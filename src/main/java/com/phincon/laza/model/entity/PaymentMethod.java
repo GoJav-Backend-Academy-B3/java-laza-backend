@@ -1,10 +1,10 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import lombok.*;
 
 import java.util.List;
@@ -19,8 +19,8 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PaymentMethod {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotBlank
     private String name;
@@ -38,7 +38,7 @@ public class PaymentMethod {
     @NotBlank
     private String logoUrl;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "paymentMethod")
     private List<Order> order;
-
 }
