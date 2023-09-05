@@ -16,32 +16,40 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.phincon.laza.config.BrandDataConfig;
 import com.phincon.laza.model.entity.Brand;
 
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.AUTO_CONFIGURED)
+@Import({BrandDataConfig.class})
 public class BrandRepositoryTest {
 
   @Autowired
   private BrandRepository repository;
 
-  private final List<Brand> brands = Arrays.asList(
-      new Brand(1l, "FILA", "logoUrl", null),
-      new Brand(2l, "NIKE", "logoUrl", null),
-      new Brand(3l, "ADIDAS", "logoUrl", null),
-      new Brand(4l, "H&M", "logoUrl", null),
-      new Brand(5l, "Zara", "logoUrl", null),
-      new Brand(6l, "Uniqlo", "logoUrl", null));
+  @Autowired
+  @Qualifier("brand.all")
+  private final List<Brand> brands;
+
+  @Autowired
+  @Qualifier("brand.one")
+  private final Brand brandOne;
+
+  @Autowired
+  @Qualifier("brand.one.dup")
+  private final Brand brandOneDup;
 
   @BeforeEach
   public void init() {
@@ -90,8 +98,7 @@ public class BrandRepositoryTest {
   @Test
   @DisplayName("Add a brand should return same data and count should be 7")
   public void addNewBrand_data() {
-    Brand newBrand = new Brand(null, "3Second", "logoUrl", null);
-    Brand output = repository.save(newBrand);
+    Brand output = repository.save(brandOne);
     
     final int countExpected = 7;
     int countActual = repository.count();
@@ -104,9 +111,7 @@ public class BrandRepositoryTest {
   @Test
   @DisplayName("Add a brand with duplicate name should throw exception")
   public void addNewBrandSameName_exception() {
-    Brand newBrand = new Brand(null, "H&M", "logoUrl", null);
-    
-    assertThrows(DataIntegrityViolationException.class, () -> repository.save(newBrand));
+    assertThrows(DataIntegrityViolationException.class, () -> repository.save(brandOneDup));
   }
 
   @Test
