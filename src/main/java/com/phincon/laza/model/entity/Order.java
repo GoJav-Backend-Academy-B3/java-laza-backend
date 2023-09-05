@@ -35,10 +35,17 @@ public class Order {
 
     private String orderStatus;
 
+//    @ManyToOne
+//    @JoinColumn(name="address_id", nullable=false)
+//    private Address address;
+
     @ManyToOne
-    @JoinColumn(name="address_id", nullable=false)
-    private Address address;
+    @JoinColumn(name="payment_method_id", nullable=false)
+    private PaymentMethod paymentMethod;
 
     @OneToMany(mappedBy = "order")
-    private List<ProductOrderHistory> productOrderHistory;
+    private List<ProductOrderDetail> productOrderDetails;
+
+    @OneToOne(mappedBy = "order")
+    private Transaction transaction;
 }

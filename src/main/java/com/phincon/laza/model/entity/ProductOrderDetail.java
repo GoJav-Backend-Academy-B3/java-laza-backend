@@ -10,10 +10,10 @@ import lombok.*;
 @Setter
 @Getter
 @ToString
-@Table(name = "product_order_histories")
+@Table(name = "product_order_details")
 @Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ProductOrderHistory {
+public class ProductOrderDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
