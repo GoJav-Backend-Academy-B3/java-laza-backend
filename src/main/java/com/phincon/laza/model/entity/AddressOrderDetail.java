@@ -12,10 +12,10 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-@Table(name = "addresses")
+@Table(name = "address_order_detail")
 @Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class Address {
+public class AddressOrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +32,6 @@ public class Address {
     @Column(nullable = false)
     private boolean isPrimary;
 
-    @ManyToOne
-    @JoinColumn(name="user_id", nullable=false)
-    private User user;
+    @OneToOne(fetch = FetchType.EAGER)
+    private Order order;
 }
