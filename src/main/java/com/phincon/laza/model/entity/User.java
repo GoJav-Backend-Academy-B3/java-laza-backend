@@ -8,13 +8,12 @@ import lombok.*;
 
 import java.util.List;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
 @ToString
-@Table(name = "users")
 @Entity
+@Table(name = "users")
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class User {
     @Id
@@ -22,12 +21,14 @@ public class User {
     private String id;
 
     @Column(nullable = false)
+    private String fullName;
+
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @Email
     @Column(nullable = false, unique = true)
     private String email;
 
