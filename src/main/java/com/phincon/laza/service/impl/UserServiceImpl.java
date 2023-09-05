@@ -28,14 +28,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getById(String id) throws Exception {
+    public User getById(String id) {
         Optional<User> findUser = userRepository.findById(id);
         userValidator.validateUserNotFound(findUser);
         return findUser.get();
     }
 
     @Override
-    public User update(String id, UserRequest request) throws Exception {
+    public User update(String id, UserRequest request) {
         Optional<User> findUser = userRepository.findById(id);
         userValidator.validateUserNotFound(findUser);
 

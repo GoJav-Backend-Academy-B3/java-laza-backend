@@ -1,6 +1,8 @@
 package com.phincon.laza.exception.custom;
 
-public class NotFoundException extends Exception {
+import com.phincon.laza.model.entity.PaymentMethod;
+
+public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {
         super(message);
     }
