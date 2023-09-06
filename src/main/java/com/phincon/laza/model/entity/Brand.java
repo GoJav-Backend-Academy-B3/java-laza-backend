@@ -20,9 +20,12 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     private String logoUrl;
+
+    private boolean isDeleted;
 
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     private List<Product> productList;
