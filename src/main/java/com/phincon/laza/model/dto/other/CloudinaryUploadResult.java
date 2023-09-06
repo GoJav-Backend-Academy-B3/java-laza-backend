@@ -18,4 +18,7 @@ public record CloudinaryUploadResult(
         (int) map.get("bytes"),
         (String) map.get("secure_url"));
   }
+    public static CloudinaryUploadResult empty() {
+        return new CloudinaryUploadResult(null, 0, 0, null, 0, null);
+    }
 }
