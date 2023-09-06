@@ -7,5 +7,6 @@ import com.phincon.laza.model.entity.User;
 
 public interface AuthService {
     TokenResponse login(LoginRequest request);
-    User register(RegisterRequest request);
+    User register(RegisterRequest request) throws Exception;
+    void registerConfirm(String token);
 }

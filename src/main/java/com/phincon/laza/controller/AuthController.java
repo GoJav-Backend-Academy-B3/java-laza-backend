@@ -11,10 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -31,10 +28,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<DataResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<DataResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest request) throws Exception {
         User user = authService.register(request);
         UserResponse result = new UserResponse(user);
-        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.CREATED.value(), HttpStatus.OK.name(), result, null);
+        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.CREATED.value(), HttpStatus.CREATED.name(), result, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+    }
+
+    @GetMapping("/register/confirm")
+    public ResponseEntity<DataResponse<?>> registerConfirm(@RequestParam String token) {
+        authService.registerConfirm(token);
+        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 }
