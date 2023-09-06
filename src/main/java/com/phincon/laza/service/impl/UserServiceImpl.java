@@ -42,9 +42,24 @@ public class UserServiceImpl implements UserService {
         userValidator.validateUserNotFound(findUser);
 
         User user = findUser.get();
+
+        if (!user.getUsername().equals(request.getUsername()) || !user.getEmail().equals(request.getEmail())) {
+            if (!user.getUsername().equals(request.getUsername())) {
+                Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
+                userValidator.validateUsernameIsExists(findByUsername);
+                user.setUsername(request.getUsername());
+            }
+
+            if (!user.getEmail().equals(request.getEmail())) {
+                Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
+                userValidator.validateEmailIsExists(findByEmail);
+
+                user.setEmail(request.getEmail());
+                user.setVerified(false);
+            }
+        }
+
         user.setFullName(request.getFullName());
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
 
         log.info("User id={} is updated", user.getId());
         return user;
@@ -60,5 +75,6 @@ public class UserServiceImpl implements UserService {
 
         findUser.get().setPassword(passwordEncoder.encode(request.getConfirmPassword()));
         userRepository.save(findUser.get());
+        log.info("User id={} is updated password", findUser.get().getId());
     }
 }
