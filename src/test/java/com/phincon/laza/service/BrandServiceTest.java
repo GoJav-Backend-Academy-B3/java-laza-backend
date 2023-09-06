@@ -99,7 +99,7 @@ public class BrandServiceTest {
     public void addOneBrand_data() {
         Brand data =  brandOne;
         Mockito.when(repository.save(any(Brand.class))).thenReturn(data);
-        Mockito.when(imageService.upload(any(byte[].class), any(String.class), any(String.class))).thenReturn(new CloudinaryUploadResult());
+        Mockito.when(imageService.upload(any(byte[].class), any(String.class), any(String.class))).thenReturn(CloudinaryUploadResult.empty());
 
         Brand returned = service.add(data);
         verify(repository, times(1)).save(data);
