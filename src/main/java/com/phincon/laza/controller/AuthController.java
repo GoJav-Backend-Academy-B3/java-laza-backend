@@ -1,7 +1,6 @@
 package com.phincon.laza.controller;
 
-import com.phincon.laza.model.dto.request.LoginRequest;
-import com.phincon.laza.model.dto.request.RegisterRequest;
+import com.phincon.laza.model.dto.request.*;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.TokenResponse;
 import com.phincon.laza.model.dto.response.UserResponse;
@@ -35,9 +34,37 @@ public class AuthController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
+    @PostMapping("/register/resend")
+    public ResponseEntity<DataResponse<?>> registerResend(@Valid @RequestBody RecoveryRequest request) throws Exception {
+        authService.registerResend(request);
+        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+    }
+
     @GetMapping("/register/confirm")
     public ResponseEntity<DataResponse<?>> registerConfirm(@RequestParam String token) {
         authService.registerConfirm(token);
+        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<DataResponse<?>> forgotPassword(@Valid @RequestBody RecoveryRequest request) throws Exception {
+        authService.forgotPassword(request);
+        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+    }
+
+    @PostMapping("/forgot-password/confirm")
+    public ResponseEntity<DataResponse<?>> forgotPasswordConfirm(@Valid @RequestBody VerificationCodeRequest request) {
+        authService.forgotPasswordConfirm(request);
+        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<DataResponse<?>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
