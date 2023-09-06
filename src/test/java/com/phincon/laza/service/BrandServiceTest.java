@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
 
 import com.phincon.laza.config.BrandDataConfig;
 import com.phincon.laza.exception.custom.ConflictException;
@@ -98,10 +100,12 @@ public class BrandServiceTest {
     @DisplayName("When add one brand, should return data")
     public void addOneBrand_data() {
         Brand data =  brandOne;
+        var mockMultipart = new MockMultipartFile("brand1.jpg", InputStream.nullInputStream());
         Mockito.when(repository.save(any(Brand.class))).thenReturn(data);
         Mockito.when(imageService.upload(any(byte[].class), any(String.class), any(String.class))).thenReturn(CloudinaryUploadResult.empty());
 
-        Brand returned = service.add(data);
+        Brand returned = service.add(data.getName(), mockMultipart);
+        verify(imageService, times(1)).upload(any(byte[].class), any(String.class), any(String.class));
         verify(repository, times(1)).save(data);
     }
 
@@ -109,10 +113,11 @@ public class BrandServiceTest {
     @DisplayName("When add one brand, should throw exception if name exists")
     public void addOneBrand_exception() {
         Brand data = brandOneDup;
+        var mockMultipart = new MockMultipartFile("brand1.jpg", InputStream.nullInputStream());
         Mockito.when(repository.save(any(Brand.class))).thenThrow(DataIntegrityViolationException.class);
         Mockito.when(imageService.upload(any(byte[].class), any(String.class), any(String.class))).thenReturn(CloudinaryUploadResult.empty());
 
-        assertThrows(ConflictException.class, () -> service.add(data));
+        assertThrows(ConflictException.class, () -> service.add(data.getName(), mockMultipart));
         verify(repository, times(1)).save(data);
     }
 
@@ -121,14 +126,16 @@ public class BrandServiceTest {
     public void updateOneBrand_data() {
         long desiredId = 10l;
         Brand data = brandOne;
+        var mockMultipart = new MockMultipartFile("brand1.jpg", InputStream.nullInputStream());
         Brand updated = new Brand(data.getId(), "lmao", data.getLogoUrl(), data.getProductList());
         Mockito.when(repository.findById(anyLong())).thenReturn(data);
         Mockito.when(repository.save(any(Brand.class))).thenReturn(updated);
         Mockito.when(imageService.upload(any(byte[].class), any(String.class), any(String.class))).thenReturn(CloudinaryUploadResult.empty());
         
-        service.update(desiredId, updated);
+        service.update(desiredId, data.getName(), mockMultipart);
 
         verify(repository, times(1)).findById(desiredId);
+        verify(imageService, times(1)).upload(any(byte[].class), any(String.class), any(String.class));
         verify(repository, times(1)).save(updated);
     }
 
@@ -137,11 +144,12 @@ public class BrandServiceTest {
     public void updateOneBrand_exception() {
         long desiredId = 10l;
         Brand data = brandOne;
+        var mockMultipart = new MockMultipartFile("brand1.jpg", InputStream.nullInputStream());
         Brand updated = new Brand(data.getId(), "lmao", data.getLogoUrl(), data.getProductList());
 
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.empty());
         
-        assertThrows(NotFoundException.class, () -> service.update(desiredId, updated));
+        assertThrows(NotFoundException.class, () -> service.update(desiredId, data.getName(), mockMultipart));
 
         verify(repository, times(1)).findById(desiredId);
         verify(repository, never()).save(updated);
