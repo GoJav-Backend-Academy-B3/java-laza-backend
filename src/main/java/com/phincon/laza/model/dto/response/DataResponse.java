@@ -17,6 +17,8 @@ import org.springframework.lang.Nullable;
 public class DataResponse<T> {
     private Integer statusCode;
     private String message;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
