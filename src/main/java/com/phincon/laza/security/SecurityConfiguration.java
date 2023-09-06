@@ -26,6 +26,7 @@ public class SecurityConfiguration {
 
     public static final String[] whiteListedRoutes = new String[]{
             "/auth/**",
+            "/rajaongkir/**",
     };
 
     @Bean

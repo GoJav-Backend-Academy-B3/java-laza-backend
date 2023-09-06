@@ -1,44 +1,52 @@
 package com.phincon.laza.controller;
 
 
-import com.phincon.laza.model.dto.response.RajaongkirAllProvinceResponse;
+import com.phincon.laza.model.dto.response.DataResponse;
+import com.phincon.laza.model.dto.response.ROAllProvinceResponse;
+import com.phincon.laza.model.dto.response.ROCityResponse;
+import com.phincon.laza.model.dto.response.ROProvinceResponse;
+import com.phincon.laza.model.entity.Address;
+import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import javax.xml.crypto.Data;
+import java.util.List;
 
 @RestController
 @RequestMapping("/rajaongkir")
 public class RajaongkirController {
 
-    @Value("${rajaongkir.key}")
-    private String RAJAONGKIR_KEY;
-
-    @Value("${rajaongkir.province.url}")
-    private String RAJAONGKIR_PROVINCE_URL;
     @Autowired
-    private RestTemplate restTemplate;
-
+    private RajaongkirService rajaongkirService;
 
     @GetMapping("/provinces")
-    public ResponseEntity<RajaongkirAllProvinceResponse> findAllProvince(){
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("key", RAJAONGKIR_KEY);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<RajaongkirAllProvinceResponse> consumeResponse = restTemplate.exchange(
-                RAJAONGKIR_PROVINCE_URL,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<RajaongkirAllProvinceResponse>() {
-                }
-        );
-
-        RajaongkirAllProvinceResponse result = consumeResponse.getBody();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<DataResponse<List<ROProvinceResponse>>> findAllProvince(
+    ){
+        List<ROProvinceResponse> provinces = rajaongkirService.findAllProvince();
+        DataResponse<List<ROProvinceResponse>> dataResponse = new DataResponse<>(
+                HttpStatus.OK.value(),
+                "OK",
+                provinces,
+                null);
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/cities")
+    public ResponseEntity<DataResponse<List<ROCityResponse>>> findAllCity(@RequestParam(value = "province", required = false)
+                                                                          String province){
+        List<ROCityResponse> cities = rajaongkirService.findAllCityByProvinceId(province);
+        DataResponse<List<ROCityResponse>> dataResponse = new DataResponse<>(
+                HttpStatus.OK.value(),
+                "OK",
+                cities,
+                null);
+
+        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
+    }
+
 }
