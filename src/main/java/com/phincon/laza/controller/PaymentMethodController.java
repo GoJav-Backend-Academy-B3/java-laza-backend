@@ -5,7 +5,6 @@ import com.phincon.laza.model.entity.PaymentMethod;
 import com.phincon.laza.service.PaymentMethodService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,20 +33,26 @@ public class PaymentMethodController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentMethod> createPaymentMethod(@Valid @RequestBody PaymentMethod paymentMethod) {
+    public ResponseEntity<DataResponse<PaymentMethod>> createPaymentMethod(@Valid @RequestBody PaymentMethod paymentMethod) {
         PaymentMethod createdPaymentMethod = paymentMethodService.createPaymentMethod(paymentMethod);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPaymentMethod);
+        return DataResponse.created(createdPaymentMethod);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PaymentMethod> updatePaymentMethod(@PathVariable Long id, @Valid @RequestBody PaymentMethod updatedPaymentMethod) {
+    public ResponseEntity<DataResponse<PaymentMethod>> updatePaymentMethod(@PathVariable Long id, @Valid @RequestBody PaymentMethod updatedPaymentMethod) {
         PaymentMethod updated = paymentMethodService.updatePaymentMethod(id, updatedPaymentMethod);
-        return ResponseEntity.ok(updated);
+        return DataResponse.ok(updated);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePaymentMethod(@PathVariable Long id) {
-        paymentMethodService.deletePaymentMethod(id);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/{id}/deactivate")
+    public ResponseEntity<DataResponse<PaymentMethod>> deactivatedPaymentMethod(@PathVariable Long id) {
+        PaymentMethod updatedPaymentMethod =  paymentMethodService.deactivatePaymentMethod(id);
+        return DataResponse.ok(updatedPaymentMethod);
+    }
+
+    @PostMapping("/{id}/activate")
+    public ResponseEntity<DataResponse<PaymentMethod>> activatePaymentMethod(@PathVariable Long id) {
+        PaymentMethod updatedPaymentMethod =  paymentMethodService.activatePaymentMethod(id);
+        return DataResponse.ok(updatedPaymentMethod);
     }
 }

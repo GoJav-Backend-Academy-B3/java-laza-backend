@@ -30,6 +30,15 @@ public class DataResponse<T> {
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
+    public static <T> ResponseEntity<DataResponse<T>> ok(@Nullable T data, Object metadata) {
+        DataResponse<T> body = new DataResponse<>();
+        body.data = data;
+        body.metadata = metadata;
+        body.statusCode = HttpStatus.OK.value();
+        body.message = HttpStatus.OK.name();
+        return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
+
     public static <T> ResponseEntity<DataResponse<T>> created(@Nullable T data) {
         DataResponse<T> body = new DataResponse<>();
         body.data = data;

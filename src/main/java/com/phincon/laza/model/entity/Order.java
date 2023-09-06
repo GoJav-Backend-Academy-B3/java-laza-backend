@@ -48,4 +48,8 @@ public class Order {
 
     @OneToOne(mappedBy = "order")
     private Transaction transaction;
+
+    @OneToOne(mappedBy = "order")
+    @JoinColumn(name="payment_detail_id", nullable=false)
+    private PaymentDetail paymentDetail;
 }
