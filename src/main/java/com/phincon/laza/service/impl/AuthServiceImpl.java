@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public TokenResponse login(LoginRequest request) throws Exception {
+    public TokenResponse login(LoginRequest request) {
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
         userValidator.validateUserNotFound(findByUsername);
 
@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public User register(RegisterRequest request) throws Exception {
+    public User register(RegisterRequest request) {
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
         userValidator.validateUsernameIsExists(findByUsername);
 

@@ -24,17 +24,17 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<DataResponse<TokenResponse>> login(@Valid @RequestBody LoginRequest request) throws Exception {
+    public ResponseEntity<DataResponse<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {
         TokenResponse token = authService.login(request);
-        DataResponse<TokenResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", token, null);
+        DataResponse<TokenResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), token, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<DataResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest request) throws Exception {
+    public ResponseEntity<DataResponse<UserResponse>> register(@Valid @RequestBody RegisterRequest request) {
         User user = authService.register(request);
         UserResponse result = new UserResponse(user);
-        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.CREATED.value(), "Success", result, null);
+        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.CREATED.value(), HttpStatus.OK.name(), result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 }
