@@ -21,9 +21,14 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String country;
+    @Column(nullable = false)
+    private String province_id;
 
-    private String city;
+    @Column(nullable = false)
+    private String city_id;
+
+    @Column(columnDefinition = "TEXT")
+    private String fullAddress;
 
     private String receiverName;
 
@@ -41,7 +46,6 @@ public class Address {
     @Column(name = "created_at", updatable = false)
     private Date createdAt;
 
-    //    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
 

@@ -12,11 +12,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class AddressRequest {
-    @NotBlank(message = "country is required")
-    private String country;
+
+    @NotBlank(message = "province is required")
+    private String province_id;
 
     @NotBlank(message = "city is required")
-    private String city;
+    private String city_id;
+
+    @NotBlank(message = "full address is required")
+    private String fullAddress;
 
     @NotBlank(message = "receiver name is required")
     @JsonProperty("receiver_name")
@@ -28,6 +32,4 @@ public class AddressRequest {
     @JsonProperty("is_primary")
     private boolean isPrimary;
 
-    @JsonProperty("user_id")
-    private String userId;
 }

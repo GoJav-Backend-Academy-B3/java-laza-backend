@@ -8,13 +8,13 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface AddressService {
-    Address add(AddressRequest request) throws Exception;
+    Address add(String username, AddressRequest request);
 
-    List<Address> findAllByUserId(String userId);
+    List<Address> findAllByUsername(String username);
 
     Address findById(Long id) throws Exception;
 
-    Address update(Long id, AddressRequest request) throws Exception;
+    Address update(String username, Long id, AddressRequest request) throws Exception;
 
     void delete(Long id) throws Exception;
 }

@@ -6,6 +6,7 @@ import com.phincon.laza.model.dto.request.AddressRequest;
 import com.phincon.laza.model.entity.Address;
 import com.phincon.laza.model.entity.User;
 import com.phincon.laza.repository.AddressRepository;
+import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,30 +25,44 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+
     @Override
-    public Address add(AddressRequest request) throws Exception {
-        Address address = new Address();
+    public Address add(String username, AddressRequest request){
+        Optional<User> user = userRepository.findByUsername(username);
 
-        User user = new User();
-        user.setId(request.getUserId());
+        if (user.isPresent()) {
+            Address address = new Address();
 
-        address.setCity(request.getCity());
-        address.setCountry(request.getCountry());
-        address.setPrimary(request.isPrimary());
-        address.setReceiverName(request.getReceiverName());
-        address.setPhoneNumber(request.getPhone());
-        address.setUser(user);
+           address.setCity_id(request.getCity_id());
+           address.setProvince_id(request.getProvince_id());
+            address.setPrimary(request.isPrimary());
+            address.setReceiverName(request.getReceiverName());
+            address.setPhoneNumber(request.getPhone());
+            address.setFullAddress(request.getFullAddress());
+            address.setUser(user.get());
 
-        if (request.isPrimary()) {
-            addressRepository.setAllAddressesNonPrimary(request.getUserId());
+            if (request.isPrimary()) {
+                addressRepository.setAllAddressesNonPrimary(user.get().getId());
+            }
+
+            return addressRepository.save(address);
         }
 
-        return addressRepository.save(address);
+        throw new NotFoundException("Username doesn't exists");
     }
 
     @Override
-    public List<Address> findAllByUserId(String userId) {
-        return addressRepository.findAllByUserId(userId);
+    public List<Address> findAllByUsername(String username){
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if (user.isPresent()) {
+            return addressRepository.findAllByUserId(user.get().getId());
+        }
+
+        throw new NotFoundException("Username doesn't exists");
     }
 
 
@@ -57,25 +72,26 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Address update(Long id, AddressRequest request) throws Exception {
+    public Address update(String username, Long id, AddressRequest request) throws Exception {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("Username doesn't exists"));
+
         Optional<Address> optionalAddress = addressRepository.findById(id);
 
         if (optionalAddress.isPresent()) {
-            User user = new User();
-            user.setId(request.getUserId());
-
             Address address = optionalAddress.get();
 
-            address.setCity(request.getCity());
-            address.setCountry(request.getCountry());
+            if (request.isPrimary()) {
+                addressRepository.setAllAddressesNonPrimary(user.getId());
+            }
+
+            address.setCity_id(request.getCity_id());
+            address.setProvince_id(request.getProvince_id());
             address.setPrimary(request.isPrimary());
             address.setReceiverName(request.getReceiverName());
             address.setPhoneNumber(request.getPhone());
+            address.setFullAddress(request.getFullAddress());
             address.setUser(user);
 
-            if (request.isPrimary()) {
-                addressRepository.setAllAddressesNonPrimary(request.getUserId());
-            }
 
             return addressRepository.save(address);
         }

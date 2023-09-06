@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +22,8 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping
-    public ResponseEntity<?> add(@Valid @RequestBody AddressRequest request) throws Exception {
-        Address address = addressService.add(request);
+    public ResponseEntity<?> add(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody AddressRequest request) throws Exception {
+        Address address = addressService.add(ctx.getUsername(), request);
 
         DataResponse<Address> dataResponse = new DataResponse<>(
                 HttpStatus.CREATED.value(),
@@ -33,8 +35,8 @@ public class AddressController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(@PathVariable String id) {
-        List<Address> addresses = addressService.findAllByUserId(id);
+    public ResponseEntity<?> getAll(@AuthenticationPrincipal UserDetails ctx) {
+        List<Address> addresses = addressService.findAllByUsername(ctx.getUsername());
 
         DataResponse<List<Address>> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
@@ -59,8 +61,8 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody AddressRequest request, @PathVariable Long id) throws Exception {
-        Address address = addressService.update(id, request);
+    public ResponseEntity<?> update(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody AddressRequest request, @PathVariable Long id) throws Exception {
+        Address address = addressService.update(ctx.getUsername(), id, request);
 
         DataResponse<Address> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
