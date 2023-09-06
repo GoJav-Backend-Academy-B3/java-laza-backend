@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 public class UserValidator {
 
-    public void validateUserNotFound(Optional<User> findUser) throws Exception {
+    public void validateUserNotFound(Optional<User> findUser) {
         if (findUser.isEmpty()) {
             throw new NotFoundException("User not found");
         }
