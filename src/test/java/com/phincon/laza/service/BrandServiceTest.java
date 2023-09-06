@@ -110,6 +110,7 @@ public class BrandServiceTest {
     public void addOneBrand_exception() {
         Brand data = brandOneDup;
         Mockito.when(repository.save(any(Brand.class))).thenThrow(DataIntegrityViolationException.class);
+        Mockito.when(imageService.upload(any(byte[].class), any(String.class), any(String.class))).thenReturn(CloudinaryUploadResult.empty());
 
         assertThrows(ConflictException.class, () -> service.add(data));
         verify(repository, times(1)).save(data);
@@ -123,6 +124,7 @@ public class BrandServiceTest {
         Brand updated = new Brand(data.getId(), "lmao", data.getLogoUrl(), data.getProductList());
         Mockito.when(repository.findById(anyLong())).thenReturn(data);
         Mockito.when(repository.save(any(Brand.class))).thenReturn(updated);
+        Mockito.when(imageService.upload(any(byte[].class), any(String.class), any(String.class))).thenReturn(CloudinaryUploadResult.empty());
         
         service.update(desiredId, updated);
 
