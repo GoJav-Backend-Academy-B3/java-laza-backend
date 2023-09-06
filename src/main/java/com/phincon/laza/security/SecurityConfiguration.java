@@ -26,6 +26,15 @@ public class SecurityConfiguration {
 
     public static final String[] whiteListedRoutes = new String[]{
             "/auth/**",
+            "/size",
+            "/size/create",
+            "/size/{id}",
+            "/size/name",
+            "/category",
+            "/category/{id}",
+            "/category/name",
+            "/category/create",
+
     };
 
     @Bean
