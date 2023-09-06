@@ -50,6 +50,8 @@ public class SecurityConfiguration {
 
     public static final String[] whiteListedRoutes = new String[]{
             "/auth/**",
+            "/size/**",
+            "/category/**"
     };
 
     private final String[] getAdminListedRoutes = new String[]{
@@ -57,6 +59,8 @@ public class SecurityConfiguration {
     };
 
     private final String[] postAdminListedRoutes = new String[]{
+            "/size/create",
+            "/category/create",
     };
 
     private final String[] putAdminListedRoutes = new String[]{
