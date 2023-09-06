@@ -1,6 +1,7 @@
 package com.phincon.laza.service;
 
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
+import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;
 import com.phincon.laza.model.entity.User;
 import org.springframework.data.domain.Page;
@@ -13,4 +14,5 @@ public interface UserService {
     User getByUsername(String username);
     User update(String username, UserRequest request);
     void changePassword(String username, ChangePasswordRequest request);
+    void updateRole(String username, RoleRequest request);
 }

@@ -1,6 +1,7 @@
 package com.phincon.laza.controller;
 
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
+import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.PaginationMeta;
@@ -57,6 +58,13 @@ public class UserController {
     @PatchMapping("/change-password")
     public ResponseEntity<DataResponse<?>> changePassword(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody ChangePasswordRequest request) {
         userService.changePassword(ctx.getUsername(), request);
+        DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+    }
+
+    @PatchMapping("/update/role")
+    public ResponseEntity<DataResponse<?>> updateRole(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody RoleRequest request) {
+        userService.updateRole(ctx.getUsername(), request);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
