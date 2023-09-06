@@ -37,6 +37,9 @@ public class BrandServiceTest {
     @Mock
     BrandRepository repository;
 
+    @Mock
+    CloudinaryImageService imageService;
+
     @InjectMocks
     BrandService service;
 
@@ -95,6 +98,7 @@ public class BrandServiceTest {
     public void addOneBrand_data() {
         Brand data =  brandOne;
         Mockito.when(repository.save(any(Brand.class))).thenReturn(data);
+        Mockito.when(imageService.upload(any(byte[].class), any(String.class), any(String.class))).thenReturn(new CloudinaryUploadResult());
 
         Brand returned = service.add(data);
         verify(repository, times(1)).save(data);
