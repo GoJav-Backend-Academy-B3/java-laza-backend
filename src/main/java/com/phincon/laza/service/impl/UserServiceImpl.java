@@ -28,15 +28,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getById(String id) {
-        Optional<User> findUser = userRepository.findById(id);
+    public User getByUsername(String username) throws Exception {
+        Optional<User> findUser = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findUser);
         return findUser.get();
     }
 
     @Override
-    public User update(String id, UserRequest request) {
-        Optional<User> findUser = userRepository.findById(id);
+    public User update(String username, UserRequest request) throws Exception {
+        Optional<User> findUser = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findUser);
 
         User user = findUser.get();
@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
 
+        log.info("User id={} is updated", user.getId());
         return user;
     }
 

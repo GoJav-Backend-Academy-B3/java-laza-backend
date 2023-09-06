@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @Entity
@@ -34,10 +34,15 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private boolean isVerified;
+    private boolean isVerified = false;
 
-    @Column(nullable = false)
-    private boolean isAdmin;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "users_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles;
 
     @ManyToMany
     @JoinTable(
