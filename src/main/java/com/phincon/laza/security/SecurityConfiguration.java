@@ -51,7 +51,8 @@ public class SecurityConfiguration {
     public static final String[] whiteListedRoutes = new String[]{
             "/auth/**",
             "/size/**",
-            "/category/**"
+            "/category/**",
+            "/rajaongkir/**"
     };
 
     private final String[] getAdminListedRoutes = new String[]{
