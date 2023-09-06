@@ -13,7 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableMethodSecurity
@@ -24,10 +24,6 @@ public class SecurityConfiguration {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    public static final String[] whiteListedRoutes = new String[]{
-            "/auth/**",
-    };
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -35,7 +31,11 @@ public class SecurityConfiguration {
                         .disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteListedRoutes).permitAll()
-                        .requestMatchers(GET,"/users").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(GET, getAdminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(POST, postAdminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PUT, putAdminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PATCH, patchAdminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(DELETE, deleteAdminListedRoutes).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,4 +47,25 @@ public class SecurityConfiguration {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .build();
     }
+
+    public static final String[] whiteListedRoutes = new String[]{
+            "/auth/**",
+    };
+
+    private final String[] getAdminListedRoutes = new String[]{
+            "/users"
+    };
+
+    private final String[] postAdminListedRoutes = new String[]{
+    };
+
+    private final String[] putAdminListedRoutes = new String[]{
+    };
+
+    private final String[] patchAdminListedRoutes = new String[]{
+            "/users/update/role",
+    };
+
+    private final String[] deleteAdminListedRoutes = new String[]{
+    };
 }
