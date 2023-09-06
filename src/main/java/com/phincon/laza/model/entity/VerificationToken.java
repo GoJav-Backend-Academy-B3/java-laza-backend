@@ -7,10 +7,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
 @ToString
 @Table(name = "verification_tokens")
 @Entity
@@ -21,9 +20,11 @@ public class VerificationToken {
     private Long id;
 
     @Column(nullable = false)
-    private String code;
+    private String token;
 
-    private LocalDateTime expiryDate;
+    private LocalDateTime expiresAt;
+
+    private LocalDateTime confirmedAt;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
