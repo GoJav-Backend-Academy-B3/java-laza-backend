@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import com.phincon.laza.config.BrandDataConfig;
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotFoundException;
+import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
 import com.phincon.laza.model.entity.Brand;
 
 @ExtendWith({ MockitoExtension.class })
