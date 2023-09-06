@@ -13,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,18 +37,17 @@ public class UserController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<DataResponse<UserResponse>> getById(@PathVariable String id) throws Exception {
-        User user = userService.getById(id);
+    @GetMapping("/me")
+    public ResponseEntity<DataResponse<UserResponse>> profile(@AuthenticationPrincipal UserDetails ctx) throws Exception {
+        User user = userService.getByUsername(ctx.getUsername());
         UserResponse result = new UserResponse(user);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DataResponse<UserResponse>> update(@PathVariable String id, @Valid @RequestBody UserRequest request) throws Exception {
-        User user = userService.update(id, request);
+    @PutMapping("/update")
+    public ResponseEntity<DataResponse<UserResponse>> update(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody UserRequest request) throws Exception {
+        User user = userService.update(ctx.getUsername(), request);
         UserResponse result = new UserResponse(user);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);

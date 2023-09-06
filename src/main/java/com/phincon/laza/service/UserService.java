@@ -9,6 +9,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService {
     Page<User> getAll(Pageable pageable);
-    User getById(String id) ;
-    User update(String id, UserRequest request) ;
+    User getByUsername(String username) throws Exception;
+    User update(String username, UserRequest request) throws Exception;
 }
