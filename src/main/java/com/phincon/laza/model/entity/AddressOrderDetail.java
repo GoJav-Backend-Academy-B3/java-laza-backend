@@ -1,22 +1,21 @@
 package com.phincon.laza.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Setter
-@Table(name = "Addresses")
+@Getter
+@ToString
+@Table(name = "address_order_detail")
 @Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class Address {
+public class AddressOrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,26 +32,6 @@ public class Address {
     @Column(nullable = false)
     private boolean isPrimary;
 
-    @ManyToOne
-    @JoinColumn(name="user_id", nullable=false)
-    @JsonBackReference
-    private User user;
-
-    @Column(name = "created_at", updatable = false)
-    private Date createdAt;
-
-    //    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at")
-    private Date updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = new Date();
-        updatedAt = createdAt;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = new Date();
-    }
+    @OneToOne(fetch = FetchType.EAGER)
+    private Order order;
 }
