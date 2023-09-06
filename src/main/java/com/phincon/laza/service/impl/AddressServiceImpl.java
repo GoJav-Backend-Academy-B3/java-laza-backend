@@ -80,6 +80,12 @@ public class AddressServiceImpl implements AddressService {
         if (optionalAddress.isPresent()) {
             Address address = optionalAddress.get();
 
+            // Jika optionalAddress.get().isPrimary() adalah true dan request.isPrimary() adalah false,
+            // jangan ubah isPrimary
+            if (optionalAddress.get().isPrimary() && !request.isPrimary()) {
+                throw new BadRequestException("Cannot change address primary to non primary");
+            }
+
             if (request.isPrimary()) {
                 addressRepository.setAllAddressesNonPrimary(user.getId());
             }
@@ -91,7 +97,6 @@ public class AddressServiceImpl implements AddressService {
             address.setPhoneNumber(request.getPhone());
             address.setFullAddress(request.getFullAddress());
             address.setUser(user);
-
 
             return addressRepository.save(address);
         }
@@ -112,13 +117,7 @@ public class AddressServiceImpl implements AddressService {
             }
 
             if (optionalAddress.get().isPrimary()) {
-                addressRepository.delete(optionalAddress.get());
-
-                Address latestAddress = addressRepository.findFirstByUserIdOrderByCreatedAtDesc(optionalAddress.get().getUser().getId());
-
-                latestAddress.setPrimary(true);
-                addressRepository.save(latestAddress);
-                return;
+                throw new BadRequestException("Cannot delete address primary");
 
             } else {
                 addressRepository.delete(optionalAddress.get());
