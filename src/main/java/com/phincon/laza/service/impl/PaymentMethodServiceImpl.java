@@ -60,5 +60,19 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
         paymentMethodValidator.validatePaymentMethodNotFound(paymentMethod, id);
         paymentMethodRepository.deleteById(id);
     }
+
+    @Override
+    public PaymentMethod deactivatePaymentMethod(Long id) {
+        PaymentMethod paymentMethod = getPaymentMethodById(id);
+        paymentMethod.setActive(false);
+        return updatePaymentMethod(paymentMethod.getId(), paymentMethod);
+    }
+
+    @Override
+    public PaymentMethod activatePaymentMethod(Long id) {
+        PaymentMethod paymentMethod = getPaymentMethodById(id);
+        paymentMethod.setActive(false);
+        return updatePaymentMethod(paymentMethod.getId(), paymentMethod);
+    }
 }
 

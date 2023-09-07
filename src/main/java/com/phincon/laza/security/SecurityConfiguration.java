@@ -31,11 +31,11 @@ public class SecurityConfiguration {
                         .disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteListedRoutes).permitAll()
-                        .requestMatchers(GET, getAdminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(POST, postAdminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(PUT, putAdminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(PATCH, patchAdminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(DELETE, deleteAdminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(GET, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(POST, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PUT, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PATCH, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(DELETE, adminListedRoutes).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -52,8 +52,9 @@ public class SecurityConfiguration {
             "/auth/**",
             "/size/**",
             "/category/**",
-            "/rajaongkir/**",
-            "/product/**"
+            "/product/**",
+
+
     };
 
     private final String[] getAdminListedRoutes = new String[]{
@@ -73,6 +74,9 @@ public class SecurityConfiguration {
             "/users/update/role",
     };
 
-    private final String[] deleteAdminListedRoutes = new String[]{
+
+
+    private final String[] adminListedRoutes = new String[]{
+            "/management/**"
     };
 }

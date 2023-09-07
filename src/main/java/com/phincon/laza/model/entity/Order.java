@@ -43,9 +43,17 @@ public class Order {
     @JoinColumn(name="payment_method_id", nullable=false)
     private PaymentMethod paymentMethod;
 
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable=false)
+    private User user;
+
     @OneToMany(mappedBy = "order")
     private List<ProductOrderDetail> productOrderDetails;
 
     @OneToOne(mappedBy = "order")
     private Transaction transaction;
+
+    @OneToOne(mappedBy = "order")
+    @JoinColumn(name="payment_detail_id", nullable=false)
+    private PaymentDetail paymentDetail;
 }
