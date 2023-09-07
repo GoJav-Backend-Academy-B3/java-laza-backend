@@ -15,5 +15,9 @@ public interface PaymentMethodService {
     PaymentMethod updatePaymentMethod(Long id, PaymentMethod updatedPaymentMethod);
 
     void deletePaymentMethod(Long id);
+
+    PaymentMethod deactivatePaymentMethod(Long id);
+
+    PaymentMethod activatePaymentMethod(Long id);
 }
 
