@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Optional;
 
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,5 +14,5 @@ import java.util.Optional;
 public class AllProvinceResponse {
     private Object query;
     private StatusResponse status;
-    private Optional results;
+    private List<ProvinceResponse> results;
 }

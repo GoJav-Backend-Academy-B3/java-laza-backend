@@ -56,10 +56,11 @@ public class SecurityConfiguration {
             "/provinces",
             "/cities",
             "/costs",
+            "/existsProvince/**",
+            "/existsCity/**",
             "/brands/{id}",
             "/brands/search",
             "/brands",
-
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
