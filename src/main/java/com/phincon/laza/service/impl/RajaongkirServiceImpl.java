@@ -1,14 +1,25 @@
 package com.phincon.laza.service.impl;
 
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.rajaongkir.AllCityResponse;
 import com.phincon.laza.model.dto.rajaongkir.AllProvinceResponse;
+import com.phincon.laza.model.dto.rajaongkir.CityResponse;
+import com.phincon.laza.model.dto.rajaongkir.ProvinceResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import java.lang.reflect.Field;
+import java.sql.Struct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,7 +29,7 @@ public class RajaongkirServiceImpl implements RajaongkirService {
     private RajaongkirRepository rajaongkirRepository;
 
     @Override
-    public Optional findAllProvince() {
+    public List<ProvinceResponse> findAllProvince() {
         AllProvinceResponse provinceResponse = rajaongkirRepository.findAllProvince();
         return provinceResponse.getResults();
     }
@@ -31,17 +42,41 @@ public class RajaongkirServiceImpl implements RajaongkirService {
     }
 
     @Override
-    public Boolean existsProvince(String id) {
-        return rajaongkirRepository.existsProvince(id);
+    public boolean existsProvince(String provinceName) {
+        List<Boolean> exists = new ArrayList<>();
+        exists.add(0,false);
+        AllProvinceResponse allProvinces = rajaongkirRepository.findAllProvince();
+        for (ProvinceResponse province: allProvinces.getResults()){
+            if (province.getProvince().equals(provinceName)){
+               exists.add(0,true);
+            }
+        }
+        if (!exists.get(0)){
+            throw new NotFoundException("province doesn't exists");
+        }
+        return exists.get(0);
     }
 
     @Override
-    public Boolean existsCity(String cityId) {
-        return rajaongkirRepository.existsCity(cityId);
+    public boolean existsCity(String cityName) {
+  /*      AllCityResponse allCityResponse =  rajaongkirRepository.findCityByProvinceId("");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            List<CityResponse> cities = objectMapper.readValue(allCityResponse.getResults().toString(),CityResponse.class);
+
+        }catch (JsonMappingException e){
+
+        }
+*/
+        return true;
+
     }
 
     @Override
     public Optional findCostCourierService(ROCostRequest roCostRequest) throws Exception{
         return rajaongkirRepository.findCostCourierService(roCostRequest).getResults().get(0).getCosts();
     }
+
+
 }

@@ -1,13 +1,18 @@
 package com.phincon.laza.service;
 
+import com.phincon.laza.model.dto.rajaongkir.CityResponse;
+import com.phincon.laza.model.dto.rajaongkir.ProvinceResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RajaongkirService {
-    public Optional findAllProvince();
+    public List<ProvinceResponse> findAllProvince();
     public Optional findAllCityByProvinceId(String provinceId);
-    public Boolean existsProvince(String id);
-    public Boolean existsCity(String cityId);
+    public boolean existsProvince(String provinceName);
+    public boolean existsCity(String cityName) ;
     public Optional findCostCourierService(ROCostRequest roCostRequest) throws Exception;
+
+
 }

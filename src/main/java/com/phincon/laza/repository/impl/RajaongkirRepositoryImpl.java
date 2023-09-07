@@ -1,6 +1,6 @@
 package com.phincon.laza.repository.impl;
 
-import com.phincon.laza.exception.custom.NotProcessException;
+import com.phincon.laza.config.RajaongkirConfig;
 import com.phincon.laza.model.dto.rajaongkir.AllCityResponse;
 import com.phincon.laza.model.dto.rajaongkir.AllProvinceResponse;
 import com.phincon.laza.model.dto.rajaongkir.CostResponse;
@@ -23,8 +23,8 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${rajaongkir.key}")
-    private String RAJAONGKIR_KEY;
+    @Autowired
+    private RajaongkirConfig rajaongkirConfig;
 
     @Value("${rajaongkir.province.url}")
     private String RAJAONGKIR_PROVINCE_URL;
@@ -38,11 +38,7 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
 
     @Override
     public AllProvinceResponse findAllProvince() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("key", RAJAONGKIR_KEY);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        Map<String, AllProvinceResponse> responseMap = new HashMap<>();
+        HttpEntity entity = rajaongkirConfig.headerConfig("");
         ResponseEntity<Map<String, AllProvinceResponse>> result_province = restTemplate.exchange(
                 RAJAONGKIR_PROVINCE_URL,
                 HttpMethod.GET,
@@ -56,9 +52,7 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
 
     @Override
     public AllCityResponse findCityByProvinceId(String provinceId){
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("key", RAJAONGKIR_KEY);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        HttpEntity entity = rajaongkirConfig.headerConfig("");
         String Url = RAJAONGKIR_CITY_URL+"?province="+provinceId;
 
         ResponseEntity<Map<String, AllCityResponse>> result_city = restTemplate.exchange(
@@ -73,33 +67,9 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
     }
 
     @Override
-    public Boolean existsProvince(String id) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("key", RAJAONGKIR_KEY);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        String Url = RAJAONGKIR_PROVINCE_URL+"?id="+id;
-
-        ResponseEntity<Map<String, AllProvinceResponse>> result_province = restTemplate.exchange(
-                Url,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-
-        if (result_province.getBody().get("rajaongkir").getResults().get().equals(new ArrayList<>())){
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public Boolean existsCity(String cityId){
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("key", RAJAONGKIR_KEY);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        HttpEntity entity = rajaongkirConfig.headerConfig("");
         String Url = RAJAONGKIR_CITY_URL+"?id="+cityId;
-
         ResponseEntity<Map<String, AllCityResponse>> result_city = restTemplate.exchange(
                 Url,
                 HttpMethod.GET,
@@ -107,7 +77,6 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
                 new ParameterizedTypeReference<>() {
                 }
         );
-
         if (result_city.getBody().get("rajaongkir").getResults().get().equals(new ArrayList<>())){
             return false;
         }
@@ -125,12 +94,7 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
                     +"="+URLEncoder.encode(roCostRequest.getWeight().toString(), "UTF-8")
                     +"&"+URLEncoder.encode("courier","UTF-8")
                     +"="+URLEncoder.encode(roCostRequest.getCourier(),"UTF-8");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            headers.add("content-type", "application/x-www-form-urlencoded");
-            headers.add("key", RAJAONGKIR_KEY);
-            HttpEntity<String> entity = new HttpEntity<>(data,headers);
-
+            HttpEntity entity = rajaongkirConfig.headerConfig(data);
             ResponseEntity<Map<String, CostResponse>> result = restTemplate.exchange(
                     RAJAONGKIR_COST_URL,
                     HttpMethod.POST,
@@ -140,7 +104,7 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
             );
             return result.getBody().get("rajaongkir");
         }catch (IOException e){
-            throw new NotProcessException("URLEncoder encode error rajaongkir");
+            throw e;
         }
     }
 }
