@@ -31,11 +31,11 @@ public class SecurityConfiguration {
                         .disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteListedRoutes).permitAll()
-                        .requestMatchers(GET, getAdminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(POST, postAdminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(PUT, putAdminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(PATCH, patchAdminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(DELETE, deleteAdminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(GET, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(POST, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PUT, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PATCH, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(DELETE, adminListedRoutes).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -52,25 +52,9 @@ public class SecurityConfiguration {
             "/auth/**",
             "/size/**",
             "/category/**",
-            "/rajaongkir/**"
     };
 
-    private final String[] getAdminListedRoutes = new String[]{
-            "/users"
-    };
-
-    private final String[] postAdminListedRoutes = new String[]{
-            "/size/create",
-            "/category/create",
-    };
-
-    private final String[] putAdminListedRoutes = new String[]{
-    };
-
-    private final String[] patchAdminListedRoutes = new String[]{
-            "/users/update/role",
-    };
-
-    private final String[] deleteAdminListedRoutes = new String[]{
+    private final String[] adminListedRoutes = new String[]{
+            "/management/**"
     };
 }
