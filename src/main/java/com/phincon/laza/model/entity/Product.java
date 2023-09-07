@@ -22,9 +22,9 @@ public class Product {
     private Long id;
 
     private String name;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
+//
+//    @Lob
+//    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String imageUrl;
