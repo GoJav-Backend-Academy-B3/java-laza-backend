@@ -60,7 +60,13 @@ public class ProductsServiceImpl implements ProductsService {
 
         CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
 
-        var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products", GenerateRandom.token());
+        var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products",
+                GenerateRandom.token());
+        product.setImageUrl(result.secureUrl());
+
+        return productsRepository.save(product);
+    }
+
     @Override
     public Product update(Long id, CreateUpdateProductRequest updateProductRequest) throws Exception {
         var product = this.getProductById(id);
