@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,8 +36,8 @@ public class UserController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/users/update")
-    public ResponseEntity<DataResponse<UserResponse>> update(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody UserRequest request) {
+    @PutMapping(value = "/users/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<DataResponse<UserResponse>> update(@AuthenticationPrincipal UserDetails ctx, @Valid @ModelAttribute UserRequest request) throws Exception {
         User user = userService.update(ctx.getUsername(), request);
         UserResponse result = new UserResponse(user);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), result, null);

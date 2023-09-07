@@ -41,7 +41,7 @@ public class UserValidator {
     }
 
     public void validateUserBadCredentials(Optional<User> findUser, String password) {
-        if (findUser.isPresent() && !passwordEncoder.matches(findUser.get().getPassword(), password)) {
+        if (findUser.isPresent() && !passwordEncoder.matches(password, findUser.get().getPassword())) {
             throw new BadRequestException("Username or Password is incorrect");
         }
     }
