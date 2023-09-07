@@ -53,8 +53,9 @@ public class SecurityConfiguration {
             "/size/**",
             "/category/**",
             "/product/**",
-
-
+            "/provinces",
+            "/cities",
+            "/costs"
     };
 
     private final String[] getAdminListedRoutes = new String[]{
@@ -73,8 +74,6 @@ public class SecurityConfiguration {
     private final String[] patchAdminListedRoutes = new String[]{
             "/users/update/role",
     };
-
-
 
     private final String[] adminListedRoutes = new String[]{
             "/management/**"
