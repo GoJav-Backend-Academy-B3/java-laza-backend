@@ -52,11 +52,13 @@ public class SecurityConfiguration {
             "/auth/**",
             "/size/**",
             "/category/**",
-            "/rajaongkir/**"
+            "/rajaongkir/**",
+            "/product/**"
     };
 
     private final String[] getAdminListedRoutes = new String[]{
-            "/users"
+            "/users",
+            "/product",
     };
 
     private final String[] postAdminListedRoutes = new String[]{
