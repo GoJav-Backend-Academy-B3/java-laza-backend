@@ -24,10 +24,6 @@ public class SecurityConfiguration {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    public static final String[] whiteListedRoutes = new String[]{
-            "/auth/**",
-    };
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -35,10 +31,11 @@ public class SecurityConfiguration {
                         .disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteListedRoutes).permitAll()
-                        .requestMatchers(GET,"/users").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(POST, "/brands").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(PUT, "/brands/{id}").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(DELETE, "/brands/{id}").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(GET, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(POST, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PUT, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PATCH, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(DELETE, adminListedRoutes).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -50,4 +47,35 @@ public class SecurityConfiguration {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .build();
     }
+
+    public static final String[] whiteListedRoutes = new String[]{
+            "/auth/**",
+            "/size/**",
+            "/category/**",
+            "/product/**",
+            "/provinces",
+            "/cities",
+            "/costs"
+    };
+
+    private final String[] getAdminListedRoutes = new String[]{
+            "/users",
+            "/product",
+    };
+
+    private final String[] postAdminListedRoutes = new String[]{
+            "/size/create",
+            "/category/create",
+    };
+
+    private final String[] putAdminListedRoutes = new String[]{
+    };
+
+    private final String[] patchAdminListedRoutes = new String[]{
+            "/users/update/role",
+    };
+
+    private final String[] adminListedRoutes = new String[]{
+            "/management/**"
+    };
 }

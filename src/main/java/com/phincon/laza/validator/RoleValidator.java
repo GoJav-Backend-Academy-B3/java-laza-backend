@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Service
 public class RoleValidator {
-    public void validateRoleNotFound(Optional<Role> findRole) throws Exception {
+    public void validateRoleNotFound(Optional<Role> findRole) {
         if (findRole.isEmpty()) {
             throw new NotFoundException("Role not found");
         }
