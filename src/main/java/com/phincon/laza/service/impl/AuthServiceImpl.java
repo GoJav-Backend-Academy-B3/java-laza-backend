@@ -19,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final AuthValidator authValidator;
