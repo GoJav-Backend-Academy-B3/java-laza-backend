@@ -1,6 +1,7 @@
 package com.phincon.laza.controller;
 
 
+import com.phincon.laza.model.dto.rajaongkir.ProvinceResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.model.dto.response.*;
 import com.phincon.laza.model.entity.Address;
@@ -24,10 +25,10 @@ public class RajaongkirController {
     private RajaongkirService rajaongkirService;
 
     @GetMapping("/provinces")
-    public ResponseEntity<DataResponse<Optional>> findAllProvince(
+    public ResponseEntity<DataResponse<List<ProvinceResponse>>> findAllProvince(
     ){
-        Optional provinces = rajaongkirService.findAllProvince();
-        DataResponse<Optional> dataResponse = new DataResponse<>(
+        List<ProvinceResponse> provinces = rajaongkirService.findAllProvince();
+        DataResponse<List<ProvinceResponse>> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
                 "OK",
                 provinces,
@@ -59,19 +60,33 @@ public class RajaongkirController {
         return new ResponseEntity<>(dataResponse, HttpStatus.OK);
     }
 
-//    @GetMapping("/cities/{id}")
-//    public ResponseEntity<DataResponse<String>> existsCity(@PathVariable(value = "id") String id){
-//        String result_ = "there is no city";
-//        if (rajaongkirService.existsProvince(id)){
-//            result_ = "there is city";
-//        }
-//        DataResponse<String> result = new DataResponse<>(
-//                HttpStatus.OK.value(),
-//                HttpStatus.OK.name(),
-//                result_,
-//                null
-//        );
-//        return new ResponseEntity<>(result, HttpStatus.OK);
-//    }
+    @GetMapping("/existsProvince/{provinceName}")
+    public ResponseEntity<DataResponse<String>> existsProvince(@PathVariable(value = "provinceName") String id){
+        String result_ = "there is no province";
+        if (rajaongkirService.existsProvince(id)){
+            result_ = "there is province";
+        }
+        DataResponse<String> result = new DataResponse<>(
+                HttpStatus.OK.value(),
+                HttpStatus.OK.name(),
+                result_,
+                null
+        );
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    @GetMapping("/existsCity/{cityName}")
+    public ResponseEntity<DataResponse<String>> existsCity(@PathVariable(value = "cityName") String id){
+        String result_ = "there is no cityName";
+        if (rajaongkirService.existsCity(id)){
+            result_ = "there is cityName";
+        }
+        DataResponse<String> result = new DataResponse<>(
+                HttpStatus.OK.value(),
+                HttpStatus.OK.name(),
+                result_,
+                null
+        );
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
 }
