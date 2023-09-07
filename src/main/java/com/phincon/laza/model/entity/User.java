@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -66,4 +67,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<VerificationToken> verificationTokenList;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 }
