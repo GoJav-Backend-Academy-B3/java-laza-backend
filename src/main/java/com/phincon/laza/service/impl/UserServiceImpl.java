@@ -1,5 +1,6 @@
 package com.phincon.laza.service.impl;
 
+import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
 import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final RoleValidator roleValidator;
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryImageServiceImpl cloudinaryImageService;
 
     @Override
     public Page<User> getAll(Pageable pageable) {
@@ -45,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(String username, UserRequest request) {
+    public User update(String username, UserRequest request) throws Exception {
         Optional<User> findUser = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findUser);
 
@@ -61,6 +64,11 @@ public class UserServiceImpl implements UserService {
 
             findUser.get().setEmail(request.getEmail());
             findUser.get().setVerified(false);
+        }
+
+        if (Objects.nonNull(request.getImage())) {
+            CloudinaryUploadResult image = cloudinaryImageService.upload(request.getImage(), "user");
+            findUser.get().setImageUrl(image.secureUrl());
         }
 
         findUser.get().setFullName(request.getFullName());
