@@ -1,21 +1,36 @@
 package com.phincon.laza.service.impl;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
-import com.phincon.laza.exception.custom.NotFoundException;
-import com.phincon.laza.model.entity.Product;
-import com.phincon.laza.repository.ProductsRepository;
-import com.phincon.laza.service.ProductsService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.phincon.laza.exception.custom.NotFoundException;
+import com.phincon.laza.model.dto.request.CreateProductRequest;
+import com.phincon.laza.model.entity.Brand;
+import com.phincon.laza.model.entity.Category;
+import com.phincon.laza.model.entity.Product;
+import com.phincon.laza.model.entity.Size;
+import com.phincon.laza.repository.ProductsRepository;
+import com.phincon.laza.service.BrandService;
+import com.phincon.laza.service.CategoryService;
+import com.phincon.laza.service.CloudinaryImageService;
+import com.phincon.laza.service.ProductsService;
+import com.phincon.laza.service.SizeService;
+import com.phincon.laza.utils.GenerateRandom;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class ProductsServiceImpl implements ProductsService {
     private final ProductsRepository productsRepository;
+    private final BrandService brandService;
+    private final CategoryService categoryService;
+    private final SizeService sizeService;
+    private final CloudinaryImageService cloudinaryImageService;
 
     public Product getProductById(Long id) throws Exception {
         Optional<Product> productOptional = productsRepository.findById(id);
@@ -23,5 +38,61 @@ public class ProductsServiceImpl implements ProductsService {
             throw new NotFoundException("Product not found");
         }
         return productOptional.get();
+    }
+
+    @Override
+    public Product create(CreateProductRequest createProductRequest) throws Exception {
+        var product = new Product();
+        // fill some fillable field
+        product.setName(createProductRequest.name());
+        product.setPrice(createProductRequest.price());
+        product.setDescription(createProductRequest.description());
+
+        // check for brand
+        var brandCompletable = findBrandById(createProductRequest.brandId())
+                .thenAcceptAsync(product::setBrand);
+        // check for category
+        var categoryCompletable = findCategoryById(createProductRequest.categoryId())
+                .thenAcceptAsync(product::setCategory);
+        // check for sizes
+        var sizesCompletable = findSizesByIds(createProductRequest.sizeIds())
+                .thenAcceptAsync(product::setSizes);
+
+        CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
+
+        var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products", GenerateRandom.token());
+        product.setImageUrl(result.secureUrl());
+
+        return productsRepository.save(product);
+    }
+
+    private CompletableFuture<Brand> findBrandById(Long id) throws Exception {
+        return CompletableFuture.supplyAsync(() -> {
+            return brandService.findById(id);
+        });
+    }
+
+    private CompletableFuture<Category> findCategoryById(Long id) throws NotFoundException {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return categoryService.getCategoryById(id);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new NotFoundException("Category not found");
+            }
+        });
+    }
+
+    private CompletableFuture<List<Size>> findSizesByIds(List<Long> ids) throws NotFoundException {
+        return CompletableFuture.supplyAsync(() -> {
+            return ids.stream().map(t -> {
+                try {
+                    return sizeService.getSizeById(t);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new NotFoundException("size not found");
+                }
+            }).collect(Collectors.toList());
+        });
     }
 }
