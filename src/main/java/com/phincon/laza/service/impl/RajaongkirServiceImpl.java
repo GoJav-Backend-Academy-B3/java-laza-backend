@@ -36,41 +36,31 @@ public class RajaongkirServiceImpl implements RajaongkirService {
 
 
     @Override
-    public Optional findAllCityByProvinceId(String provinceId) {
+    public List<CityResponse> findAllCityByProvinceId(String provinceId) {
         AllCityResponse cityResponse = rajaongkirRepository.findCityByProvinceId(provinceId);
         return cityResponse.getResults();
     }
 
     @Override
-    public boolean existsProvince(String provinceName) {
-        List<Boolean> exists = new ArrayList<>();
-        exists.add(0,false);
+    public void existsProvince(String provinceName) {
         AllProvinceResponse allProvinces = rajaongkirRepository.findAllProvince();
         for (ProvinceResponse province: allProvinces.getResults()){
             if (province.getProvince().equals(provinceName)){
-               exists.add(0,true);
+               return;
             }
         }
-        if (!exists.get(0)){
-            throw new NotFoundException("province doesn't exists");
-        }
-        return exists.get(0);
+        throw new NotFoundException("Province doesn't exists");
     }
 
     @Override
-    public boolean existsCity(String cityName) {
-  /*      AllCityResponse allCityResponse =  rajaongkirRepository.findCityByProvinceId("");
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            List<CityResponse> cities = objectMapper.readValue(allCityResponse.getResults().toString(),CityResponse.class);
-
-        }catch (JsonMappingException e){
-
+    public void existsCity(String cityName) {
+        AllCityResponse allCityResponse = rajaongkirRepository.findCityByProvinceId("");
+        for (CityResponse city: allCityResponse.getResults()){
+            if (city.getCity_name() == cityName){
+                return;
+            }
         }
-*/
-        return true;
-
+        throw new NotFoundException("City doesn't exists");
     }
 
     @Override

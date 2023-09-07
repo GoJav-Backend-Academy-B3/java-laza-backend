@@ -10,7 +10,6 @@ import com.phincon.laza.model.dto.rajaongkir.CostResponse;
 public interface RajaongkirRepository {
     public AllProvinceResponse findAllProvince();
     public AllCityResponse findCityByProvinceId(String provinceId);
-    public Boolean existsCity(String cityId);
     public CostResponse findCostCourierService(ROCostRequest roCostRequest) throws Exception;
 
 }

@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface RajaongkirService {
     public List<ProvinceResponse> findAllProvince();
-    public Optional findAllCityByProvinceId(String provinceId);
-    public boolean existsProvince(String provinceName);
-    public boolean existsCity(String cityName) ;
+    public List<CityResponse> findAllCityByProvinceId(String provinceId);
+    public void existsProvince(String provinceName);
+    public void existsCity(String cityName) ;
     public Optional findCostCourierService(ROCostRequest roCostRequest) throws Exception;
 
 

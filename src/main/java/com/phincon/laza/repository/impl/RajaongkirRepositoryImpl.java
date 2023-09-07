@@ -66,22 +66,6 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
         return response;
     }
 
-    @Override
-    public Boolean existsCity(String cityId){
-        HttpEntity entity = rajaongkirConfig.headerConfig("");
-        String Url = RAJAONGKIR_CITY_URL+"?id="+cityId;
-        ResponseEntity<Map<String, AllCityResponse>> result_city = restTemplate.exchange(
-                Url,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-        if (result_city.getBody().get("rajaongkir").getResults().get().equals(new ArrayList<>())){
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public CostResponse findCostCourierService(ROCostRequest roCostRequest) throws Exception {
