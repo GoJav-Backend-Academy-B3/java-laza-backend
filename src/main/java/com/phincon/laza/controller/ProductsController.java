@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,6 +38,17 @@ public class ProductsController {
         Product product = productsService.create(request);
         ProductsResponse result = new ProductsResponse(product);
         DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.CREATED.value(),
+                "Success", result, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DataResponse<ProductsResponse>> updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute CreateUpdateProductRequest request) throws Exception {
+        Product product = productsService.update(id, request);
+        ProductsResponse result = new ProductsResponse(product);
+        DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.OK.value(),
                 "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
