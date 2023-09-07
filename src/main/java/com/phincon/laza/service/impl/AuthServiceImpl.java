@@ -49,6 +49,7 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse login(LoginRequest request) {
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
         userValidator.validateUserNotFound(findByUsername);
+        userValidator.validateUserBadCredentials(findByUsername, request.getPassword());
         userValidator.validateUserNotIsVerfied(findByUsername);
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));

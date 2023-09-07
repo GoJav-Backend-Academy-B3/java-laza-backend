@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -33,6 +32,9 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
 
     @Column(nullable = false)
     private boolean isVerified = false;
@@ -73,5 +75,4 @@ public class User {
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<Cart> carts;
-
 }

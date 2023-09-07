@@ -20,10 +20,10 @@ public class ProductsController {
     private final ProductsService productsService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
+    public ResponseEntity<DataResponse<Product>> getProductById(@PathVariable Long id) throws Exception {
         Product product = productsService.getProductById(id);
-        ProductsResponse result = new ProductsResponse(product);
-        DataResponse<ProductsResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", result, null);
+//        ProductsResponse result = new ProductsResponse(product);
+        DataResponse<Product> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", product, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 }
