@@ -5,6 +5,7 @@ import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.model.dto.response.*;
 import com.phincon.laza.model.entity.Address;
 import com.phincon.laza.service.RajaongkirService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/rajaongkir")
 public class RajaongkirController {
 
     @Autowired
@@ -49,7 +49,7 @@ public class RajaongkirController {
     }
 
     @PostMapping("/costs")
-    public ResponseEntity<DataResponse<Optional>> findCostCourierService(@RequestBody ROCostRequest roCostRequest) throws Exception{
+    public ResponseEntity<DataResponse<Optional>> findCostCourierService(@Valid @RequestBody ROCostRequest roCostRequest) throws Exception{
         Optional courierCost = rajaongkirService.findCostCourierService(roCostRequest);
         DataResponse<Optional> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
