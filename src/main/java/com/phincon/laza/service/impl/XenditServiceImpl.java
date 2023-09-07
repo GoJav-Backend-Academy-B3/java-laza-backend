@@ -8,6 +8,7 @@ import com.phincon.laza.service.XenditService;
 import com.xendit.XenditClient;
 import com.xendit.exception.XenditException;
 import com.xendit.model.EWalletCharge;
+import com.xendit.model.FixedVirtualAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,8 @@ public class XenditServiceImpl implements XenditService {
 
         EWalletCharge eWalletCharge = xenditClient.eWallet.createEWalletCharge(params);
 
+        // ToDo: implement add transaction to database
+
         System.out.println(eWalletCharge);
         System.out.println(eWalletCharge.getChannelProperties());
         System.out.println(eWalletCharge.getActions());
@@ -46,6 +49,26 @@ public class XenditServiceImpl implements XenditService {
         paymentDetail.setCode(order.getPaymentMethod().getCode());
         paymentDetail.setDeeplink(eWalletCharge.getActions().get("mobile_deeplink_checkout_url"));
         paymentDetail.setQrCode(eWalletCharge.getActions().get("qr_checkout_string"));
+        paymentDetail.setOrder(order);
+
+        return paymentDetailService.createPaymentDetail(paymentDetail);
+    }
+
+    public PaymentDetail chargeVirtualAccount(PaymentMethod paymentMethod, Order order) throws XenditException {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("external_id", order.getId());
+        params.put("bank_code", paymentMethod.getCode());
+        params.put("name", order.getUser().getFullName());
+        params.put("expected_amount", order.getAmount());
+
+        FixedVirtualAccount closedVirtualAccount = xenditClient.fixedVirtualAccount.createClosed(params);
+
+        PaymentDetail paymentDetail = new PaymentDetail();
+        paymentDetail.setType(order.getPaymentMethod().getType());
+        paymentDetail.setCode(order.getPaymentMethod().getCode());
+        paymentDetail.setBank(closedVirtualAccount.getBankCode());
+        paymentDetail.setVaNumber(closedVirtualAccount.getAccountNumber());
         paymentDetail.setOrder(order);
 
         return paymentDetailService.createPaymentDetail(paymentDetail);

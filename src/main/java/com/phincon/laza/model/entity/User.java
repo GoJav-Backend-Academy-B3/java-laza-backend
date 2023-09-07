@@ -3,8 +3,10 @@ package com.phincon.laza.model.entity;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -59,4 +61,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<VerificationToken> verificationTokenList;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
 }

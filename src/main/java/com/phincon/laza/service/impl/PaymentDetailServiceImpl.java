@@ -44,5 +44,4 @@ public class PaymentDetailServiceImpl implements PaymentDetailService {
             throw new ConflictException(e.getMessage());
         }
     }
-
 }
