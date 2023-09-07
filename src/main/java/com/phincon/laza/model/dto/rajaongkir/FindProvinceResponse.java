@@ -1,19 +1,17 @@
-package com.phincon.laza.model.dto.response;
-
+package com.phincon.laza.model.dto.rajaongkir;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.Optional;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ROAllProvinceResponse {
+public class FindProvinceResponse {
     private Object query;
-    private ROStatusResponse status;
+    private StatusResponse status;
     private Optional results;
 }

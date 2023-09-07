@@ -1,8 +1,10 @@
 package com.phincon.laza.repository.impl;
 
 import com.phincon.laza.exception.custom.NotProcessException;
+import com.phincon.laza.model.dto.rajaongkir.AllCityResponse;
+import com.phincon.laza.model.dto.rajaongkir.AllProvinceResponse;
+import com.phincon.laza.model.dto.rajaongkir.CostResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
-import com.phincon.laza.model.dto.response.*;
 import com.phincon.laza.repository.RajaongkirRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,38 +37,38 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
 
 
     @Override
-    public ROAllProvinceResponse findAllProvince() {
+    public AllProvinceResponse findAllProvince() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("key", RAJAONGKIR_KEY);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        Map<String, ROAllProvinceResponse> responseMap = new HashMap<>();
-        ResponseEntity<Map<String, ROAllProvinceResponse>> result_province = restTemplate.exchange(
+        Map<String, AllProvinceResponse> responseMap = new HashMap<>();
+        ResponseEntity<Map<String, AllProvinceResponse>> result_province = restTemplate.exchange(
                 RAJAONGKIR_PROVINCE_URL,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<Map<String, ROAllProvinceResponse>>() {
+                new ParameterizedTypeReference<Map<String, AllProvinceResponse>>() {
                 }
         );
-        ROAllProvinceResponse response =  result_province.getBody().get("rajaongkir");
+        AllProvinceResponse response =  result_province.getBody().get("rajaongkir");
         return response;
     }
 
     @Override
-    public ROAllCityResponse findCityByProvinceId(String provinceId){
+    public AllCityResponse findCityByProvinceId(String provinceId){
         HttpHeaders headers = new HttpHeaders();
         headers.add("key", RAJAONGKIR_KEY);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         String Url = RAJAONGKIR_CITY_URL+"?province="+provinceId;
 
-        ResponseEntity<Map<String, ROAllCityResponse>> result_city = restTemplate.exchange(
+        ResponseEntity<Map<String, AllCityResponse>> result_city = restTemplate.exchange(
                 Url,
                 HttpMethod.GET,
                 entity,
-                new ParameterizedTypeReference<Map<String, ROAllCityResponse>>() {
+                new ParameterizedTypeReference<Map<String, AllCityResponse>>() {
                 }
         );
-        ROAllCityResponse response = result_city.getBody().get("rajaongkir");
+        AllCityResponse response = result_city.getBody().get("rajaongkir");
         return response;
     }
 
@@ -77,7 +79,7 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         String Url = RAJAONGKIR_PROVINCE_URL+"?id="+id;
 
-        ResponseEntity<Map<String, ROAllProvinceResponse>> result_province = restTemplate.exchange(
+        ResponseEntity<Map<String, AllProvinceResponse>> result_province = restTemplate.exchange(
                 Url,
                 HttpMethod.GET,
                 entity,
@@ -98,7 +100,7 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         String Url = RAJAONGKIR_CITY_URL+"?id="+cityId;
 
-        ResponseEntity<Map<String, ROAllCityResponse>> result_city = restTemplate.exchange(
+        ResponseEntity<Map<String, AllCityResponse>> result_city = restTemplate.exchange(
                 Url,
                 HttpMethod.GET,
                 entity,
@@ -113,7 +115,7 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
     }
 
     @Override
-    public ROCostResponse findCostCourierService(ROCostRequest roCostRequest) throws Exception {
+    public CostResponse findCostCourierService(ROCostRequest roCostRequest) throws Exception {
         try{
             String data = URLEncoder.encode("origin","UTF-8")
                     +"="+URLEncoder.encode(roCostRequest.getOrigin(), "UTF-8")
@@ -129,7 +131,7 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
             headers.add("key", RAJAONGKIR_KEY);
             HttpEntity<String> entity = new HttpEntity<>(data,headers);
 
-            ResponseEntity<Map<String,ROCostResponse>> result = restTemplate.exchange(
+            ResponseEntity<Map<String, CostResponse>> result = restTemplate.exchange(
                     RAJAONGKIR_COST_URL,
                     HttpMethod.POST,
                     entity,

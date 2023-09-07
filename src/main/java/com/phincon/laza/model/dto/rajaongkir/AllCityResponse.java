@@ -1,4 +1,4 @@
-package com.phincon.laza.model.dto.response;
+package com.phincon.laza.model.dto.rajaongkir;
 
 
 import lombok.Data;
@@ -6,8 +6,8 @@ import lombok.Data;
 import java.util.Optional;
 
 @Data
-public class ROAllCityResponse {
+public class AllCityResponse {
     private Object query;
-    private ROStatusResponse status;
+    private StatusResponse status;
     private Optional results;
 }
