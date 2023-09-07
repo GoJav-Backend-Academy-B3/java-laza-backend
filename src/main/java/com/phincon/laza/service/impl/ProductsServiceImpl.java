@@ -61,6 +61,27 @@ public class ProductsServiceImpl implements ProductsService {
         CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
 
         var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products", GenerateRandom.token());
+    @Override
+    public Product update(Long id, CreateUpdateProductRequest updateProductRequest) throws Exception {
+        var product = this.getProductById(id);
+        product.setName(updateProductRequest.name());
+        product.setPrice(updateProductRequest.price());
+        product.setDescription(updateProductRequest.description());
+
+        // check for brand
+        var brandCompletable = findBrandById(updateProductRequest.brandId())
+                .thenAcceptAsync(product::setBrand);
+        // check for category
+        var categoryCompletable = findCategoryById(updateProductRequest.categoryId())
+                .thenAcceptAsync(product::setCategory);
+        // check for sizes
+        var sizesCompletable = findSizesByIds(updateProductRequest.sizeIds())
+                .thenAcceptAsync(product::setSizes);
+
+        CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
+
+        var result = cloudinaryImageService.upload(updateProductRequest.file().getBytes(), "products",
+                GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
 
         return productsRepository.save(product);
@@ -95,4 +116,5 @@ public class ProductsServiceImpl implements ProductsService {
             }).collect(Collectors.toList());
         });
     }
+
 }
