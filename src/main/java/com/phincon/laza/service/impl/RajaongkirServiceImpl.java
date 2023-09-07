@@ -1,16 +1,15 @@
 package com.phincon.laza.service.impl;
 
 
-import com.phincon.laza.model.dto.response.ROAllCityResponse;
-import com.phincon.laza.model.dto.response.ROAllProvinceResponse;
-import com.phincon.laza.model.dto.response.ROCityResponse;
-import com.phincon.laza.model.dto.response.ROProvinceResponse;
+import com.phincon.laza.model.dto.rajaongkir.AllCityResponse;
+import com.phincon.laza.model.dto.rajaongkir.AllProvinceResponse;
+import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RajaongkirServiceImpl implements RajaongkirService {
@@ -19,15 +18,15 @@ public class RajaongkirServiceImpl implements RajaongkirService {
     private RajaongkirRepository rajaongkirRepository;
 
     @Override
-    public List<ROProvinceResponse> findAllProvince() {
-        ROAllProvinceResponse provinceResponse = rajaongkirRepository.findAllProvince();
+    public Optional findAllProvince() {
+        AllProvinceResponse provinceResponse = rajaongkirRepository.findAllProvince();
         return provinceResponse.getResults();
     }
 
 
     @Override
-    public List<ROCityResponse> findAllCityByProvinceId(String provinceId) {
-        ROAllCityResponse cityResponse = rajaongkirRepository.findCityByProvinceId(provinceId);
+    public Optional findAllCityByProvinceId(String provinceId) {
+        AllCityResponse cityResponse = rajaongkirRepository.findCityByProvinceId(provinceId);
         return cityResponse.getResults();
     }
 
@@ -39,5 +38,10 @@ public class RajaongkirServiceImpl implements RajaongkirService {
     @Override
     public Boolean existsCity(String cityId) {
         return rajaongkirRepository.existsCity(cityId);
+    }
+
+    @Override
+    public Optional findCostCourierService(ROCostRequest roCostRequest) throws Exception{
+        return rajaongkirRepository.findCostCourierService(roCostRequest).getResults().get(0).getCosts();
     }
 }

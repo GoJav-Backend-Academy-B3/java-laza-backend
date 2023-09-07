@@ -53,5 +53,10 @@ public class Product {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<Review> reviewList;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<Cart> carts;
+
+
 }
 

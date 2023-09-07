@@ -28,4 +28,8 @@ public class Size {
             joinColumns = @JoinColumn(name = "size_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
+
+    @OneToMany(mappedBy = "size", fetch = FetchType.LAZY)
+    private List<Cart> carts;
+
 }
