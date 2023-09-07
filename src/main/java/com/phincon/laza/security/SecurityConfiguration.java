@@ -55,7 +55,7 @@ public class SecurityConfiguration {
             "/product/**",
             "/provinces",
             "/cities",
-            "/costs"
+            "/costs",
     };
 
     private final String[] getAdminListedRoutes = new String[]{
