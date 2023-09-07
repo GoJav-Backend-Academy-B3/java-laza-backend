@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record CreateProductRequest(
+public record CreateUpdateProductRequest(
         String name,
         String description,
         Integer price,
