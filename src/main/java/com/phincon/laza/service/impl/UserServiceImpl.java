@@ -49,28 +49,24 @@ public class UserServiceImpl implements UserService {
         Optional<User> findUser = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findUser);
 
-        User user = findUser.get();
-
-        if (!user.getUsername().equals(request.getUsername()) || !user.getEmail().equals(request.getEmail())) {
-            if (!user.getUsername().equals(request.getUsername())) {
-                Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
-                userValidator.validateUsernameIsExists(findByUsername);
-                user.setUsername(request.getUsername());
-            }
-
-            if (!user.getEmail().equals(request.getEmail())) {
-                Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
-                userValidator.validateEmailIsExists(findByEmail);
-
-                user.setEmail(request.getEmail());
-                user.setVerified(false);
-            }
+        Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
+        if (!findUser.get().getUsername().equals(findByUsername.get().getUsername())) {
+            userValidator.validateUsernameIsExists(findByUsername);
+            findUser.get().setUsername(request.getUsername());
         }
 
-        user.setFullName(request.getFullName());
+        Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
+        if (!findUser.get().getEmail().equals(findByEmail.get().getEmail())) {
+            userValidator.validateEmailIsExists(findByEmail);
 
-        log.info("User id={} is updated", user.getId());
-        return user;
+            findUser.get().setEmail(request.getEmail());
+            findUser.get().setVerified(false);
+        }
+
+        findUser.get().setFullName(request.getFullName());
+        userRepository.save(findUser.get());
+        log.info("User id={} is updated", findUser.get().getId());
+        return findUser.get();
     }
 
     @Override
