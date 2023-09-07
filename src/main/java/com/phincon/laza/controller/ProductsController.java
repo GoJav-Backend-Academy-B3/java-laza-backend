@@ -1,6 +1,6 @@
 package com.phincon.laza.controller;
 
-import com.phincon.laza.model.dto.request.CreateProductRequest;
+import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.ProductsResponse;
 import com.phincon.laza.model.entity.Product;
@@ -26,15 +26,18 @@ public class ProductsController {
     public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
         Product product = productsService.getProductById(id);
         ProductsResponse result = new ProductsResponse(product);
-        DataResponse<ProductsResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", result, null);
+        DataResponse<ProductsResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", result,
+                null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
     @PostMapping
-    public ResponseEntity<DataResponse<ProductsResponse>> createProduct(@ModelAttribute CreateProductRequest request) throws Exception {
+    public ResponseEntity<DataResponse<ProductsResponse>> createProduct(
+            @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.create(request);
         ProductsResponse result = new ProductsResponse(product);
-        DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.CREATED.value(), "Success", result, null);
+        DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.CREATED.value(),
+                "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 }

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.phincon.laza.exception.custom.NotFoundException;
-import com.phincon.laza.model.dto.request.CreateProductRequest;
+import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
 import com.phincon.laza.model.entity.Brand;
 import com.phincon.laza.model.entity.Category;
 import com.phincon.laza.model.entity.Product;
@@ -41,7 +41,7 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
-    public Product create(CreateProductRequest createProductRequest) throws Exception {
+    public Product create(CreateUpdateProductRequest createProductRequest) throws Exception {
         var product = new Product();
         // fill some fillable field
         product.setName(createProductRequest.name());
