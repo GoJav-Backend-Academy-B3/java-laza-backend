@@ -1,5 +1,7 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
@@ -25,5 +27,6 @@ public class Brand {
     private String logoUrl;
 
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Product> productList;
 }
