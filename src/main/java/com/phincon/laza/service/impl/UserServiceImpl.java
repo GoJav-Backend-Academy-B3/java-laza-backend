@@ -1,5 +1,6 @@
 package com.phincon.laza.service.impl;
 
+import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
 import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;
@@ -16,13 +17,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -30,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final RoleValidator roleValidator;
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryImageServiceImpl cloudinaryImageService;
 
     @Override
     public Page<User> getAll(Pageable pageable) {
@@ -45,32 +50,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(String username, UserRequest request) {
+    public User update(String username, UserRequest request) throws Exception {
         Optional<User> findUser = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findUser);
 
-        User user = findUser.get();
-
-        if (!user.getUsername().equals(request.getUsername()) || !user.getEmail().equals(request.getEmail())) {
-            if (!user.getUsername().equals(request.getUsername())) {
-                Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
-                userValidator.validateUsernameIsExists(findByUsername);
-                user.setUsername(request.getUsername());
-            }
-
-            if (!user.getEmail().equals(request.getEmail())) {
-                Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
-                userValidator.validateEmailIsExists(findByEmail);
-
-                user.setEmail(request.getEmail());
-                user.setVerified(false);
-            }
+        Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
+        if (!findUser.get().getUsername().equals(findByUsername.get().getUsername())) {
+            userValidator.validateUsernameIsExists(findByUsername);
+            findUser.get().setUsername(request.getUsername());
         }
 
-        user.setFullName(request.getFullName());
+        Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
+        if (!findUser.get().getEmail().equals(findByEmail.get().getEmail())) {
+            userValidator.validateEmailIsExists(findByEmail);
 
-        log.info("User id={} is updated", user.getId());
-        return user;
+            findUser.get().setEmail(request.getEmail());
+            findUser.get().setVerified(false);
+        }
+
+        if (Objects.nonNull(request.getImage())) {
+            CloudinaryUploadResult image = cloudinaryImageService.upload(request.getImage(), "user");
+            findUser.get().setImageUrl(image.secureUrl());
+        }
+
+        findUser.get().setFullName(request.getFullName());
+        userRepository.save(findUser.get());
+        log.info("User id={} is updated", findUser.get().getId());
+        return findUser.get();
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
@@ -37,10 +40,12 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name="brand_id", nullable=false)
+    @JsonManagedReference
     private Brand brand;
 
     @ManyToOne
     @JoinColumn(name="category_id", nullable=false)
+    @JsonManagedReference
     private Category category;
 
     @ManyToMany(mappedBy = "wishlistProducts", fetch = FetchType.LAZY)
@@ -48,10 +53,6 @@ public class Product {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<Review> reviewList;
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    private List<Cart> carts;
-
 
 }
 

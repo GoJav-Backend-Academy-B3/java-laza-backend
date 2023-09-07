@@ -2,6 +2,7 @@ package com.phincon.laza.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
@@ -29,7 +30,7 @@ public class Brand {
     @JsonIgnore
     private Boolean isDeleted = false;
 
-    @OneToMany(mappedBy = "brand", fetch = FetchType.EAGER)
-    @JsonIgnore
+    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Product> productList;
 }

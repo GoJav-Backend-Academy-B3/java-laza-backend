@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/me")
+    @GetMapping("/users/me")
     public ResponseEntity<DataResponse<UserResponse>> profile(@AuthenticationPrincipal UserDetails ctx) {
         User user = userService.getByUsername(ctx.getUsername());
         UserResponse result = new UserResponse(user);
@@ -35,15 +36,15 @@ public class UserController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<DataResponse<UserResponse>> update(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody UserRequest request) {
+    @PutMapping(value = "/users/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<DataResponse<UserResponse>> update(@AuthenticationPrincipal UserDetails ctx, @Valid @ModelAttribute UserRequest request) throws Exception {
         User user = userService.update(ctx.getUsername(), request);
         UserResponse result = new UserResponse(user);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PatchMapping("/change-password")
+    @PatchMapping("/users/change-password")
     public ResponseEntity<DataResponse<?>> changePassword(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody ChangePasswordRequest request) {
         userService.changePassword(ctx.getUsername(), request);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);

@@ -56,23 +56,19 @@ public class SecurityConfiguration {
             "/provinces",
             "/cities",
             "/costs",
-    };
-
-    private final String[] getAdminListedRoutes = new String[]{
-            "/users",
-            "/product",
-    };
-
-    private final String[] postAdminListedRoutes = new String[]{
-            "/size/create",
-            "/category/create",
-    };
-
-    private final String[] putAdminListedRoutes = new String[]{
-    };
-
-    private final String[] patchAdminListedRoutes = new String[]{
-            "/users/update/role",
+            "/brands/{id}",
+            "/brands/search",
+            "/brands",
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html",
     };
 
     private final String[] adminListedRoutes = new String[]{
