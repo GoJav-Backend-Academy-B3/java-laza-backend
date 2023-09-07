@@ -1,4 +1,4 @@
-package com.phincon.laza.model.dto.response;
+package com.phincon.laza.model.dto.rajaongkir;
 
 
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.Optional;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ROCourierResponse {
+public class CourierResponse {
     private String code;
     private String name;
     private Optional costs;

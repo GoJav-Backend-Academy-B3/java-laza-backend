@@ -1,9 +1,9 @@
-package com.phincon.laza.model.dto.response;
+package com.phincon.laza.model.dto.rajaongkir;
 
 import lombok.Data;
 
 @Data
-public class ROCityResponse {
+public class CityResponse {
     private String city_id;
     private String province_id;
     private String province;

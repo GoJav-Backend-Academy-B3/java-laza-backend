@@ -1,14 +1,14 @@
 package com.phincon.laza.service.impl;
 
 
+import com.phincon.laza.model.dto.rajaongkir.AllCityResponse;
+import com.phincon.laza.model.dto.rajaongkir.AllProvinceResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
-import com.phincon.laza.model.dto.response.*;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,14 +19,14 @@ public class RajaongkirServiceImpl implements RajaongkirService {
 
     @Override
     public Optional findAllProvince() {
-        ROAllProvinceResponse provinceResponse = rajaongkirRepository.findAllProvince();
+        AllProvinceResponse provinceResponse = rajaongkirRepository.findAllProvince();
         return provinceResponse.getResults();
     }
 
 
     @Override
     public Optional findAllCityByProvinceId(String provinceId) {
-        ROAllCityResponse cityResponse = rajaongkirRepository.findCityByProvinceId(provinceId);
+        AllCityResponse cityResponse = rajaongkirRepository.findCityByProvinceId(provinceId);
         return cityResponse.getResults();
     }
 

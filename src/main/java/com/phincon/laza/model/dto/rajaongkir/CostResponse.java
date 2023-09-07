@@ -1,4 +1,4 @@
-package com.phincon.laza.model.dto.response;
+package com.phincon.laza.model.dto.rajaongkir;
 
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import lombok.AllArgsConstructor;
@@ -10,11 +10,11 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ROCostResponse {
-    private ROStatusResponse status;
+public class CostResponse {
+    private StatusResponse status;
     private ROCostRequest query;
-    private ROCityResponse origin_details;
-    private ROCityResponse destination_details;
-    private List<ROCourierResponse> results;
+    private CityResponse origin_details;
+    private CityResponse destination_details;
+    private List<CourierResponse> results;
 }
 
