@@ -7,10 +7,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
 @ToString
 @Table(name = "verification_codes")
 @Entity
@@ -23,7 +22,9 @@ public class VerificationCode {
     @Column(length = 4, nullable = false)
     private String code;
 
-    private LocalDateTime expiryDate;
+    private LocalDateTime expiresAt;
+
+    private LocalDateTime confirmedAt;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
