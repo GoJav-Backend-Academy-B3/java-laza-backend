@@ -58,23 +58,6 @@ public class SecurityConfiguration {
             "/costs"
     };
 
-    private final String[] getAdminListedRoutes = new String[]{
-            "/users",
-            "/product",
-    };
-
-    private final String[] postAdminListedRoutes = new String[]{
-            "/size/create",
-            "/category/create",
-    };
-
-    private final String[] putAdminListedRoutes = new String[]{
-    };
-
-    private final String[] patchAdminListedRoutes = new String[]{
-            "/users/update/role",
-    };
-
     private final String[] adminListedRoutes = new String[]{
             "/management/**"
     };

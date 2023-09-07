@@ -36,19 +36,25 @@ public class UserValidator {
 
     public void validateUserNotIsVerfied(Optional<User> findUser) {
         if (Objects.isNull(findUser.get().isVerified()) || !findUser.get().isVerified()) {
-            throw new BadRequestException("User not verification account!, please confirm account!");
+            throw new BadRequestException("User not verification account!, please confirm account");
+        }
+    }
+
+    public void validateUserBadCredentials(Optional<User> findUser, String password) {
+        if (findUser.isPresent() && !passwordEncoder.matches(findUser.get().getPassword(), password)) {
+            throw new BadRequestException("Username or Password is incorrect");
         }
     }
 
     public void validateUserPasswordNotMatch(String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
-            throw new BadRequestException("New password and Confirm password do not match!");
+            throw new BadRequestException("New password and Confirm password do not match");
         }
     }
 
     public void validateInvalidOldPassword(String oldPassword, String dbPassword) {
         if (!passwordEncoder.matches(oldPassword, dbPassword)) {
-            throw new BadRequestException("Old password is incorrect!");
+            throw new BadRequestException("Old password is incorrect");
         }
     }
 }
