@@ -12,10 +12,7 @@ import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.AuthService;
 import com.phincon.laza.service.SenderMailService;
 import com.phincon.laza.utils.GenerateRandom;
-import com.phincon.laza.validator.RoleValidator;
-import com.phincon.laza.validator.UserValidator;
-import com.phincon.laza.validator.VerificationCodeValidator;
-import com.phincon.laza.validator.VerificationTokenValidator;
+import com.phincon.laza.validator.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +29,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+    private final AuthValidator authValidator;
     private final UserRepository userRepository;
     private final UserValidator userValidator;
     private final RoleRepository roleRepository;
@@ -191,5 +189,29 @@ public class AuthServiceImpl implements AuthService {
 
         verificationCodeRepository.deleteById(findCode.get().getId());
         log.info("User id={} is deleted code", findUser.get().getId());
+    }
+
+    @Override
+    public TokenResponse refreshToken(String authHeader) {
+        authValidator.validateAuthHeaderNotFound(authHeader);
+        String refreshToken = authHeader.substring(7);
+        String username = jwtService.extractUsername(refreshToken);
+        authValidator.validateAuthUsernameNull(username);
+
+        Optional<User> findByUsername = userRepository.findByUsername(username);
+        userValidator.validateUserNotFound(findByUsername);
+
+        SysUserDetails user = new SysUserDetails();
+        user.setUsername(findByUsername.get().getUsername());
+        user.setPassword(findByUsername.get().getPassword());
+        user.setRoles(findByUsername.get().getRoles());
+
+        authValidator.validateAuthTokenInvalid(refreshToken, user);
+        String accessToken = jwtService.generateToken(user);
+
+        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
+
+        log.info("{} has been used refresh token", user.getUsername());
+        return tokenResponse;
     }
 }
