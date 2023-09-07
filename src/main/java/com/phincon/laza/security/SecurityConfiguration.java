@@ -13,7 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableMethodSecurity
@@ -36,6 +36,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteListedRoutes).permitAll()
                         .requestMatchers(GET,"/users").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(POST, "/brands").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(PUT, "/brands/{id}").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(DELETE, "/brands/{id}").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface BrandService {
-    Brand add(BrandRequest request);
+    Brand add(BrandRequest request) throws Exception;
 
     Page<Brand> findAll(Pageable pageable);
 
@@ -16,7 +16,7 @@ public interface BrandService {
 
     Brand findByName(String name);
 
-    Brand update(Long id, BrandRequest request);
+    Brand update(Long id, BrandRequest request) throws Exception;
 
     void delete(Long id);
 }

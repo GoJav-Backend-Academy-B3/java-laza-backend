@@ -23,7 +23,7 @@ public class Product {
 
     private String name;
 
-    @Lob
+//    @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
 
