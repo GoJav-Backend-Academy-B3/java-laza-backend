@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ public class AddressRequest {
     private String city_id;
 
     @NotBlank(message = "full address is required")
+    @JsonProperty("full_address")
     private String fullAddress;
 
     @NotBlank(message = "receiver name is required")
@@ -27,6 +29,7 @@ public class AddressRequest {
     private String receiverName;
 
     @NotBlank(message = "phone number is required")
+    @Pattern(regexp = "^[0-9]+$", message = "phone must be a number")
     private String phone;
 
     @JsonProperty("is_primary")

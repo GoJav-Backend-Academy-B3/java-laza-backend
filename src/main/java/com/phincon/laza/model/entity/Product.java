@@ -23,7 +23,6 @@ public class Product {
 
     private String name;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -49,5 +48,10 @@ public class Product {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<Review> reviewList;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<Cart> carts;
+
+
 }
 
