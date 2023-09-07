@@ -52,6 +52,9 @@ public class SecurityConfiguration {
             "/auth/**",
             "/size/**",
             "/category/**",
+            "/provinces",
+            "/cities",
+            "/costs"
     };
 
     private final String[] adminListedRoutes = new String[]{

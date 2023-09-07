@@ -136,7 +136,6 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
                     new ParameterizedTypeReference<>() {
                     }
             );
-            System.out.println("DUARR :"+result.getBody().get("rajaongkir"));
             return result.getBody().get("rajaongkir");
         }catch (IOException e){
             throw new NotProcessException("URLEncoder encode error rajaongkir");
