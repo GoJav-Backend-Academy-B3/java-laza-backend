@@ -14,15 +14,6 @@ public class RajaongkirConfig {
     @Value("${rajaongkir.key}")
     private String RAJAONGKIR_KEY;
 
-    @Value("${rajaongkir.province.url}")
-    private String RAJAONGKIR_PROVINCE_URL;
-
-    @Value("${rajaongkir.city.url}")
-    private String RAJAONGKIR_CITY_URL;
-
-    @Value("${rajaongkir.cost.url}")
-    private String RAJAONGKIR_COST_URL;
-
     public HttpEntity<String> headerConfig(String... params){
         HttpHeaders headers = new HttpHeaders();
         headers.add("key", RAJAONGKIR_KEY);
