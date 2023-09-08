@@ -1,18 +1,19 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @ToString
-@Table(name = "payment_method_details")
+@Table(name = "transaction")
 @Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Transaction {
@@ -35,11 +36,12 @@ public class Transaction {
 
     private String transactionStatus;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     @OneToOne
     @JoinColumn(name="order_id", nullable=false)
+    @JsonIgnore
     private Order order;
 }

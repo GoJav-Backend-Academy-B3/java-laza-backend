@@ -30,12 +30,12 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf
                         .disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(whiteListedRoutes).permitAll()
                         .requestMatchers(GET, adminListedRoutes).hasAuthority("ROLE_ADMIN")
                         .requestMatchers(POST, adminListedRoutes).hasAuthority("ROLE_ADMIN")
                         .requestMatchers(PUT, adminListedRoutes).hasAuthority("ROLE_ADMIN")
                         .requestMatchers(PATCH, adminListedRoutes).hasAuthority("ROLE_ADMIN")
                         .requestMatchers(DELETE, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(whiteListedRoutes).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -52,6 +52,16 @@ public class SecurityConfiguration {
             "/auth/**",
             "/size/**",
             "/category/**",
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html"
     };
 
     private final String[] adminListedRoutes = new String[]{
