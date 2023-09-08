@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -72,5 +73,26 @@ public class CartServiceImpl implements CartService {
         Cart result = cartRepository.findById(getCart.get().getId()).get();
         result.setQuantity(result.getQuantity()-1);
         return result;
+    }
+
+    @Override
+    public void deleteCart(Long cartId) throws Exception {
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        if (!cart.isPresent()){
+            throw new NotFoundException("Cart not found");
+        }
+        cartRepository.deleteById(cartId);
+    }
+
+    @Override
+    public void deleteCartByUser(String username) {
+        User user = userService.getByUsername(username);
+        cartRepository.deleteByUserId(user.getId());
+    }
+
+    @Override
+    public List<Cart> findCartByUser(String username) {
+        User user = userService.getByUsername(username);
+        return cartRepository.findByUserId(user.getId());
     }
 }
