@@ -38,11 +38,11 @@ public class Product {
     private List<Size> sizes;
 
     @ManyToOne
-    @JoinColumn(name="brand_id", nullable=false)
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
     @ManyToOne
-    @JoinColumn(name="category_id", nullable=false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @ManyToMany(mappedBy = "wishlistProducts", fetch = FetchType.LAZY)
@@ -54,6 +54,4 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<Cart> carts;
 
-
 }
-
