@@ -1,6 +1,7 @@
 package com.phincon.laza.controller;
 
 
+import com.phincon.laza.model.dto.rajaongkir.CityResponse;
 import com.phincon.laza.model.dto.rajaongkir.ProvinceResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.model.dto.response.*;
@@ -37,10 +38,10 @@ public class RajaongkirController {
     }
 
     @GetMapping("/cities")
-    public ResponseEntity<DataResponse<Optional>> findAllCity(@RequestParam(value = "province", required = false)
+    public ResponseEntity<DataResponse< List<CityResponse>>> findAllCity(@RequestParam(value = "province", required = false)
                                                                           String province){
-        Optional cities = rajaongkirService.findAllCityByProvinceId(province);
-        DataResponse<Optional> dataResponse = new DataResponse<>(
+        List<CityResponse> cities = rajaongkirService.findAllCityByProvinceId(province);
+        DataResponse< List<CityResponse>> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
                 "OK",
                 cities,
@@ -58,35 +59,6 @@ public class RajaongkirController {
                 courierCost,
                 null);
         return new ResponseEntity<>(dataResponse, HttpStatus.OK);
-    }
-
-    @GetMapping("/existsProvince/{provinceName}")
-    public ResponseEntity<DataResponse<String>> existsProvince(@PathVariable(value = "provinceName") String id){
-        String result_ = "there is no province";
-        if (rajaongkirService.existsProvince(id)){
-            result_ = "there is province";
-        }
-        DataResponse<String> result = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                result_,
-                null
-        );
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-    @GetMapping("/existsCity/{cityName}")
-    public ResponseEntity<DataResponse<String>> existsCity(@PathVariable(value = "cityName") String id){
-        String result_ = "there is no cityName";
-        if (rajaongkirService.existsCity(id)){
-            result_ = "there is cityName";
-        }
-        DataResponse<String> result = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                result_,
-                null
-        );
-        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }
