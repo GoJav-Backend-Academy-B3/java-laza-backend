@@ -52,7 +52,11 @@ public class Product {
     private List<User> wishlistBy;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Review> reviewList;
 
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Cart> carts;
 }
 

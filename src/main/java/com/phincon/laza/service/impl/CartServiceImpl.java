@@ -33,10 +33,10 @@ public class CartServiceImpl implements CartService {
     private ProductsService productsService;
 
     @Override
-    public Cart saveCart(String userName,CartRequest cartRequest) throws Exception{
+    public Cart saveCart(String userId,CartRequest cartRequest) throws Exception{
         Product product = productsService.getProductById(cartRequest.getProductId());
         Size size = sizeService.getSizeById(cartRequest.getSizeId());
-        User user = userService.getById(userName);
+        User user = userService.getById(userId);
         Cart cart = new Cart();
         cart.setUser(user);
         cart.setProduct(product);
@@ -84,14 +84,13 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void deleteCartByUser(String username) {
-        User user = userService.getByUsername(username);
-        cartRepository.deleteByUserId(user.getId());
+    public void deleteCartByUser(String userId) {
+        cartRepository.deleteByUserId(userId);
     }
 
     @Override
-    public List<Cart> findCartByUser(String username) {
-        User user = userService.getByUsername(username);
-        return cartRepository.findByUserId(user.getId());
+    public List<Cart> findCartByUser(String userId) {
+        List<Cart> carts = cartRepository.findByUser_Id(userId);
+        return carts;
     }
 }
