@@ -14,4 +14,6 @@ public interface CloudinaryImageService {
     default CloudinaryUploadResult upload(MultipartFile file, String folder) throws Exception {
         return upload(file, folder, file.getName());
     };
+
+    boolean delete(String publicId) throws Exception;
 }
