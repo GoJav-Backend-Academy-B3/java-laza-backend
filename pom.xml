@@ -17,14 +17,13 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -53,7 +52,7 @@
 		</dependency>
 
 <!--	DATABASE	-->
-    <dependency>
+    	<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
@@ -69,14 +68,18 @@
 			<artifactId>xendit-java-lib</artifactId>
 			<version>1.23.0</version>
 		</dependency>
-    <dependency>
-      <groupId>com.cloudinary</groupId>
-      <artifactId>cloudinary-http44</artifactId>
-      <version>1.32.2</version>
-    </dependency>
+		<dependency>
+		  <groupId>com.cloudinary</groupId>
+		  <artifactId>cloudinary-http44</artifactId>
+		  <version>1.32.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
 
-<!--	SECURITY	-->
-    <dependency>
+		<!--	SECURITY	-->
+    	<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>

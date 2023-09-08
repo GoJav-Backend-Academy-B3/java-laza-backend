@@ -1,5 +1,6 @@
 package com.phincon.laza.security;
 
+import com.phincon.laza.model.entity.ERole;
 import com.phincon.laza.security.jwt.JwtAccessDeniedHandler;
 import com.phincon.laza.security.jwt.JwtAuthenticationEntryPoint;
 import com.phincon.laza.security.jwt.JwtAuthenticationFilter;
@@ -31,11 +32,11 @@ public class SecurityConfiguration {
                         .disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteListedRoutes).permitAll()
-                        .requestMatchers(GET, adminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(POST, adminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(PUT, adminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(PATCH, adminListedRoutes).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(DELETE, adminListedRoutes).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(GET, adminListedRoutes).hasAuthority(ERole.ADMIN.name())
+                        .requestMatchers(POST, adminListedRoutes).hasAuthority(ERole.ADMIN.name())
+                        .requestMatchers(PUT, adminListedRoutes).hasAuthority(ERole.ADMIN.name())
+                        .requestMatchers(PATCH, adminListedRoutes).hasAuthority(ERole.ADMIN.name())
+                        .requestMatchers(DELETE, adminListedRoutes).hasAuthority(ERole.ADMIN.name())
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -58,9 +59,7 @@ public class SecurityConfiguration {
             "/costs",
             "/existsProvince/**",
             "/existsCity/**",
-            "/brands/{id}",
-            "/brands/search",
-            "/brands",
+            "/brands/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
