@@ -31,5 +31,9 @@ public class FakeCloudinaryImageServiceImpl implements CloudinaryImageService {
         Path f = Files.write(d.resolve(fileId), bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         return new CloudinaryUploadResult(fileId, 0, 0, "", bytes.length, f.toString());
     }
-    
+
+    @Override
+    public boolean delete(String publicId) throws Exception {
+        throw new UnsupportedOperationException("Delete method is unsupported.");
+    }
 }
