@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService {
     Page<User> getAll(Pageable pageable);
-    User getByUsername(String username);
-    User update(String username, UserRequest request) throws Exception;
-    void changePassword(String username, ChangePasswordRequest request);
-    void updateRole(String username, RoleRequest request);
+    User getById(String id);
+    User update(String id, UserRequest request) throws Exception;
+    void changePassword(String id, ChangePasswordRequest request);
+    void updateRole(RoleRequest request);
 }
