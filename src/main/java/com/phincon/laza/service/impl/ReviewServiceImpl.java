@@ -32,11 +32,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review save(String fullName,Long productId, ReviewRequest reviewRequest) throws Exception {
+    public Review save(String id,Long productId, ReviewRequest reviewRequest) throws Exception {
 
         Product product = productsService.getProductById(productId);
 
-        User user = userService.getByUsername(fullName);
+        User user = userService.getById(id);
 
         Review review = new Review();
         review.setComment(reviewRequest.getComment());

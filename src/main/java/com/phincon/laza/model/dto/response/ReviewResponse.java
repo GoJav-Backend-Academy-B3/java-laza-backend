@@ -13,19 +13,19 @@ import java.util.List;
 public class ReviewResponse {
     private Long id;
     private String comment;
+    private String fullname;
+    private String image;
     private float rating;
     private LocalDateTime createdAt;
-    private User users;
-    private Product products;
 
     public ReviewResponse(Review review) {
         this.id = review.getId();
         this.comment = review.getComment();
         this.rating = review.getRating();
         this.createdAt = review.getCreatedAt();
-        this.users = review.getUser();
-        this.products = review.getProduct();
-
+        User user = review.getUser();
+        this.fullname = user.getFullName();
+        this.image = user.getImageUrl();
     }
 
 }

@@ -1,13 +1,12 @@
 package com.phincon.laza.model.dto.response;
 
-import com.phincon.laza.model.entity.Category;
-import com.phincon.laza.model.entity.Product;
-import com.phincon.laza.model.entity.Size;
+import com.phincon.laza.model.entity.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -19,6 +18,8 @@ public class ProductsResponse {
     private Integer price;
     private LocalDateTime createdAt;
     private Category category;
+    private Brand brand;
+    private List<ReviewResponse> review;
     private List<Size> sizes;
 
     public ProductsResponse(Product product) {
@@ -29,6 +30,11 @@ public class ProductsResponse {
         this.price = product.getPrice();
         this.createdAt = product.getCreatedAt();
         this.category = product.getCategory();
+        this.brand = product.getBrand();
+        this.review = product.getReviewList().stream().limit(2)
+                .map(ReviewResponse::new)
+                .collect(Collectors.toList());
+
         this.sizes = product.getSizes();
     }
 }

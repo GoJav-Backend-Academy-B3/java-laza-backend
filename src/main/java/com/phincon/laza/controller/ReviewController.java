@@ -3,8 +3,7 @@ package com.phincon.laza.controller;
 
 import com.phincon.laza.model.dto.request.ReviewRequest;
 import com.phincon.laza.model.dto.response.DataResponse;
-import com.phincon.laza.model.entity.Cart;
-import com.phincon.laza.model.entity.Product;
+import com.phincon.laza.model.dto.response.ReviewResponse;
 import com.phincon.laza.model.entity.Review;
 import com.phincon.laza.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/review")
@@ -25,9 +25,11 @@ public class ReviewController {
 
 
     @GetMapping("/{productId}")
-    public ResponseEntity<List<Review>> getReviewsByProductId(@PathVariable Long productId) {
+    public ResponseEntity<DataResponse<List<ReviewResponse>>> getReviewsByProductId(@PathVariable Long productId) {
         List<Review> reviews = reviewService.getReviewsByProductId(productId);
-        return ResponseEntity.ok(reviews);
+        List<ReviewResponse> reviewResponses = reviews.stream().map(ReviewResponse::new).collect(Collectors.toList());
+        DataResponse<List<ReviewResponse>> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", reviewResponses, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
     @PostMapping("/{productId}/reviews")
@@ -36,7 +38,7 @@ public class ReviewController {
 
         DataResponse<Review> response = new DataResponse<>(
                 HttpStatus.CREATED.value(),
-                "Success",
+                "Review Created Succesfully",
                 createdReview,
                 null
         );

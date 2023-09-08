@@ -54,6 +54,7 @@ public class SecurityConfiguration {
             "/size/**",
             "/category/**",
             "/product/**",
+            "/review/**",
             "/provinces",
             "/cities",
             "/costs",

@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface ReviewService {
     List<Review> getReviewsByProductId(Long productId);
-   Review save(String fullName, Long productId, ReviewRequest reviewRequest) throws Exception;
+   Review save(String id, Long productId, ReviewRequest reviewRequest) throws Exception;
 }
