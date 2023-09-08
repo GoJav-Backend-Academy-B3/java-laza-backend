@@ -4,6 +4,7 @@ package com.phincon.laza.controller;
 import com.phincon.laza.model.dto.request.SizeRequest;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.SizeResponse;
+import com.phincon.laza.model.entity.Brand;
 import com.phincon.laza.model.entity.Size;
 import com.phincon.laza.service.SizeService;
 import jakarta.validation.Valid;
