@@ -1,5 +1,6 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
@@ -36,5 +37,6 @@ public class AddressOrderDetail {
     private String phoneNumber;
 
     @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     private Order order;
 }

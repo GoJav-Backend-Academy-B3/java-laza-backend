@@ -1,11 +1,13 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,9 +23,9 @@ public class Order {
 
     private Integer amount;
 
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
-    private LocalDateTime updatedAt;
+    private Date updatedAt;
 
     private LocalDateTime paidAt;
 
@@ -35,17 +37,13 @@ public class Order {
 
     private String orderStatus;
 
-//    @ManyToOne
-//    @JoinColumn(name="address_id", nullable=false)
-//    private Address address;
-
-    @ManyToOne
-    @JoinColumn(name="payment_method_id", nullable=false)
-    private PaymentMethod paymentMethod;
-
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
+    @JsonIgnore
     private User user;
+
+    @OneToOne(mappedBy = "order")
+    private AddressOrderDetail addressOrderDetail;
 
     @OneToMany(mappedBy = "order")
     private List<ProductOrderDetail> productOrderDetails;
@@ -54,6 +52,16 @@ public class Order {
     private Transaction transaction;
 
     @OneToOne(mappedBy = "order")
-    @JoinColumn(name="payment_detail_id", nullable=false)
     private PaymentDetail paymentDetail;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
+    }
 }

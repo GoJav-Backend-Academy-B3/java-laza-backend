@@ -1,6 +1,7 @@
 package com.phincon.laza.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -32,4 +33,7 @@ public class Category {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Product> productList;
+
+    @JsonIgnore
+    private Boolean isDeleted = false;
 }

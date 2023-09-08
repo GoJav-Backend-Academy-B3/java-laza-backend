@@ -16,4 +16,21 @@ public class GenerateRandom {
         int randomNumber = random.nextInt(max - min + 1) + min;
         return String.valueOf(randomNumber);
     }
+
+    public static String generateRandomNumber(int length) {
+        if (length <= 0) {
+            throw new IllegalArgumentException("Length must be greater than 0");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+
+        for (int i = 0; i < length; i++) {
+            int digit = random.nextInt(10); // Generate a random digit (0-9)
+            sb.append(digit);
+        }
+
+        return sb.toString();
+    }
+
 }

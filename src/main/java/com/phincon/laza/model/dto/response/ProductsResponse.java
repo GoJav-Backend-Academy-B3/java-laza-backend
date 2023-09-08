@@ -1,14 +1,13 @@
 package com.phincon.laza.model.dto.response;
 
-import com.phincon.laza.model.entity.Brand;
-import com.phincon.laza.model.entity.Category;
-import com.phincon.laza.model.entity.Product;
+import com.phincon.laza.model.entity.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Data
 public class ProductsResponse {
@@ -18,8 +17,10 @@ public class ProductsResponse {
     private String imageUrl;
     private Integer price;
     private LocalDateTime createdAt;
-    private CategoryResponse category;
-    private List<SizeResponse> sizes;
+    private Category category;
+    private Brand brand;
+    private List<ReviewResponse> review;
+    private List<Size> sizes;
 
     public ProductsResponse(Product product) {
         this.id = product.getId();
@@ -28,16 +29,12 @@ public class ProductsResponse {
         this.imageUrl = product.getImageUrl();
         this.price = product.getPrice();
         this.createdAt = product.getCreatedAt();
-        if (product.getCategory() != null) {
-            this.category = new CategoryResponse(product.getCategory());
-        }
-//        if (product.getSizes() != null) {
-//            this.sizes = product.getSizes().stream()
-//                    .map(SizeResponse::new)
-//                    .collect(Collectors.toList());
-//        }
-        this.sizes = (product.getSizes() != null) ? product.getSizes().stream()
-                .map(SizeResponse::new)
-                .collect(Collectors.toList()) : Collections.emptyList();
+        this.category = product.getCategory();
+        this.brand = product.getBrand();
+        this.review = product.getReviewList().stream().limit(2)
+                .map(ReviewResponse::new)
+                .collect(Collectors.toList());
+
+        this.sizes = product.getSizes();
     }
 }
