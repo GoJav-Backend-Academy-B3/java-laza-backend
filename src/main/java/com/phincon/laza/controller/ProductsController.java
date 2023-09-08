@@ -28,8 +28,7 @@ public class ProductsController {
     public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
         Product product = productsService.getProductById(id);
         ProductsResponse result = new ProductsResponse(product);
-        DataResponse<ProductsResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", result,
-                null);
+        DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.OK.value(), "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
