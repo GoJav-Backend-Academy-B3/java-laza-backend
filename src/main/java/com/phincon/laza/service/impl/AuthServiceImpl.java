@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,10 +55,7 @@ public class AuthServiceImpl implements AuthService {
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        SysUserDetails user = new SysUserDetails();
-        user.setUsername(findByUsername.get().getUsername());
-        user.setPassword(findByUsername.get().getPassword());
-        user.setRoles(findByUsername.get().getRoles());
+        UserDetails user = SysUserDetails.create(findByUsername.get());
 
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -203,10 +201,7 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> findByUsername = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findByUsername);
 
-        SysUserDetails user = new SysUserDetails();
-        user.setUsername(findByUsername.get().getUsername());
-        user.setPassword(findByUsername.get().getPassword());
-        user.setRoles(findByUsername.get().getRoles());
+        UserDetails user = SysUserDetails.create(findByUsername.get());
 
         authValidator.validateAuthTokenInvalid(refreshToken, user);
         String accessToken = jwtService.generateToken(user);

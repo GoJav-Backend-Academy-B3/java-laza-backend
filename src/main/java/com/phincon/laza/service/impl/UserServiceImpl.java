@@ -43,15 +43,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getByUsername(String username) {
-        Optional<User> findUser = userRepository.findByUsername(username);
+    public User getById(String id) {
+        Optional<User> findUser = userRepository.findById(id);
         userValidator.validateUserNotFound(findUser);
         return findUser.get();
     }
 
     @Override
-    public User update(String username, UserRequest request) throws Exception {
-        Optional<User> findUser = userRepository.findByUsername(username);
+    public User update(String id, UserRequest request) throws Exception {
+        Optional<User> findUser = userRepository.findById(id);
         userValidator.validateUserNotFound(findUser);
 
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
@@ -80,10 +80,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String username, ChangePasswordRequest request) {
+    public void changePassword(String id, ChangePasswordRequest request) {
         userValidator.validateUserPasswordNotMatch(request.getNewPassword(), request.getConfirmPassword());
 
-        Optional<User> findUser = userRepository.findByUsername(username);
+        Optional<User> findUser = userRepository.findById(id);
         userValidator.validateUserNotFound(findUser);
         userValidator.validateInvalidOldPassword(request.getOldPassword(), findUser.get().getPassword());
 
@@ -93,8 +93,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateRole(String username, RoleRequest request) {
-        Optional<User> findUser = userRepository.findByUsername(username);
+    public void updateRole(RoleRequest request) {
+        Optional<User> findUser = userRepository.findByUsername(request.getUsername());
         userValidator.validateUserNotFound(findUser);
 
         List<Role> listRole = new ArrayList<>();
