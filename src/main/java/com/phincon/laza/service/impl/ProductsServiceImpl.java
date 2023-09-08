@@ -63,6 +63,7 @@ public class ProductsServiceImpl implements ProductsService {
         var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products",
                 GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
+        product.setCloudinaryPublicId(result.publicId());
 
         return productsRepository.save(product);
     }
@@ -86,11 +87,22 @@ public class ProductsServiceImpl implements ProductsService {
 
         CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
 
+        cloudinaryImageService.delete(product.getCloudinaryPublicId());
         var result = cloudinaryImageService.upload(updateProductRequest.file().getBytes(), "products",
                 GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
 
         return productsRepository.save(product);
+    }
+
+    @Override
+    public void delete(Long id) throws Exception {
+        var product = this.getProductById(id);
+        String publicId = product.getCloudinaryPublicId();
+
+        cloudinaryImageService.delete(publicId);
+
+        productsRepository.delete(product);
     }
 
     private CompletableFuture<Brand> findBrandById(Long id) throws Exception {
@@ -122,5 +134,4 @@ public class ProductsServiceImpl implements ProductsService {
             }).collect(Collectors.toList());
         });
     }
-
 }
