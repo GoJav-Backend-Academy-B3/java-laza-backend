@@ -35,6 +35,8 @@ public class Product {
 
     private LocalDateTime createdAt;
 
+    private String cloudinaryPublicId;
+
     @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
     private List<Size> sizes;
 
