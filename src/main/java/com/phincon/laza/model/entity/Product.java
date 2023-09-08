@@ -32,7 +32,9 @@ public class Product {
 
     private LocalDateTime createdAt;
 
-    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @ManyToMany
+    @JoinTable(name = "product_sizes", joinColumns = { @JoinColumn(name = "product_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "size_id") })
     private List<Size> sizes;
 
     @ManyToOne
