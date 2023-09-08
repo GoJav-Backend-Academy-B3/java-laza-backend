@@ -11,7 +11,6 @@ import com.phincon.laza.service.CartService;
 import com.phincon.laza.service.ProductsService;
 import com.phincon.laza.service.SizeService;
 import com.phincon.laza.service.UserService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public class CartServiceImpl implements CartService {
     public Cart saveCart(String userName,CartRequest cartRequest) throws Exception{
         Product product = productsService.getProductById(cartRequest.getProductId());
         Size size = sizeService.getSizeById(cartRequest.getSizeId());
-        User user = userService.getByUsername(userName);
+        User user = userService.getById(userName);
         Cart cart = new Cart();
         cart.setUser(user);
         cart.setProduct(product);
