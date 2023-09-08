@@ -50,6 +50,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getByUsername(String username) {
+        Optional<User> findUser = userRepository.findByUsername(username);
+        userValidator.validateUserNotFound(findUser);
+        return findUser.get();
+    }
+
+    @Override
     public User update(String id, UserRequest request) throws Exception {
         Optional<User> findUser = userRepository.findById(id);
         userValidator.validateUserNotFound(findUser);
