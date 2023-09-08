@@ -13,15 +13,15 @@ import java.util.stream.Collectors;
 public class SizeResponse {
     private Long id;
     private String size;
-    private List<ProductsResponse> productList;
+//    private List<ProductsResponse> productList;
 
 
     public SizeResponse(Size size) {
         this.id = size.getId();
         this.size = size.getSize();
-        this.productList = size.getProducts().stream()
-                .map(ProductsResponse::new)
-                .collect(Collectors.toList());
+//        this.productList = size.getProducts().stream()
+//                .map(ProductsResponse::new)
+//                .collect(Collectors.toList());
     }
 
 }

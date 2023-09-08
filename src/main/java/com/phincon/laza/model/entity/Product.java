@@ -34,14 +34,18 @@ public class Product {
     private Integer price;
 
     private LocalDateTime createdAt;
-
-    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
-    private List<Size> sizes;
+  
+    private String cloudinaryPublicId;
 
     @ManyToOne
-    @JoinColumn(name="brand_id", nullable=false)
+    @JoinColumn(name = "brand_id", nullable = false)
     @JsonManagedReference
     private Brand brand;
+
+    @ManyToMany
+    @JoinTable(name = "product_sizes", joinColumns = { @JoinColumn(name = "product_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "size_id") })
+    private List<Size> sizes;
 
     @ManyToOne
     @JoinColumn(name="category_id", nullable=false)
@@ -55,5 +59,7 @@ public class Product {
     @JsonBackReference
     private List<Review> reviewList;
 
-}
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<Cart> carts;
 
+}
