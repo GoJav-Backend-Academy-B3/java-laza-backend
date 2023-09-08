@@ -12,4 +12,6 @@ public interface ProductsService {
     Product create(CreateUpdateProductRequest createProductRequest) throws Exception;
 
     Product update(Long id, CreateUpdateProductRequest updateProductRequest) throws Exception;
+
+    void delete(Long id) throws Exception;
 }
