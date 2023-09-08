@@ -1,5 +1,8 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
@@ -31,6 +34,13 @@ public class Product {
     private Integer price;
 
     private LocalDateTime createdAt;
+  
+    private String cloudinaryPublicId;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id", nullable = false)
+    @JsonManagedReference
+    private Brand brand;
 
     @ManyToMany
     @JoinTable(name = "product_sizes", joinColumns = { @JoinColumn(name = "product_id") }, inverseJoinColumns = {
@@ -38,11 +48,8 @@ public class Product {
     private List<Size> sizes;
 
     @ManyToOne
-    @JoinColumn(name = "brand_id", nullable = false)
-    private Brand brand;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name="category_id", nullable=false)
+    @JsonManagedReference
     private Category category;
 
     @ManyToMany(mappedBy = "wishlistProducts", fetch = FetchType.LAZY)

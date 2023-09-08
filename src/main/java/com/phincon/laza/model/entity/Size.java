@@ -25,7 +25,4 @@ public class Size {
     @ManyToMany(mappedBy = "sizes")
     private List<Product> products;
 
-    @OneToMany(mappedBy = "size", fetch = FetchType.LAZY)
-    private List<Cart> carts;
-
 }

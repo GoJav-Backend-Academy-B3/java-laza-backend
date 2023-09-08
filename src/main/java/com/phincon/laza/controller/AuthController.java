@@ -6,6 +6,7 @@ import com.phincon.laza.model.dto.response.TokenResponse;
 import com.phincon.laza.model.dto.response.UserResponse;
 import com.phincon.laza.model.entity.User;
 import com.phincon.laza.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -65,6 +66,13 @@ public class AuthController {
     public ResponseEntity<DataResponse<?>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         authService.resetPassword(request);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), null, null);
+        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<DataResponse<?>> refreshToken(HttpServletRequest request) {
+        TokenResponse token = authService.refreshToken(request.getHeader("X-Auth-Refresh"));
+        DataResponse<TokenResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), token, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 }

@@ -22,7 +22,6 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<DataResponse<List<CategoryResponse>>> getAllCategory() {
         List<Category> categories = categoryService.getAllCategory();
-        // Konversi entitas kategori menjadi DTO kategori (CategoryResponse)
         List<CategoryResponse> categoryResponses = categories.stream().map(CategoryResponse::new).collect(Collectors.toList());
         DataResponse<List<CategoryResponse>> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", categoryResponses, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
