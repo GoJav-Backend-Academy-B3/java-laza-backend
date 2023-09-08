@@ -1,6 +1,7 @@
 package com.phincon.laza.controller;
 
 import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
+import com.phincon.laza.model.dto.response.CreateUpdateProductResponse;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.ProductsResponse;
 import com.phincon.laza.model.entity.Product;
@@ -33,22 +34,22 @@ public class ProductsController {
     }
 
     @PostMapping
-    public ResponseEntity<DataResponse<ProductsResponse>> createProduct(
+    public ResponseEntity<DataResponse<CreateUpdateProductResponse>> createProduct(
             @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.create(request);
-        ProductsResponse result = new ProductsResponse(product);
-        DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.CREATED.value(),
+        CreateUpdateProductResponse result = CreateUpdateProductResponse.fromProductEntity(product);
+        DataResponse<CreateUpdateProductResponse> dataResponse = new DataResponse<>(HttpStatus.CREATED.value(),
                 "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DataResponse<ProductsResponse>> updateProduct(
+    public ResponseEntity<DataResponse<CreateUpdateProductResponse>> updateProduct(
             @PathVariable Long id,
             @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.update(id, request);
-        ProductsResponse result = new ProductsResponse(product);
-        DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.OK.value(),
+        CreateUpdateProductResponse result = CreateUpdateProductResponse.fromProductEntity(product);
+        DataResponse<CreateUpdateProductResponse> dataResponse = new DataResponse<CreateUpdateProductResponse>(HttpStatus.OK.value(),
                 "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
