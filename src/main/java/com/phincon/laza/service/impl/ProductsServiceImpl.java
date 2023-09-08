@@ -63,6 +63,7 @@ public class ProductsServiceImpl implements ProductsService {
         var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products",
                 GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
+        product.setCloudinaryPublicId(result.publicId());
 
         return productsRepository.save(product);
     }
@@ -86,6 +87,7 @@ public class ProductsServiceImpl implements ProductsService {
 
         CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
 
+        cloudinaryImageService.delete(product.getCloudinaryPublicId());
         var result = cloudinaryImageService.upload(updateProductRequest.file().getBytes(), "products",
                 GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
