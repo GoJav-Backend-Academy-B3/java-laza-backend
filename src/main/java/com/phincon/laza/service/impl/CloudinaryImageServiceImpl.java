@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.cloudinary.Cloudinary;
@@ -14,6 +15,7 @@ import com.phincon.laza.service.CloudinaryImageService;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Primary
 @Slf4j
 public class CloudinaryImageServiceImpl implements CloudinaryImageService {
 
@@ -34,6 +36,18 @@ public class CloudinaryImageServiceImpl implements CloudinaryImageService {
             return CloudinaryUploadResult.fromMap(result);
         } catch (IOException e) {
             log.error("Cannot upload file. Reason {}", e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public boolean delete(String publicId) throws Exception {
+        var uploader = cloudinary.uploader();
+        try {
+            var result = uploader.destroy(publicId, ObjectUtils.emptyMap());
+            return Boolean.valueOf(result.get("result").toString());
+        } catch (IOException e) {
+            log.error("Cannot delete file. Reason {} ", e.getMessage());
             throw e;
         }
     }
