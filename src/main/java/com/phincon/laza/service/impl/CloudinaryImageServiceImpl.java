@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -15,6 +15,7 @@ import com.phincon.laza.service.CloudinaryImageService;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Primary
 @Slf4j
 public class CloudinaryImageServiceImpl implements CloudinaryImageService {
 
@@ -40,7 +41,14 @@ public class CloudinaryImageServiceImpl implements CloudinaryImageService {
     }
 
     @Override
-    public CloudinaryUploadResult upload(MultipartFile file, String folder) throws Exception {
-        return upload(file.getBytes(), folder, file.getName());
+    public boolean delete(String publicId) throws Exception {
+        var uploader = cloudinary.uploader();
+        try {
+            var result = uploader.destroy(publicId, ObjectUtils.emptyMap());
+            return Boolean.valueOf(result.get("result").toString());
+        } catch (IOException e) {
+            log.error("Cannot delete file. Reason {} ", e.getMessage());
+            throw e;
+        }
     }
 }
