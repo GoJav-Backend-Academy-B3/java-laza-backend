@@ -1,5 +1,6 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
@@ -22,10 +23,10 @@ public class Size {
 
     private String size;
 
-    @ManyToMany
-    @JoinTable(
-            name = "size_products",
-            joinColumns = @JoinColumn(name = "size_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @ManyToMany(mappedBy = "sizes")
     private List<Product> products;
+
+    @JsonIgnore
+    private Boolean isDeleted = false;
+
 }

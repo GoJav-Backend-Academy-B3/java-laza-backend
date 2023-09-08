@@ -1,6 +1,7 @@
 package com.phincon.laza.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -34,6 +35,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
+
     @Column(nullable = false)
     private boolean isVerified = false;
 
@@ -60,6 +64,7 @@ public class User {
     private List<CreditCard> creditCardList;
 
     @OneToMany(mappedBy = "user")
+    @JsonBackReference
     private List<Review> reviewList;
 
     @OneToMany(mappedBy = "user")
@@ -71,4 +76,5 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Order> orders;
+
 }

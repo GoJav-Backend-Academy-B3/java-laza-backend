@@ -12,4 +12,5 @@ public interface AuthService {
     void forgotPassword(RecoveryRequest request) throws Exception;
     void forgotPasswordConfirm(VerificationCodeRequest request);
     void resetPassword(ResetPasswordRequest request);
+    TokenResponse refreshToken(String authHeader);
 }

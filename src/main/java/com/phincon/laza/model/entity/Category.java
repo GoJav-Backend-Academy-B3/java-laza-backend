@@ -1,5 +1,9 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.phincon.laza.model.dto.request.CategoryRequest;
@@ -8,6 +12,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,5 +31,9 @@ public class Category {
     private String category;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Product> productList;
+
+    @JsonIgnore
+    private Boolean isDeleted = false;
 }
