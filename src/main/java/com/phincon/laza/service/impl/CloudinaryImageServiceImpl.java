@@ -40,7 +40,12 @@ public class CloudinaryImageServiceImpl implements CloudinaryImageService {
     }
 
     @Override
+    public CloudinaryUploadResult upload(MultipartFile file, String folder, String fileId) throws Exception {
+        return upload(file.getBytes(), folder, fileId);
+    }
+
+    @Override
     public CloudinaryUploadResult upload(MultipartFile file, String folder) throws Exception {
-        return upload(file.getBytes(), folder, file.getName());
+        return upload(file, folder, file.getName());
     }
 }
