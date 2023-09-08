@@ -2,21 +2,16 @@ package com.phincon.laza.service.impl;
 
 
 import com.phincon.laza.model.dto.request.SizeRequest;
-import com.phincon.laza.model.entity.Category;
 import com.phincon.laza.model.entity.Size;
 import com.phincon.laza.repository.SizeRepository;
 import com.phincon.laza.service.SizeService;
-import com.phincon.laza.service.SizeService;
 import com.phincon.laza.validator.SizeValidator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class SizeServiceImpl implements SizeService {
     private final SizeRepository sizeRepository;
@@ -57,7 +52,14 @@ public class SizeServiceImpl implements SizeService {
 
     public void delete(Long id) throws Exception {
         Optional<Size> existingSizeOptional = sizeRepository.findById(id);
+
+        if (existingSizeOptional.isPresent()) {
+            Size sizes = existingSizeOptional.get();
+
+            sizes.setIsDeleted(true);
+            sizeRepository.save(sizes);
+            return;
+        }
         sizeValidator.validateSizeNotFound(existingSizeOptional);
-        sizeRepository.deleteById(id);
     }
 }

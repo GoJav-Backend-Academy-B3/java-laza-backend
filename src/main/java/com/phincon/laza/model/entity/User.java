@@ -1,5 +1,6 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -62,6 +63,7 @@ public class User {
     private List<CreditCard> creditCardList;
 
     @OneToMany(mappedBy = "user")
+    @JsonBackReference
     private List<Review> reviewList;
 
     @OneToMany(mappedBy = "user")

@@ -5,18 +5,14 @@ import com.phincon.laza.model.dto.request.CategoryRequest;
 import com.phincon.laza.model.entity.Category;
 import com.phincon.laza.repository.CategoryRepository;
 import com.phincon.laza.service.CategoryService;
-
 import com.phincon.laza.validator.CategoryValidator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 

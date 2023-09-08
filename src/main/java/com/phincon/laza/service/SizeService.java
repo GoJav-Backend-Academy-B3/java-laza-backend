@@ -1,8 +1,6 @@
 package com.phincon.laza.service;
 
-import com.phincon.laza.model.dto.request.CategoryRequest;
 import com.phincon.laza.model.dto.request.SizeRequest;
-import com.phincon.laza.model.entity.Category;
 import com.phincon.laza.model.entity.Size;
 import org.springframework.stereotype.Service;
 
