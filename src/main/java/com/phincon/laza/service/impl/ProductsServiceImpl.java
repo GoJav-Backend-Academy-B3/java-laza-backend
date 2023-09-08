@@ -95,6 +95,16 @@ public class ProductsServiceImpl implements ProductsService {
         return productsRepository.save(product);
     }
 
+    @Override
+    public void delete(Long id) throws Exception {
+        var product = this.getProductById(id);
+        String publicId = product.getCloudinaryPublicId();
+
+        cloudinaryImageService.delete(publicId);
+
+        productsRepository.delete(product);
+    }
+
     private CompletableFuture<Brand> findBrandById(Long id) throws Exception {
         return CompletableFuture.supplyAsync(() -> {
             return brandService.findById(id);
@@ -124,5 +134,4 @@ public class ProductsServiceImpl implements ProductsService {
             }).collect(Collectors.toList());
         });
     }
-
 }
