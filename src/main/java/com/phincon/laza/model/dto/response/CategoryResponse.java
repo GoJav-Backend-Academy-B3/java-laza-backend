@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Data
-@NoArgsConstructor
 public class CategoryResponse {
     private Long id;
     private String category;

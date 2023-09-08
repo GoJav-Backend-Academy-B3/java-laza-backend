@@ -1,5 +1,6 @@
 package com.phincon.laza.model.dto.response;
 
+import com.phincon.laza.model.entity.Category;
 import com.phincon.laza.model.entity.Product;
 import com.phincon.laza.model.entity.Size;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class ProductsResponse {
     private String imageUrl;
     private Integer price;
     private LocalDateTime createdAt;
-    private CategoryResponse category;
+    private Category category;
     private List<Size> sizes;
 
     public ProductsResponse(Product product) {
@@ -27,9 +28,7 @@ public class ProductsResponse {
         this.imageUrl = product.getImageUrl();
         this.price = product.getPrice();
         this.createdAt = product.getCreatedAt();
-        if (product.getCategory() != null) {
-            this.category = new CategoryResponse(product.getCategory());
-        }
+        this.category = product.getCategory();
         this.sizes = product.getSizes();
     }
 }
