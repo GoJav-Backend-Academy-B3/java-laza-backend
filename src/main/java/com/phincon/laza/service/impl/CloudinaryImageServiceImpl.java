@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -37,15 +36,5 @@ public class CloudinaryImageServiceImpl implements CloudinaryImageService {
             log.error("Cannot upload file. Reason {}", e.getMessage());
             throw e;
         }
-    }
-
-    @Override
-    public CloudinaryUploadResult upload(MultipartFile file, String folder, String fileId) throws Exception {
-        return upload(file.getBytes(), folder, fileId);
-    }
-
-    @Override
-    public CloudinaryUploadResult upload(MultipartFile file, String folder) throws Exception {
-        return upload(file, folder, file.getName());
     }
 }
