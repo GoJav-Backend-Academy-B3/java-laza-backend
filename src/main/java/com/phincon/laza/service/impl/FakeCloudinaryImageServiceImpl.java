@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
 import com.phincon.laza.service.CloudinaryImageService;
 
-
 @Service
 @Qualifier("fake")
 public class FakeCloudinaryImageServiceImpl implements CloudinaryImageService {
 
     private Path tempDirectory;
+
     public FakeCloudinaryImageServiceImpl() {
         try {
             tempDirectory = Files.createTempDirectory("lmao");
@@ -27,13 +27,18 @@ public class FakeCloudinaryImageServiceImpl implements CloudinaryImageService {
 
     @Override
     public CloudinaryUploadResult upload(byte[] bytes, String folder, String fileId) throws Exception {
-        Path d = Files.createDirectories(tempDirectory.resolve(folder));
-        Path f = Files.write(d.resolve(fileId), bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Path f = Files.write(tempDirectory.resolve(fileId), bytes, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING);
         return new CloudinaryUploadResult(fileId, 0, 0, "", bytes.length, f.toString());
     }
 
     @Override
     public boolean delete(String publicId) throws Exception {
-        throw new UnsupportedOperationException("Delete method is unsupported.");
+        try {
+            Files.delete(tempDirectory.resolve(publicId));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
