@@ -68,6 +68,7 @@ public class Product {
     private Category category;
 
     @ManyToMany(mappedBy = "wishlistProducts", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<User> wishlistBy;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
@@ -75,6 +76,7 @@ public class Product {
     private List<Review> reviewList;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Cart> carts;
-
 }
+
