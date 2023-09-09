@@ -53,6 +53,7 @@ public class Product {
     private Category category;
 
     @ManyToMany(mappedBy = "wishlistProducts", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<User> wishlistBy;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)

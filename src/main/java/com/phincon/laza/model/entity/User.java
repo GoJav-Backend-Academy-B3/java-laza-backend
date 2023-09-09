@@ -54,6 +54,7 @@ public class User {
             name = "wishlist",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @JsonBackReference
     private List<Product> wishlistProducts;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -76,5 +77,18 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Order> orders;
+
+    public void addWishlist(Product product) {
+        this.wishlistProducts.add(product);
+        product.getWishlistBy().add(this);
+    }
+
+    public void removeProductWishlist(long productId) {
+        Product product = this.wishlistProducts.stream().filter(t -> t.getId() == productId).findFirst().orElse(null);
+        if (product != null) {
+            this.wishlistProducts.remove(product);
+            product.getWishlistBy().remove(this);
+        }
+    }
 
 }
