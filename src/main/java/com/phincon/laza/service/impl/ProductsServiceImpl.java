@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
@@ -38,6 +41,11 @@ public class ProductsServiceImpl implements ProductsService {
             throw new NotFoundException("Product not found");
         }
         return productOptional.get();
+    }
+
+    @Override
+    public Page<Product> findProductByName(String keyword, int page, int size) {
+       return productsRepository.findByNameContaining(keyword, PageRequest.of(page, size)); 
     }
 
     @Override
