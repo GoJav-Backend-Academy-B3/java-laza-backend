@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class ReviewResponse {
     private Long id;
     private String comment;
-    private String fullname;
+    private String name;
     private String image;
     private float rating;
     private LocalDateTime createdAt;
@@ -22,7 +22,7 @@ public class ReviewResponse {
         this.rating = review.getRating();
         this.createdAt = review.getCreatedAt();
         User user = review.getUser();
-        this.fullname = user.getName();
+        this.name = user.getName();
         this.image = user.getImageUrl();
     }
 
