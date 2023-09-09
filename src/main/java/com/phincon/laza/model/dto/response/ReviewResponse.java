@@ -1,13 +1,11 @@
 package com.phincon.laza.model.dto.response;
 
 
-import com.phincon.laza.model.entity.Product;
 import com.phincon.laza.model.entity.Review;
 import com.phincon.laza.model.entity.User;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class ReviewResponse {
@@ -24,7 +22,7 @@ public class ReviewResponse {
         this.rating = review.getRating();
         this.createdAt = review.getCreatedAt();
         User user = review.getUser();
-        this.fullname = user.getFullName();
+        this.fullname = user.getName();
         this.image = user.getImageUrl();
     }
 
