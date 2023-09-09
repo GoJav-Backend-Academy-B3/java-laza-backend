@@ -1,17 +1,5 @@
 package com.phincon.laza.controller;
 
-import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
-import com.phincon.laza.model.dto.response.CreateUpdateProductResponse;
-import com.phincon.laza.model.dto.response.DataResponse;
-import com.phincon.laza.model.dto.response.OverviewProductResponse;
-import com.phincon.laza.model.dto.response.PaginationMeta;
-import com.phincon.laza.model.dto.response.ProductsResponse;
-import com.phincon.laza.model.entity.Product;
-import com.phincon.laza.service.ProductsService;
-
-import jakarta.websocket.server.PathParam;
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +13,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
+import com.phincon.laza.model.dto.response.CreateUpdateProductResponse;
+import com.phincon.laza.model.dto.response.DataResponse;
+import com.phincon.laza.model.dto.response.OverviewProductResponse;
+import com.phincon.laza.model.dto.response.PaginationMeta;
+import com.phincon.laza.model.dto.response.ProductsResponse;
+import com.phincon.laza.model.entity.Product;
+import com.phincon.laza.service.ProductsService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/product")
