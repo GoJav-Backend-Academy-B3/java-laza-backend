@@ -12,17 +12,21 @@ import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.validator.AuthValidator;
 import com.phincon.laza.validator.RoleValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class SysOAuth2UserService extends DefaultOAuth2UserService {
     private final AuthValidator authValidator;
@@ -68,13 +72,17 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
         user.setProvider(EProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase()));
         user.setRoles(listRole);
 
-        return userRepository.save(user);
+        userRepository.save(user);
+        log.info("User id={} is saved with OAuth2 {}", user.getId(), user.getProvider());
+        return user;
     }
 
     private User update(User user, OAuth2UserInfo oAuth2UserInfo) {
         user.setName(oAuth2UserInfo.getName());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
 
-        return userRepository.save(user);
+        userRepository.save(user);
+        log.info("User id={} is updated with OAuth2 {}", user.getId(), user.getProvider());
+        return user;
     }
 }
