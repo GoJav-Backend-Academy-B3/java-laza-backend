@@ -1,6 +1,8 @@
 package com.phincon.laza.service;
 
 import com.phincon.laza.model.dto.rajaongkir.CityResponse;
+import com.phincon.laza.model.dto.rajaongkir.CostsResponse;
+import com.phincon.laza.model.dto.rajaongkir.CourierResponse;
 import com.phincon.laza.model.dto.rajaongkir.ProvinceResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 
@@ -12,7 +14,7 @@ public interface RajaongkirService {
     public List<CityResponse> findAllCityByProvinceId(String provinceId);
     public void existsProvince(String provinceName);
     public void existsCity(String cityName) ;
-    public Optional findCostCourierService(ROCostRequest roCostRequest) throws Exception;
+    public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception;
 
 
 }
