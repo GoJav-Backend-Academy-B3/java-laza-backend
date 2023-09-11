@@ -16,28 +16,18 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+#    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'
-        script: |
-          cd ~/actions-runner/_work/java-laza-backend/java-laza-backend
-          sudo mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
-#    - name: Build with Maven
-#      run: mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
+        distribution: 'adopt'
+    - name: Build with Maven
+      run: mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
+#    - name: Execute jar file
+#      run: sudo kill -9 `sudo lsof -t -i:8080` & sudo java -jar /home/ubuntu/actions-runner/_work/java-laza-backend/java-laza-backend/target/laza-0.0.1-SNAPSHOT.jar &
 
-  deploy:
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Execure jar file
-        run: sudo kill -9 `sudo lsof -t -i:8080` & sudo java -jar /home/ubuntu/actions-runner/_work/java-laza-backend/java-laza-backend/target/laza-0.0.1-SNAPSHOT.jar &
+# mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
