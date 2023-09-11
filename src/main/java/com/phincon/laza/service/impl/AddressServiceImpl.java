@@ -8,14 +8,12 @@ import com.phincon.laza.model.entity.User;
 import com.phincon.laza.repository.AddressRepository;
 import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.service.AddressService;
+import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -28,35 +26,45 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RajaongkirService rajaongkirService;
+
 
     @Override
-    public Address add(String username, AddressRequest request){
-        Optional<User> user = userRepository.findByUsername(username);
+    public Address add(String userId, AddressRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
 
-        if (user.isPresent()) {
-            Address address = new Address();
+        Address address = new Address();
 
-           address.setCity_id(request.getCity_id());
-           address.setProvince_id(request.getProvince_id());
+        Integer count = addressRepository.countByUserId(userId);
+
+        if (count == 0) {
+            address.setPrimary(true);
+        } else {
             address.setPrimary(request.isPrimary());
-            address.setReceiverName(request.getReceiverName());
-            address.setPhoneNumber(request.getPhone());
-            address.setFullAddress(request.getFullAddress());
-            address.setUser(user.get());
-
-            if (request.isPrimary()) {
-                addressRepository.setAllAddressesNonPrimary(user.get().getId());
-            }
-
-            return addressRepository.save(address);
         }
 
-        throw new NotFoundException("Username doesn't exists");
+        rajaongkirService.existsProvince(request.getProvinceName());
+        rajaongkirService.existsCity(request.getCityName());
+
+        address.setCityName(request.getCityName());
+        address.setProvinceName(request.getProvinceName());
+        address.setReceiverName(request.getReceiverName());
+        address.setPhoneNumber(request.getPhone());
+        address.setFullAddress(request.getFullAddress());
+        address.setUser(user);
+
+        if (request.isPrimary()) {
+            addressRepository.setAllAddressesNonPrimary(userId);
+        }
+
+        return addressRepository.save(address);
+
     }
 
     @Override
-    public List<Address> findAllByUsername(String username){
-        Optional<User> user = userRepository.findByUsername(username);
+    public List<Address> findAllByUserId(String userId) {
+        Optional<User> user = userRepository.findById(userId);
 
         if (user.isPresent()) {
             return addressRepository.findAllByUserId(user.get().getId());
@@ -72,9 +80,8 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Address update(String username, Long id, AddressRequest request) throws Exception {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("Username doesn't exists"));
-
+    public Address update(String userId, Long id, AddressRequest request) throws Exception {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
         Optional<Address> optionalAddress = addressRepository.findById(id);
 
         if (optionalAddress.isPresent()) {
@@ -87,11 +94,14 @@ public class AddressServiceImpl implements AddressService {
             }
 
             if (request.isPrimary()) {
-                addressRepository.setAllAddressesNonPrimary(user.getId());
+                addressRepository.setAllAddressesNonPrimary(userId);
             }
 
-            address.setCity_id(request.getCity_id());
-            address.setProvince_id(request.getProvince_id());
+            rajaongkirService.existsProvince(request.getProvinceName().toLowerCase());
+            rajaongkirService.existsCity(request.getCityName().toLowerCase());
+
+            address.setCityName(request.getCityName());
+            address.setProvinceName(request.getProvinceName());
             address.setPrimary(request.isPrimary());
             address.setReceiverName(request.getReceiverName());
             address.setPhoneNumber(request.getPhone());

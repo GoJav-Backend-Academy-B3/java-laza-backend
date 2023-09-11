@@ -75,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
         userValidator.validateEmailIsExists(findByEmail);
 
         List<Role> listRole = new ArrayList<>();
-        Optional<Role> findRole = roleRepository.findByName(ERole.ADMIN);
+        Optional<Role> findRole = roleRepository.findByName(ERole.USER);
         roleValidator.validateRoleNotFound(findRole);
         listRole.add(findRole.get());
 

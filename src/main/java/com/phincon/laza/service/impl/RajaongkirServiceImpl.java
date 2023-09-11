@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -42,7 +43,7 @@ public class RajaongkirServiceImpl implements RajaongkirService {
     public void existsProvince(String provinceName) {
         AllProvinceResponse allProvinces = rajaongkirRepository.findAllProvince();
         for (ProvinceResponse province: allProvinces.getResults()){
-            if (province.getProvince().equals(provinceName)){
+            if (province.getProvince().toLowerCase().equals(provinceName)){
                return;
             }
         }
@@ -53,7 +54,7 @@ public class RajaongkirServiceImpl implements RajaongkirService {
     public void existsCity(String cityName) {
         AllCityResponse allCityResponse = rajaongkirRepository.findCityByProvinceId("");
         for (CityResponse city: allCityResponse.getResults()){
-            if (city.getCity_name() == cityName){
+            if (Objects.equals(city.getCity_name().toLowerCase(), cityName)){
                 return;
             }
         }

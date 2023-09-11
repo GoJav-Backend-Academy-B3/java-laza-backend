@@ -3,6 +3,8 @@ package com.phincon.laza.controller;
 import com.phincon.laza.model.dto.request.AddressRequest;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.entity.Address;
+import com.phincon.laza.security.userdetails.CurrentUser;
+import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.AddressService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,8 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping
-    public ResponseEntity<?> add(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody AddressRequest request) throws Exception {
-        Address address = addressService.add(ctx.getUsername(), request);
+    public ResponseEntity<?> add(@CurrentUser SysUserDetails ctx, @Valid @RequestBody AddressRequest request) throws Exception {
+        Address address = addressService.add(ctx.getId(), request);
 
         DataResponse<Address> dataResponse = new DataResponse<>(
                 HttpStatus.CREATED.value(),
@@ -35,8 +37,8 @@ public class AddressController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(@AuthenticationPrincipal UserDetails ctx) {
-        List<Address> addresses = addressService.findAllByUsername(ctx.getUsername());
+    public ResponseEntity<?> getAll(@CurrentUser SysUserDetails ctx) {
+        List<Address> addresses = addressService.findAllByUserId(ctx.getId());
 
         DataResponse<List<Address>> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
@@ -61,8 +63,8 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@AuthenticationPrincipal UserDetails ctx, @Valid @RequestBody AddressRequest request, @PathVariable Long id) throws Exception {
-        Address address = addressService.update(ctx.getUsername(), id, request);
+    public ResponseEntity<?> update(@CurrentUser SysUserDetails ctx, @Valid @RequestBody AddressRequest request, @PathVariable Long id) throws Exception {
+        Address address = addressService.update(ctx.getId(), id, request);
 
         DataResponse<Address> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
