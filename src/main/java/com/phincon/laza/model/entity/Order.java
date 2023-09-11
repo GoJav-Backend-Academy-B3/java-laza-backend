@@ -62,13 +62,13 @@ public class Order {
     private PaymentDetail paymentDetail;
 
     @PrePersist
-    protected void onCreate() {
+    private void onCreate() {
         createdAt = new Date();
         updatedAt = createdAt;
     }
 
     @PreUpdate
-    protected void onUpdate() {
+    private void onUpdate() {
         updatedAt = new Date();
     }
 }
