@@ -1,5 +1,6 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -37,10 +38,16 @@ public class Order {
 
     private String orderStatus;
 
+    private boolean reviewed;
+
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
     @JsonIgnore
     private User user;
+
+    @JsonBackReference
+    @OneToOne(mappedBy = "order")
+    private Review review;
 
     @OneToOne(mappedBy = "order")
     private AddressOrderDetail addressOrderDetail;
