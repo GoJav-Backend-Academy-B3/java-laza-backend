@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.exception.custom.NotFoundException;
-import com.phincon.laza.model.dto.rajaongkir.AllCityResponse;
-import com.phincon.laza.model.dto.rajaongkir.AllProvinceResponse;
-import com.phincon.laza.model.dto.rajaongkir.CityResponse;
-import com.phincon.laza.model.dto.rajaongkir.ProvinceResponse;
+import com.phincon.laza.model.dto.rajaongkir.*;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.service.RajaongkirService;
@@ -64,8 +61,8 @@ public class RajaongkirServiceImpl implements RajaongkirService {
     }
 
     @Override
-    public Optional findCostCourierService(ROCostRequest roCostRequest) throws Exception{
-        return rajaongkirRepository.findCostCourierService(roCostRequest).getResults().get(0).getCosts();
+    public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception{
+        return rajaongkirRepository.findCostCourierService(roCostRequest).getResults();
     }
 
 

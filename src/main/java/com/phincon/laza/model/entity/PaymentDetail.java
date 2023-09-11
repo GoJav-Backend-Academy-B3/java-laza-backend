@@ -23,7 +23,13 @@ public class PaymentDetail {
     private String id;
 
     @NotBlank
+    private String paymentMethod;
+
+    @NotBlank
     private String type;
+
+    @NotBlank
+    private String provider;
 
     private String code;
 

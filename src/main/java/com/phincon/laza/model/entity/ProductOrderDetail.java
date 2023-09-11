@@ -1,5 +1,6 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
@@ -23,7 +24,6 @@ public class ProductOrderDetail {
 
     private String imageUrl;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -37,9 +37,10 @@ public class ProductOrderDetail {
 
     private Integer quantity;
 
-    private Integer total_price;
+    private Integer totalPrice;
 
     @ManyToOne
     @JoinColumn(name="order_id", nullable=false)
+    @JsonIgnore
     private Order order;
 }

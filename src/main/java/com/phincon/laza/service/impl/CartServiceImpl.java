@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,10 +33,10 @@ public class CartServiceImpl implements CartService {
     private ProductsService productsService;
 
     @Override
-    public Cart saveCart(String userName,CartRequest cartRequest) throws Exception{
+    public Cart saveCart(String userId,CartRequest cartRequest) throws Exception{
         Product product = productsService.getProductById(cartRequest.getProductId());
         Size size = sizeService.getSizeById(cartRequest.getSizeId());
-        User user = userService.getById(userName);
+        User user = userService.getById(userId);
         Cart cart = new Cart();
         cart.setUser(user);
         cart.setProduct(product);
@@ -71,5 +72,25 @@ public class CartServiceImpl implements CartService {
         Cart result = cartRepository.findById(getCart.get().getId()).get();
         result.setQuantity(result.getQuantity()-1);
         return result;
+    }
+
+    @Override
+    public void deleteCart(Long cartId) throws Exception {
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        if (!cart.isPresent()){
+            throw new NotFoundException("Cart not found");
+        }
+        cartRepository.deleteById(cartId);
+    }
+
+    @Override
+    public void deleteCartByUser(String userId) {
+        cartRepository.deleteByUserId(userId);
+    }
+
+    @Override
+    public List<Cart> findCartByUser(String userId) {
+        List<Cart> carts = cartRepository.findByUser_Id(userId);
+        return carts;
     }
 }

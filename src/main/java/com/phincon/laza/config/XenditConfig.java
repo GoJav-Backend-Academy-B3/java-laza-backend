@@ -9,7 +9,7 @@ public class XenditConfig {
     @Bean
     public XenditClient xenditClient() {
         return new XenditClient.Builder()
-                .setApikey("xnd_public_development_Av89vIGkrNeQE2ZSKAGANGC70X6iTYt37DRUt3JNrIr7z8RGKoNGW5zmZHg4WqJ")
+                .setApikey("xnd_development_ARKvHGZFnj1BlGLgUn6jVFJauA6MmY6dbcwxUOYU8s8fyhbQ5zyaszBcRo17j0cf")
                 .build();
     }
 
