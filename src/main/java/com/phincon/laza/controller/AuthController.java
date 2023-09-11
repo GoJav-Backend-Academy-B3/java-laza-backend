@@ -73,7 +73,7 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<DataResponse<?>> refreshToken(HttpServletRequest request) {
-        TokenResponse token = authService.refreshToken(request.getHeader("X-Auth-Refresh"));
+        TokenResponse token = authService.refreshToken(request.getHeader("X-AUTH-REFRESH"));
         DataResponse<TokenResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), token, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
