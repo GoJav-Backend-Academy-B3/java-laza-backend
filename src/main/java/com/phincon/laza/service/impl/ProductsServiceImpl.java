@@ -21,19 +21,19 @@ import com.phincon.laza.service.CloudinaryImageService;
 import com.phincon.laza.service.ProductsService;
 import com.phincon.laza.service.SizeService;
 
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import com.phincon.laza.utils.GenerateRandom;
 
 
 @Service
-@RequiredArgsConstructor
 public class ProductsServiceImpl implements ProductsService {
-    private final ProductsRepository productsRepository;
-    private final BrandService brandService;
-    private final CategoryService categoryService;
-    private final SizeService sizeService;
-    private final CloudinaryImageService cloudinaryImageService;
+    private ProductsRepository productsRepository;
+    private BrandService brandService;
+    private CategoryService categoryService;
+    private SizeService sizeService;
+    private CloudinaryImageService cloudinaryImageService;
 
     public Product getProductById(Long id) throws Exception {
         Optional<Product> productOptional = productsRepository.findById(id);
