@@ -40,7 +40,7 @@ public class ProductRepositoryTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private ProductRepository repository;
+    private ProductsRepository repository;
 
     @Autowired
     @Qualifier("product.all")
