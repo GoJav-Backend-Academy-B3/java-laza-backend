@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RegisterRequest {
-    @NotBlank(message = "fullName is required")
-    @Pattern(regexp = "^[a-zA-Z\s]+$", message = "fullName must be alpha")
-    private String fullName;
+    @NotBlank(message = "name is required")
+    @Pattern(regexp = "^[a-zA-Z\s]+$", message = "name must be alpha")
+    private String name;
 
     @NotBlank(message = "username is required")
     @Pattern(regexp = "^[A-Za-z0-9_]+$", message = "username must be alphanumeric and not whitespace")

@@ -36,7 +36,6 @@ public class XenditServiceImpl implements XenditService {
     public PaymentDetail chargeEwallet(PaymentMethod paymentMethod, Order order, String callbackUrl) throws XenditException {
         Map<String, String> channelProperties = new HashMap<>();
 
-
         Map<String, Object> params = new HashMap<>();
         params.put("reference_id", order.getId());
         params.put("currency", "IDR");
@@ -56,16 +55,10 @@ public class XenditServiceImpl implements XenditService {
 
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + eWalletCharge);
 
-//        order.setExpiryDate(eWalletCharge.get);
-        // update order status
         order.setOrderStatus(eWalletCharge.getStatus().toLowerCase());
-//        order.setUpdatedAt(LocalDateTime.now());
-//
-//        orderService.updateOrder(order.getId(), order);
 
-        // ToDo: implement add transaction to database
+        // add transaction to database
         Transaction transaction = new Transaction();
-
         transaction.setOrder(order);
         transaction.setReferenceId(eWalletCharge.getId());
         transaction.setAmount(Integer.valueOf(eWalletCharge.getChargeAmount()));
@@ -74,25 +67,18 @@ public class XenditServiceImpl implements XenditService {
         transaction.setTransactionStatus(eWalletCharge.getStatus());
         transaction.setCreatedAt(LocalDateTime.now());
         transaction.setUpdatedAt(LocalDateTime.now());
-
         transactionService.createTransaction(transaction);
 
-        System.out.println(eWalletCharge);
-        System.out.println(eWalletCharge.getChannelProperties());
-        System.out.println(eWalletCharge.getActions());
-
+        // add payment detail to database
         PaymentDetail paymentDetail = new PaymentDetail();
         paymentDetail.setPaymentMethod(paymentMethod.getName());
         paymentDetail.setType(paymentMethod.getType());
         paymentDetail.setCode(paymentMethod.getCode());
         paymentDetail.setProvider(paymentMethod.getProvider());
-
         paymentDetail.setDeeplink(eWalletCharge.getCallbackUrl());
-
         if (eWalletCharge.getActions() != null) {
             paymentDetail.setQrCode(eWalletCharge.getActions().get("qr_checkout_string"));
         }
-
         paymentDetail.setOrder(order);
 
         return paymentDetailService.createPaymentDetail(paymentDetail);
@@ -103,7 +89,7 @@ public class XenditServiceImpl implements XenditService {
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", order.getId());
         params.put("bank_code", paymentMethod.getCode());
-        params.put("name", order.getUser().getFullName());
+        params.put("name", order.getUser().getName());
         params.put("expected_amount", order.getAmount());
 
         FixedVirtualAccount closedVirtualAccount = xenditClient.fixedVirtualAccount.createClosed(params);

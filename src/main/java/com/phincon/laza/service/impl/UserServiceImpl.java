@@ -4,6 +4,7 @@ import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
 import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;
+import com.phincon.laza.model.entity.ERole;
 import com.phincon.laza.model.entity.Role;
 import com.phincon.laza.model.entity.User;
 import com.phincon.laza.repository.RoleRepository;
@@ -80,7 +81,7 @@ public class UserServiceImpl implements UserService {
             findUser.get().setImageUrl(image.secureUrl());
         }
 
-        findUser.get().setFullName(request.getFullName());
+        findUser.get().setName(request.getName());
         userRepository.save(findUser.get());
         log.info("User id={} is updated", findUser.get().getId());
         return findUser.get();
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
 
         List<Role> listRole = new ArrayList<>();
         for (String v : request.getRoles()) {
-            Optional<Role> findRole = roleRepository.findByName(v);
+            Optional<Role> findRole = roleRepository.findByName(ERole.valueOf(v.toUpperCase()));
             roleValidator.validateRoleNotFound(findRole);
             listRole.add(findRole.get());
         }

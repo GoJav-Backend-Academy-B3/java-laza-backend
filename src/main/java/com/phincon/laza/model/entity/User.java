@@ -24,12 +24,11 @@ public class User {
     private String id;
 
     @Column(nullable = false)
-    private String fullName;
+    private String name;
 
     @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false, unique = true)
@@ -41,10 +40,14 @@ public class User {
     @Column(nullable = false)
     private boolean isVerified = false;
 
+    @Column(unique = true)
+    @Enumerated(EnumType.STRING)
+    private EProvider provider;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "users_id"),
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles;
