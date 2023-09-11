@@ -1,5 +1,6 @@
 package com.phincon.laza.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -36,4 +37,9 @@ public class Review {
     @JoinColumn(name="product_id", nullable=false)
     @JsonManagedReference
     private Product product;
+
+    @OneToOne
+    @JoinColumn(name="order_id", nullable=false)
+    @JsonIgnore
+    private Order order;
 }
