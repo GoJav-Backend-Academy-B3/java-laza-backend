@@ -4,12 +4,12 @@ import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
 import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;
-import com.phincon.laza.model.entity.ERole;
-import com.phincon.laza.model.entity.Role;
-import com.phincon.laza.model.entity.User;
+import com.phincon.laza.model.entity.*;
+import com.phincon.laza.repository.ProviderRepository;
 import com.phincon.laza.repository.RoleRepository;
 import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.service.UserService;
+import com.phincon.laza.validator.ProviderValidator;
 import com.phincon.laza.validator.RoleValidator;
 import com.phincon.laza.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private final UserValidator userValidator;
     private final RoleRepository roleRepository;
     private final RoleValidator roleValidator;
+    private final ProviderRepository providerRepository;
+    private final ProviderValidator providerValidator;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryImageServiceImpl cloudinaryImageService;
 
@@ -93,7 +95,12 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> findUser = userRepository.findById(id);
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateInvalidOldPassword(request.getOldPassword(), findUser.get().getPassword());
+        userValidator.validateUserInvalidOldPassword(request.getOldPassword(), findUser.get().getPassword());
+
+        List<Provider> listProvider =  findUser.get().getProviders();
+        Optional<Provider> findProvider = providerRepository.findByName(EProvider.LOCAL);
+        providerValidator.validateProviderNotFound(findProvider);
+        listProvider.add(findProvider.get());
 
         findUser.get().setPassword(passwordEncoder.encode(request.getConfirmPassword()));
         userRepository.save(findUser.get());
