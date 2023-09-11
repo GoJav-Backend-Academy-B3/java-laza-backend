@@ -29,11 +29,11 @@ import com.phincon.laza.utils.GenerateRandom;
 
 @Service
 public class ProductsServiceImpl implements ProductsService {
-    private ProductsRepository productsRepository;
-    private BrandService brandService;
-    private CategoryService categoryService;
-    private SizeService sizeService;
-    private CloudinaryImageService cloudinaryImageService;
+    @Autowired private ProductsRepository productsRepository;
+    @Autowired private BrandService brandService;
+    @Autowired private CategoryService categoryService;
+    @Autowired private SizeService sizeService;
+    @Autowired private CloudinaryImageService cloudinaryImageService;
 
     public Product getProductById(Long id) throws Exception {
         Optional<Product> productOptional = productsRepository.findById(id);
