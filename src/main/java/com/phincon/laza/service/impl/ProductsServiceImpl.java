@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,12 @@ public class ProductsServiceImpl implements ProductsService {
     private final SizeService sizeService;
     private final CloudinaryImageService cloudinaryImageService;
 
+    @Override
+    public Page<Product> getAll(int page, int size) {
+        return productsRepository.findAll(PageRequest.of(page, size));
+    }
+
+    @Override
     public Product getProductById(Long id) throws Exception {
         Optional<Product> productOptional = productsRepository.findById(id);
         if (productOptional.isEmpty()) {
@@ -142,4 +149,5 @@ public class ProductsServiceImpl implements ProductsService {
             }).collect(Collectors.toList());
         });
     }
+
 }
