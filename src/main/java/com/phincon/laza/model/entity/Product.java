@@ -79,14 +79,13 @@ public class Product {
     @JsonBackReference
     private List<Cart> carts;
 
-    public Product(Long id, String name, String description, String imageUrl, Integer price, String cloudinaryPublicId,
+    public Product(Long id, String name, String description, String imageUrl, Integer price,
             Brand brand, List<Size> sizes, Category category) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
         this.price = price;
-        this.cloudinaryPublicId = cloudinaryPublicId;
         this.brand = brand;
         this.sizes = sizes;
         this.category = category;
