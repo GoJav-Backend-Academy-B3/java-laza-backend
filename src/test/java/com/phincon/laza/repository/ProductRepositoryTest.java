@@ -44,15 +44,15 @@ public class ProductRepositoryTest {
 
     @Autowired
     @Qualifier("product.all")
-    private final List<Product> products;
+    private List<Product> products;
 
     @Autowired
     @Qualifier("product.one")
-    private final Product productOne;
+    private Product productOne;
 
     @Autowired
     @Qualifier("product.sz.nx")
-    private final Product productWithSizeNonexistent;
+    private Product productWithSizeNonexistent;
 
     @BeforeEach
     public void init() {
