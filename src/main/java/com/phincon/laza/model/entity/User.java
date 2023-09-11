@@ -40,8 +40,13 @@ public class User {
     @Column(nullable = false)
     private boolean isVerified = false;
 
-    @Enumerated(EnumType.STRING)
-    private EProvider provider;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_providers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "provider_id")
+    )
+    private List<EProvider> providers;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
