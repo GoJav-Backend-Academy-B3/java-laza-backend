@@ -89,7 +89,7 @@ public class XenditServiceImpl implements XenditService {
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", order.getId());
         params.put("bank_code", paymentMethod.getCode());
-        params.put("name", order.getUser().getFullName());
+        params.put("name", order.getUser().getName());
         params.put("expected_amount", order.getAmount());
 
         FixedVirtualAccount closedVirtualAccount = xenditClient.fixedVirtualAccount.createClosed(params);

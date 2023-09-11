@@ -75,15 +75,16 @@ public class AuthServiceImpl implements AuthService {
         userValidator.validateEmailIsExists(findByEmail);
 
         List<Role> listRole = new ArrayList<>();
-        Optional<Role> findRole = roleRepository.findByName(ERole.USER.toString());
+        Optional<Role> findRole = roleRepository.findByName(ERole.ADMIN);
         roleValidator.validateRoleNotFound(findRole);
         listRole.add(findRole.get());
 
         User user = new User();
-        user.setFullName(request.getFullName());
+        user.setName(request.getName());
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setProvider(EProvider.LOCAL);
         user.setRoles(listRole);
 
         userRepository.save(user);
@@ -209,6 +210,21 @@ public class AuthServiceImpl implements AuthService {
         TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
 
         log.info("{} has been used refresh token", user.getUsername());
+        return tokenResponse;
+    }
+
+    @Override
+    public TokenResponse token(UserDetails request) {
+        Optional<User> findUser = userRepository.findByUsername(request.getUsername());
+        userValidator.validateUserNotFound(findUser);
+        userValidator.validateUserNotIsVerfied(findUser);
+
+        String accessToken = jwtService.generateToken(request);
+        String refreshToken = jwtService.generateRefreshToken(request);
+
+        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
+
+        log.info("{} has been login with oauth2 {}", findUser.get().getEmail(), findUser.get().getProvider());
         return tokenResponse;
     }
 }
