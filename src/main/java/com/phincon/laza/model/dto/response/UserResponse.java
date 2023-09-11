@@ -15,7 +15,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserResponse {
     private String id;
-    private String fullName;
+    private String name;
     private String username;
     private String email;
     private String imageUrl;
@@ -24,7 +24,7 @@ public class UserResponse {
 
     public UserResponse (User user) {
         this.id = user.getId();
-        this.fullName = user.getName();
+        this.name = user.getName();
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.imageUrl = user.getImageUrl();

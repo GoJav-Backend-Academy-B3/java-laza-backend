@@ -3,6 +3,7 @@ package com.phincon.laza.controller;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.entity.PaymentMethod;
 import com.phincon.laza.service.PaymentMethodService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/payment-methods")
+@SecurityRequirement(name = "X-AUTH-TOKEN")
 public class PaymentMethodController {
 
     private final PaymentMethodService paymentMethodService;

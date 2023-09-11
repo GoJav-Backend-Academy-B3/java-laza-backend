@@ -40,7 +40,6 @@ public class User {
     @Column(nullable = false)
     private boolean isVerified = false;
 
-    @Column(unique = true)
     @Enumerated(EnumType.STRING)
     private EProvider provider;
 
