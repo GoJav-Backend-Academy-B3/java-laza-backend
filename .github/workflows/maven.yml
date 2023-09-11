@@ -24,7 +24,6 @@ jobs:
       with:
         java-version: '17'
         distribution: 'zulu'
-        cache: maven
     - name: Build with Maven
       run: mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
 
