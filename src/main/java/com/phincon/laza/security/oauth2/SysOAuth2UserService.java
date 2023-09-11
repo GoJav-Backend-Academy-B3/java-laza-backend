@@ -10,6 +10,7 @@ import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.validator.AuthValidator;
 import com.phincon.laza.validator.ProviderValidator;
 import com.phincon.laza.validator.RoleValidator;
+import com.phincon.laza.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -28,6 +29,7 @@ import java.util.*;
 public class SysOAuth2UserService extends DefaultOAuth2UserService {
     private final AuthValidator authValidator;
     private final UserRepository userRepository;
+    private final UserValidator userValidator;
     private final RoleRepository roleRepository;
     private final RoleValidator roleValidator;
     private final ProviderRepository providerRepository;
@@ -49,6 +51,7 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
         User user = findUser.orElseGet(() -> register(oAuth2UserRequest, oAuth2UserInfo));
 
         findUser.ifPresent(existingUser -> {
+            userValidator.validateUserNotEqualProvider(findUser, oAuth2UserRequest.getClientRegistration().getRegistrationId());
             update(existingUser, oAuth2UserRequest, oAuth2UserInfo);
         });
 

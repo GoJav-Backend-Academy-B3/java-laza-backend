@@ -62,6 +62,18 @@ public class UserValidator {
         }
     }
 
+    public void validateUserNotEqualProvider(Optional<User> findUser, String registrationId) {
+        if (!findUser.get().getProviders().stream()
+                .anyMatch(provider -> provider.getName().name().equalsIgnoreCase(registrationId))) {
+            List<String> listName = findUser.get().getProviders().stream()
+                    .map(provider -> String.valueOf(provider.getName()))
+                    .collect(Collectors.toList());
+
+            String result = String.join(", ", listName).toLowerCase();
+            throw new NotProcessException(String.format("Looks like you're signed up with %s account. Please use your %s account to login.", result, result));
+        }
+    }
+
     public void validateUserPasswordNotMatch(String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new BadRequestException("New password and Confirm password do not match");
