@@ -23,9 +23,12 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'zulu'
-    - name: Build with Maven
-      run: mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
+        distribution: 'temurin'
+        script: |
+          cd ~/actions-runner/_work/java-laza-backend/java-laza-backend
+          sudo mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
+#    - name: Build with Maven
+#      run: mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
 
   deploy:
     runs-on: self-hosted
@@ -35,7 +38,6 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'zulu'
-          cache: maven
+          distribution: 'temurin'
       - name: Execure jar file
         run: sudo kill -9 `sudo lsof -t -i:8080` & sudo java -jar /home/ubuntu/actions-runner/_work/java-laza-backend/java-laza-backend/target/laza-0.0.1-SNAPSHOT.jar &
