@@ -46,7 +46,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "provider_id")
     )
-    private List<EProvider> providers;
+    private List<Provider> providers;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
