@@ -28,7 +28,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
+      run: cd /home/ubuntu/actions-runner/_work/java-laza-backend/java-laza-backend & mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod' &
     - name: Execure jar file
       run: sudo kill -9 `sudo lsof -t -i:8080` & sudo java -jar /home/ubuntu/actions-runner/_work/java-laza-backend/java-laza-backend/target/laza-0.0.1-SNAPSHOT.jar &
 

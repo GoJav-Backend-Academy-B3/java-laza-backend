@@ -52,13 +52,13 @@ public class Address {
     private Date updatedAt;
 
     @PrePersist
-    private void onCreate() {
+    protected void onCreate() {
         createdAt = new Date();
         updatedAt = createdAt;
     }
 
     @PreUpdate
-    private void onUpdate() {
+    protected void onUpdate() {
         updatedAt = new Date();
     }
 }
