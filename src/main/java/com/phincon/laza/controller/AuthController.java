@@ -13,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -84,11 +83,5 @@ public class AuthController {
         TokenResponse token = authService.token(ctx);
         DataResponse<TokenResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), token, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
-    }
-
-    @GetMapping("/csrf")
-    public void csrf(HttpServletRequest request) {
-        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-        csrfToken.getToken();
     }
 }
