@@ -10,11 +10,15 @@ import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.service.AddressService;
 import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Transactional
@@ -36,17 +40,14 @@ public class AddressServiceImpl implements AddressService {
 
         Address address = new Address();
 
-        Integer count = addressRepository.countByUserId(userId);
+        Integer addressCount = addressRepository.countByUserId(userId);
 
-        if (count == 0) {
-            address.setPrimary(true);
-        } else {
-            address.setPrimary(request.isPrimary());
-        }
+        boolean isPrimary = (addressCount == 0) || request.isPrimary();
 
-        rajaongkirService.existsProvince(request.getProvinceName());
-        rajaongkirService.existsCity(request.getCityName());
+        rajaongkirService.existsProvince(request.getProvinceName().toLowerCase());
+        rajaongkirService.existsCity(request.getCityName().toLowerCase());
 
+        address.setPrimary(isPrimary);
         address.setCityName(request.getCityName());
         address.setProvinceName(request.getProvinceName());
         address.setReceiverName(request.getReceiverName());
@@ -54,7 +55,7 @@ public class AddressServiceImpl implements AddressService {
         address.setFullAddress(request.getFullAddress());
         address.setUser(user);
 
-        if (request.isPrimary()) {
+        if (isPrimary) {
             addressRepository.setAllAddressesNonPrimary(userId);
         }
 
@@ -82,14 +83,13 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address update(String userId, Long id, AddressRequest request) throws Exception {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
-        Optional<Address> optionalAddress = addressRepository.findById(id);
 
-        if (optionalAddress.isPresent()) {
-            Address address = optionalAddress.get();
+        Address address = addressRepository.findById(id).orElseThrow(() -> new NotFoundException("Address not founc"));
 
-            // Jika optionalAddress.get().isPrimary() adalah true dan request.isPrimary() adalah false,
-            // jangan ubah isPrimary
-            if (optionalAddress.get().isPrimary() && !request.isPrimary()) {
+
+            /* Jika optionalAddress.get().isPrimary() adalah true dan request.isPrimary() adalah false,
+            jangan ubah isPrimary */
+            if (address.isPrimary() && !request.isPrimary()) {
                 throw new BadRequestException("Cannot change address primary to non primary");
             }
 
@@ -109,9 +109,7 @@ public class AddressServiceImpl implements AddressService {
             address.setUser(user);
 
             return addressRepository.save(address);
-        }
 
-        throw new NotFoundException("Address not found");
     }
 
 
