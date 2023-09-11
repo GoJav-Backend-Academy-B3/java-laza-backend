@@ -3,13 +3,17 @@ package com.phincon.laza.validator;
 import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotFoundException;
+import com.phincon.laza.exception.custom.NotProcessException;
+import com.phincon.laza.model.entity.EProvider;
 import com.phincon.laza.model.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,14 +50,26 @@ public class UserValidator {
         }
     }
 
+    public void validateUserBadProviderLocal(Optional<User> findUser) {
+        if (!findUser.get().getProviders().stream()
+                .anyMatch(provider -> EProvider.LOCAL.equals(provider.getName()))) {
+            List<String> listName = findUser.get().getProviders().stream()
+                    .map(provider -> String.valueOf(provider.getName()))
+                    .collect(Collectors.toList());
+
+            String result = String.join(", ", listName).toLowerCase();
+            throw new NotProcessException(String.format("Looks like you're signed up with %s account. Please use your %s account to login.", result, result));
+        }
+    }
+
     public void validateUserPasswordNotMatch(String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new BadRequestException("New password and Confirm password do not match");
         }
     }
 
-    public void validateInvalidOldPassword(String oldPassword, String dbPassword) {
-        if (!passwordEncoder.matches(oldPassword, dbPassword)) {
+    public void validateUserInvalidOldPassword(String oldPassword, String dbPassword) {
+        if (Objects.nonNull(dbPassword) && !passwordEncoder.matches(oldPassword, dbPassword)) {
             throw new BadRequestException("Old password is incorrect");
         }
     }
