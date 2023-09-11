@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public interface UserService {
     Page<User> getAll(Pageable pageable);
     User getById(String id);
+    User getByUsername(String username);
     User update(String id, UserRequest request) throws Exception;
     void changePassword(String id, ChangePasswordRequest request);
     void updateRole(RoleRequest request);

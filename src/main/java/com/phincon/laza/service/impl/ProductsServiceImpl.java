@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
@@ -41,6 +44,11 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
+    public Page<Product> findProductByName(String keyword, int page, int size) {
+       return productsRepository.findByNameContaining(keyword, PageRequest.of(page, size)); 
+    }
+
+    @Override
     public Product create(CreateUpdateProductRequest createProductRequest) throws Exception {
         var product = new Product();
         // fill some fillable field
@@ -63,6 +71,7 @@ public class ProductsServiceImpl implements ProductsService {
         var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products",
                 GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
+        product.setCloudinaryPublicId(result.publicId());
 
         return productsRepository.save(product);
     }
@@ -86,11 +95,22 @@ public class ProductsServiceImpl implements ProductsService {
 
         CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
 
+        cloudinaryImageService.delete(product.getCloudinaryPublicId());
         var result = cloudinaryImageService.upload(updateProductRequest.file().getBytes(), "products",
                 GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
 
         return productsRepository.save(product);
+    }
+
+    @Override
+    public void delete(Long id) throws Exception {
+        var product = this.getProductById(id);
+        String publicId = product.getCloudinaryPublicId();
+
+        cloudinaryImageService.delete(publicId);
+
+        productsRepository.delete(product);
     }
 
     private CompletableFuture<Brand> findBrandById(Long id) throws Exception {
@@ -122,5 +142,4 @@ public class ProductsServiceImpl implements ProductsService {
             }).collect(Collectors.toList());
         });
     }
-
 }

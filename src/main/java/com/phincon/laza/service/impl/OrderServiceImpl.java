@@ -67,10 +67,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order requestCreateOrder(String username, CheckoutRequest checkoutRequest) {
+    public Order requestCreateOrder(String userId, CheckoutRequest checkoutRequest) {
         try {
-            User user = userService.getByUsername(username);
-
+            User user = userService.getById(userId);
 
             Order order = new Order();
 
@@ -144,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
 
     private String generateOrderId() {
         LocalDateTime date = LocalDateTime.now();
-        String orderId = String.format("ORD-%s%s%s-", date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+        String orderId = String.format("ORD-%02d%02d%s-", date.getDayOfMonth(), date.getMonthValue(), date.getYear());
 
         String result = orderId + GenerateRandom.generateRandomNumber(10);
 
