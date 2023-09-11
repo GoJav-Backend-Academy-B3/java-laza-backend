@@ -1,7 +1,10 @@
 package com.phincon.laza.security.oauth2.user;
 
+import lombok.Data;
+
 import java.util.Map;
 
+@Data
 public abstract class OAuth2UserInfo {
     protected Map<String, Object> attributes;
 
@@ -12,9 +15,5 @@ public abstract class OAuth2UserInfo {
 
     public OAuth2UserInfo(Map<String, Object> attributes) {
         this.attributes = attributes;
-    }
-
-    public Map<String, Object> getAttributes() {
-        return attributes;
     }
 }
