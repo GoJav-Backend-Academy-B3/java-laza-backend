@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ChangePasswordRequest {
-    @Size(min = 8, message = "password must be minimum 8 characters")
-    @NotBlank(message = "old password is required")
     private String oldPassword;
 
     @Size(min = 8, message = "password must be minimum 8 characters")

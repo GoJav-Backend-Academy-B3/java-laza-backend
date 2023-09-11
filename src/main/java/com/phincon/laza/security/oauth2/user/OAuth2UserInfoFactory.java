@@ -8,6 +8,8 @@ import java.util.Map;
 public class OAuth2UserInfoFactory {
     public static OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {
         switch (EProvider.valueOf(registrationId.toUpperCase())) {
+            case GOOGLE:
+                return new GoogleOAuth2UserInfo(attributes);
             case FACEBOOK:
                 return new FacebookOAuth2UserInfo(attributes);
             default:
