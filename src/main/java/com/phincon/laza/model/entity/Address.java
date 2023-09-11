@@ -22,10 +22,10 @@ public class Address {
     private Long id;
 
     @Column(nullable = false)
-    private String province_id;
+    private String provinceName;
 
     @Column(nullable = false)
-    private String city_id;
+    private String cityName;
 
     @Column(columnDefinition = "TEXT")
     private String fullAddress;
