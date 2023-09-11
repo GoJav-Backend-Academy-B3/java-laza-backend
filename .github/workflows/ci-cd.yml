@@ -28,7 +28,6 @@ jobs:
     - name: Build with Maven
       run: mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
 
-
     - name: Build & push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
@@ -42,3 +41,14 @@ jobs:
 #      run: sudo kill -9 `sudo lsof -t -i:8080` & sudo java -jar /home/ubuntu/actions-runner/_work/java-laza-backend/java-laza-backend/target/laza-0.0.1-SNAPSHOT.jar &
 
 # mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
+
+    - name: SSH and deploy app
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd ~/java-laza-backend
+          sudo docker-compose up -d
