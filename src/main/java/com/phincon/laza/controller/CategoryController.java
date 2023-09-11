@@ -43,7 +43,7 @@ public class CategoryController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<DataResponse<CategoryResponse>> createCategory(@Valid @RequestBody CategoryRequest request) throws Exception {
         Category category = categoryService.save(request);
         CategoryResponse result = new CategoryResponse(category);

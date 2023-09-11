@@ -2,8 +2,10 @@ package com.phincon.laza.controller;
 
 
 import com.phincon.laza.model.dto.request.ReviewRequest;
+import com.phincon.laza.model.dto.response.CategoryResponse;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.ReviewResponse;
+import com.phincon.laza.model.dto.response.ReviewsResponse;
 import com.phincon.laza.model.entity.Review;
 import com.phincon.laza.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +24,16 @@ import java.util.stream.Collectors;
 public class ReviewController {
     private final ReviewService reviewService;
 
-
-
     @GetMapping("/{productId}")
-    public ResponseEntity<DataResponse<List<ReviewResponse>>> getReviewsByProductId(@PathVariable Long productId) {
+    public ResponseEntity<ReviewsResponse> getReviewsByProductId(@PathVariable Long productId) {
         List<Review> reviews = reviewService.getReviewsByProductId(productId);
-        List<ReviewResponse> reviewResponses = reviews.stream().map(ReviewResponse::new).collect(Collectors.toList());
-        DataResponse<List<ReviewResponse>> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", reviewResponses, null);
-        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+        List<ReviewsResponse.ReviewItem> reviewItems = ReviewsResponse.createReviewItems(reviews);
+        int totalReviews = reviews.size();
+        float averageRating = reviewService.calculateAverageRating(reviewItems);
+
+        ReviewsResponse response = new ReviewsResponse(HttpStatus.OK.value(), "Success");
+        response.setReviewData(reviewItems, totalReviews, averageRating);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/{productId}/reviews")
