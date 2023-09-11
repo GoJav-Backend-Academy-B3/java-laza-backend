@@ -62,10 +62,10 @@ public class ProductDataConfig {
     }
 
     @Bean
-    @Qualifier("product.sz.nx")
-    public Product productSizeNonexistent() {
-        return new Product(null, "Figure Kobo Kanaeru", "figure kobo kanaeru", "image+url", 1000000000,
+    @Qualifier("product.update")
+    public Product productUpdated() {
+        return new Product(99l, "Figure Kobo Kanaeru", "figure kobo kanaeru", "image+url", 1000000000,
                 brandInit().get(0),
-                Arrays.asList(new Size(90l, null, null, false)), categoryInit().get(1));
+                Arrays.asList(sizeInit().get(0), sizeInit().get(2)), categoryInit().get(1));
     }
 }
