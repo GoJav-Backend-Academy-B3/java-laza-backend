@@ -63,8 +63,8 @@ public class UserValidator {
     }
 
     public void validateUserNotEqualProvider(Optional<User> findUser, String registrationId) {
-        if (!findUser.get().getProviders().stream()
-                .anyMatch(provider -> provider.getName().name().equalsIgnoreCase(registrationId))) {
+        if (findUser.get().getProviders().stream()
+                .noneMatch(provider -> provider.getName().name().equalsIgnoreCase(registrationId))) {
             List<String> listName = findUser.get().getProviders().stream()
                     .map(provider -> String.valueOf(provider.getName()))
                     .collect(Collectors.toList());

@@ -20,9 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -74,12 +72,12 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
         userValidator.validateEmailIsExists(findByEmail);
 
-        List<Provider> listProvider =  new ArrayList<>();
+        Set<Provider> listProvider =  new HashSet<>();
         Optional<Provider> findProvider = providerRepository.findByName(EProvider.LOCAL);
         providerValidator.validateProviderNotFound(findProvider);
         listProvider.add(findProvider.get());
 
-        List<Role> listRole = new ArrayList<>();
+        Set<Role> listRole = new HashSet<>();
         Optional<Role> findRole = roleRepository.findByName(ERole.USER);
         roleValidator.validateRoleNotFound(findRole);
         listRole.add(findRole.get());

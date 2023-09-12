@@ -59,12 +59,12 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User register(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        List<Provider> listProvider =  new ArrayList<>();
+        Set<Provider> listProvider =  new HashSet<>();
         Optional<Provider> findProvider = providerRepository.findByName(EProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase()));
         providerValidator.validateProviderNotFound(findProvider);
         listProvider.add(findProvider.get());
 
-        List<Role> listRole = new ArrayList<>();
+        Set<Role> listRole = new HashSet<>();
         Optional<Role> findRole = roleRepository.findByName(ERole.USER);
         roleValidator.validateRoleNotFound(findRole);
         listRole.add(findRole.get());
@@ -84,10 +84,13 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User update(User user, OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        List<Provider> listProvider =  user.getProviders();
-        Optional<Provider> findProvider = providerRepository.findByName(EProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase()));
-        providerValidator.validateProviderNotFound(findProvider);
-        listProvider.add(findProvider.get());
+        Set<Provider> listProvider =  user.getProviders();
+
+        if (user.getProviders().stream().noneMatch(provider -> provider.getName().name().equalsIgnoreCase(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
+            Optional<Provider> findProvider = providerRepository.findByName(EProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase()));
+            providerValidator.validateProviderNotFound(findProvider);
+            listProvider.add(findProvider.get());
+        }
 
         user.setName(oAuth2UserInfo.getName());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
