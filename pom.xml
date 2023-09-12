@@ -153,5 +153,4 @@
         </plugins>
         <finalName>java-laza-backend</finalName>
     </build>
-
 </project>
