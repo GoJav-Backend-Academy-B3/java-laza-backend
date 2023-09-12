@@ -1,0 +1,7 @@
+version: '3'
+services:
+  java-laza-backend:
+    image: adimaspph/java-laza-backend:latest
+    container_name: java-laza-backend
+    ports:
+      - "8080:8080"

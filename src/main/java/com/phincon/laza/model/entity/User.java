@@ -1,7 +1,7 @@
 package com.phincon.laza.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -40,8 +41,13 @@ public class User {
     @Column(nullable = false)
     private boolean isVerified = false;
 
-    @Enumerated(EnumType.STRING)
-    private EProvider provider;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_providers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "provider_id")
+    )
+    private Set<Provider> providers;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -49,7 +55,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @ManyToMany
     @JoinTable(
