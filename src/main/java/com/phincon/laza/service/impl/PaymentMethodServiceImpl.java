@@ -1,6 +1,7 @@
 package com.phincon.laza.service.impl;
 
 import com.phincon.laza.exception.custom.ConflictException;
+import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
 import com.phincon.laza.model.entity.PaymentMethod;
 import com.phincon.laza.repository.PaymentMethodRepository;
 import com.phincon.laza.service.PaymentMethodService;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +23,13 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     private final PaymentMethodRepository paymentMethodRepository;
     private final PaymentMethodValidator paymentMethodValidator;
 
+    private final CloudinaryImageServiceImpl cloudinaryImageService;
+
     @Autowired
-    public PaymentMethodServiceImpl(PaymentMethodRepository paymentMethodRepository, PaymentMethodValidator paymentMethodValidator) {
+    public PaymentMethodServiceImpl(PaymentMethodRepository paymentMethodRepository, PaymentMethodValidator paymentMethodValidator, CloudinaryImageServiceImpl cloudinaryImageService) {
         this.paymentMethodRepository = paymentMethodRepository;
         this.paymentMethodValidator = paymentMethodValidator;
+        this.cloudinaryImageService = cloudinaryImageService;
     }
 
     public List<PaymentMethod> getAllPaymentMethods() {
@@ -46,6 +51,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
     public PaymentMethod createPaymentMethod(PaymentMethod paymentMethod) {
         try {
+            paymentMethod.setIsActive(false);
             return paymentMethodRepository.save(paymentMethod);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new ConflictException(e.getMessage());
@@ -53,11 +59,31 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     }
 
     public PaymentMethod updatePaymentMethod(Long id, PaymentMethod updatedPaymentMethod) {
-        Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
-        paymentMethodValidator.validatePaymentMethodNotFound(paymentMethod, id);
+        try {
+            Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
+            paymentMethodValidator.validatePaymentMethodNotFound(paymentMethod, id);
 
-        updatedPaymentMethod.setId(id);
-        return paymentMethodRepository.save(updatedPaymentMethod);
+            updatedPaymentMethod.setId(id);
+            return paymentMethodRepository.save(updatedPaymentMethod);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public PaymentMethod updatePaymentMethodLogo(Long id, MultipartFile logo) {
+        try {
+            Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
+            paymentMethodValidator.validatePaymentMethodNotFound(paymentMethod, id);
+
+            PaymentMethod updatedPaymentMethod = paymentMethod.get();
+
+            CloudinaryUploadResult uploadResult = cloudinaryImageService.upload(logo, "payment-method", GenerateLogoFileName(updatedPaymentMethod));
+            updatedPaymentMethod.setLogoUrl(uploadResult.secureUrl());
+            return updatedPaymentMethod;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void deletePaymentMethod(Long id) {
@@ -78,6 +104,10 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
         PaymentMethod paymentMethod = getPaymentMethodById(id);
         paymentMethod.setIsActive(true);
         return updatePaymentMethod(paymentMethod.getId(), paymentMethod);
+    }
+
+    private String GenerateLogoFileName(PaymentMethod paymentMethod) {
+        return String.format("%s-%s-%s-%s", paymentMethod.getName(), paymentMethod.getType(), paymentMethod.getCode(), paymentMethod.getProvider()).toLowerCase();
     }
 }
 
