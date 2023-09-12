@@ -10,6 +10,7 @@ import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.validator.AuthValidator;
 import com.phincon.laza.validator.ProviderValidator;
 import com.phincon.laza.validator.RoleValidator;
+import com.phincon.laza.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -28,6 +29,7 @@ import java.util.*;
 public class SysOAuth2UserService extends DefaultOAuth2UserService {
     private final AuthValidator authValidator;
     private final UserRepository userRepository;
+    private final UserValidator userValidator;
     private final RoleRepository roleRepository;
     private final RoleValidator roleValidator;
     private final ProviderRepository providerRepository;
@@ -49,6 +51,7 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
         User user = findUser.orElseGet(() -> register(oAuth2UserRequest, oAuth2UserInfo));
 
         findUser.ifPresent(existingUser -> {
+            userValidator.validateUserNotEqualProvider(findUser, oAuth2UserRequest.getClientRegistration().getRegistrationId());
             update(existingUser, oAuth2UserRequest, oAuth2UserInfo);
         });
 
@@ -56,12 +59,12 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User register(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        List<Provider> listProvider =  new ArrayList<>();
+        Set<Provider> listProvider =  new HashSet<>();
         Optional<Provider> findProvider = providerRepository.findByName(EProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase()));
         providerValidator.validateProviderNotFound(findProvider);
         listProvider.add(findProvider.get());
 
-        List<Role> listRole = new ArrayList<>();
+        Set<Role> listRole = new HashSet<>();
         Optional<Role> findRole = roleRepository.findByName(ERole.USER);
         roleValidator.validateRoleNotFound(findRole);
         listRole.add(findRole.get());
@@ -81,10 +84,13 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User update(User user, OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        List<Provider> listProvider =  user.getProviders();
-        Optional<Provider> findProvider = providerRepository.findByName(EProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase()));
-        providerValidator.validateProviderNotFound(findProvider);
-        listProvider.add(findProvider.get());
+        Set<Provider> listProvider =  user.getProviders();
+
+        if (user.getProviders().stream().noneMatch(provider -> provider.getName().name().equalsIgnoreCase(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
+            Optional<Provider> findProvider = providerRepository.findByName(EProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId().toUpperCase()));
+            providerValidator.validateProviderNotFound(findProvider);
+            listProvider.add(findProvider.get());
+        }
 
         user.setName(oAuth2UserInfo.getName());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
