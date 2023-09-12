@@ -71,6 +71,12 @@ public class OrderServiceImpl implements OrderService {
         try {
             User user = userService.getById(userId);
 
+            PaymentMethod paymentMethod = paymentMethodService.getPaymentMethodById(checkoutRequest.getPaymentMethodId());
+
+            if (!paymentMethod.getIsActive()) {
+                throw new NotProcessException("payment method inactive");
+            }
+
             Order order = new Order();
 
             order.setOrderStatus("requested");
@@ -97,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
             if (checkoutRequest.getPaymentMethod().equalsIgnoreCase("credit_card")) {
 
             } else {
-                PaymentMethod paymentMethod = paymentMethodService.getPaymentMethodById(checkoutRequest.getPaymentMethodId());
+
 
                 // xendet payment gateway
                 if (paymentMethod.getProvider().equalsIgnoreCase("xendit")) {
