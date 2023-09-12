@@ -45,9 +45,9 @@ public class Order {
     @JsonIgnore
     private User user;
 
-//    @JsonBackReference
-//    @OneToOne(mappedBy = "order")
-//    private Review review;
+    @JsonBackReference
+    @OneToOne(mappedBy = "order")
+    private Review review;
 
     @OneToOne(mappedBy = "order")
     private AddressOrderDetail addressOrderDetail;

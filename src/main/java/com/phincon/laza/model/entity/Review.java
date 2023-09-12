@@ -38,8 +38,8 @@ public class Review {
     @JsonManagedReference
     private Product product;
 
-//    @OneToOne
-//    @JoinColumn(name="order_id", nullable=false)
-//    @JsonIgnore
-//    private Order order;
+    @OneToOne
+    @JoinColumn(name="order_id", nullable=false)
+    @JsonIgnore
+    private Order order;
 }

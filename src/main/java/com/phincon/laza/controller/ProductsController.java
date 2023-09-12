@@ -3,6 +3,7 @@ package com.phincon.laza.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,10 +28,9 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/product")
-@RequiredArgsConstructor
 public class ProductsController {
-
-    private final ProductsService productsService;
+    @Autowired
+    private ProductsService productsService;
 
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
