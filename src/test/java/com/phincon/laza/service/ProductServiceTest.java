@@ -74,19 +74,19 @@ public class ProductServiceTest {
     @Test
     @DisplayName("get all products with page 1 size 4 should return data")
     public void getAllProductPage1Size4_data() {
-    final List<Product> productSlice = products.subList(4, 6);
-    final Pageable pageRequest = PageRequest.of(1, 4);
-    Mockito.when(repository.findAll(pageRequest))
-    .thenReturn(new PageImpl<>(productSlice, pageRequest, productSlice.size()));
+        final List<Product> productSlice = products.subList(4, 6);
+        final Pageable pageRequest = PageRequest.of(1, 4);
+        Mockito.when(repository.findAll(pageRequest))
+                .thenReturn(new PageImpl<>(productSlice, pageRequest, productSlice.size()));
 
-    final Page<Product> result = service.getAll(1, 4);
-    final List<Product> actual = result.toList();
+        final Page<Product> result = service.getAll(1, 4);
+        final List<Product> actual = result.toList();
 
-    Assertions.assertEquals(1, result.getNumber());
-    Assertions.assertEquals(4, result.getSize());
-    Assertions.assertEquals(2, result.getNumberOfElements());
-    Assertions.assertTrue(CollectionUtils.isEqualCollection(productSlice,
-    actual));
+        Assertions.assertEquals(1, result.getNumber());
+        Assertions.assertEquals(4, result.getSize());
+        Assertions.assertEquals(2, result.getNumberOfElements());
+        Assertions.assertTrue(CollectionUtils.isEqualCollection(productSlice,
+                actual));
     }
 
     @Test
