@@ -198,7 +198,7 @@ public class ProductServiceTest {
                 InputStream.nullInputStream());
         final CreateUpdateProductRequest request = new CreateUpdateProductRequest(
                 productOne.getName(), productOne.getDescription(),
-                productOne.getPrice(), mockMultipart, Arrays.asList(1l, 2l), 1l, 9999l);
+                productOne.getPrice(), mockMultipart, Arrays.asList(sz1Id, sz2Id), categoryId, brandId);
         Mockito.when(brandService.findById(Mockito.anyLong())).thenThrow(NotFoundException.class);
         Mockito.when(categoryService.getCategoryById(Mockito.anyLong())).thenReturn(category);
         Mockito.when(sizeService.getSizeById(Mockito.anyLong())).thenReturn(sz1, sz2);
