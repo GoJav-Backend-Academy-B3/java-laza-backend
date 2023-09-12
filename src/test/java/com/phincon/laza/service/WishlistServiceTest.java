@@ -1,7 +1,6 @@
 package com.phincon.laza.service;
 
 
-import com.phincon.laza.config.WishlistDataConfig;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.WishlistRequest;
 import com.phincon.laza.model.entity.*;
@@ -28,7 +27,6 @@ import static org.mockito.Mockito.lenient;
 
 
 @ExtendWith({MockitoExtension.class})
-@SpringJUnitConfig({WishlistDataConfig.class})
 public class WishlistServiceTest {
     @Mock
     private UserRepository userRepository;
