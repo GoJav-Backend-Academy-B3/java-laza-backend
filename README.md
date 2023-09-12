@@ -1,6 +1,6 @@
 # Laza
 
-Laza is a marketplace for selling fashion products. This RESTful API built using Golang, PostgreSQL, Gin, and dependency injection as modularization.
+Laza is a marketplace for selling fashion products. This RESTful API built using Java, PostgreSQL, Sprint Boot, and dependency injection as modularization.
 
 ## ⚡ Features
 
