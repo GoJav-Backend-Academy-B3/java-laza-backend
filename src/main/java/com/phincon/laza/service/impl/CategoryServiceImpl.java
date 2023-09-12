@@ -54,8 +54,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     public void delete(Long id) throws Exception {
         Optional<Category> existingCategoryOptional = categoryRepository.findById(id);
+        if (existingCategoryOptional.isPresent()) {
+            Category category = existingCategoryOptional.get();
+            category.setIsDeleted(true);
+            categoryRepository.save(category);
+            return;
+        }
         categoryValidator.validateCategoryNotFound(existingCategoryOptional);
-        categoryRepository.deleteById(id);
-    }
 
+    }
 }
