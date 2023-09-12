@@ -30,8 +30,9 @@ public class PaymentMethod {
     @NotBlank
     private String provider;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Boolean isActive;
 
-    @NotBlank
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String logoUrl;
 }

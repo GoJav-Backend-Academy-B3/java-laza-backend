@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -47,6 +48,12 @@ public class PaymentMethodController {
     @PutMapping("/management/payment-methods/{id}")
     public ResponseEntity<DataResponse<PaymentMethod>> updatePaymentMethod(@PathVariable Long id, @Valid @RequestBody PaymentMethod updatedPaymentMethod) {
         PaymentMethod updated = paymentMethodService.updatePaymentMethod(id, updatedPaymentMethod);
+        return DataResponse.ok(updated);
+    }
+
+    @PutMapping("/management/payment-methods/{id}/logo")
+    public ResponseEntity<DataResponse<PaymentMethod>> updatePaymentMethodLogo(@PathVariable Long id, @RequestParam("logo") MultipartFile logo) {
+        PaymentMethod updated = paymentMethodService.updatePaymentMethodLogo(id, logo);
         return DataResponse.ok(updated);
     }
 
