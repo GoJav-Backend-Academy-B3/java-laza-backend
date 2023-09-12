@@ -17,10 +17,10 @@ public class ProductsResponse {
     private String imageUrl;
     private Integer price;
     private LocalDateTime createdAt;
-    private Category category;
-    private Brand brand;
+    private CategoryResponse category;
+    private BrandResponse brand;
     private List<ReviewResponse> review;
-    private List<Size> sizes;
+    private List<SizeResponse> sizes;
 
     public ProductsResponse(Product product) {
         this.id = product.getId();
@@ -29,12 +29,12 @@ public class ProductsResponse {
         this.imageUrl = product.getImageUrl();
         this.price = product.getPrice();
         this.createdAt = product.getCreatedAt();
-        this.category = product.getCategory();
-        this.brand = product.getBrand();
+        this.category = new CategoryResponse(product.getCategory());
+        this.brand = BrandResponse.fromEntity(product.getBrand());
         this.review = product.getReviewList().stream().limit(2)
                 .map(ReviewResponse::new)
                 .collect(Collectors.toList());
 
-        this.sizes = product.getSizes();
+        this.sizes = product.getSizes().stream().map(SizeResponse::new).collect(Collectors.toList());
     }
 }

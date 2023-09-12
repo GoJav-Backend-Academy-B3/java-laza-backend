@@ -38,7 +38,7 @@ public class SizeController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<DataResponse<SizeResponse>> createSize(@Valid @RequestBody SizeRequest request) throws Exception {
         Size size = sizeService.save(request);
         SizeResponse result = new SizeResponse(size);

@@ -9,6 +9,8 @@ import com.phincon.laza.model.entity.Product;
 
 @Service
 public interface ProductsService {
+    Page<Product> getAll(int page, int size);
+
     Product getProductById(Long id) throws Exception;
 
     Page<Product> findProductByName(String keyword, int page, int size);
