@@ -9,13 +9,13 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "providers")
+public class Provider {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(unique = true)
     @Enumerated(EnumType.STRING)
-    private ERole name;
+    private EProvider name;
 }

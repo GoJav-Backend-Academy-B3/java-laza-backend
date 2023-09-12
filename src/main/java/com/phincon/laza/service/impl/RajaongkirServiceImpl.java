@@ -7,6 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.rajaongkir.*;
 import com.phincon.laza.model.dto.request.ROCostRequest;
+import com.phincon.laza.model.entity.City;
+import com.phincon.laza.model.entity.Province;
+import com.phincon.laza.repository.CityRepository;
+import com.phincon.laza.repository.ProvinceRepository;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +29,11 @@ public class RajaongkirServiceImpl implements RajaongkirService {
 
     @Autowired
     private RajaongkirRepository rajaongkirRepository;
+    @Autowired
+    private ProvinceRepository provinceRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
 
     @Override
     public List<ProvinceResponse> findAllProvince() {
