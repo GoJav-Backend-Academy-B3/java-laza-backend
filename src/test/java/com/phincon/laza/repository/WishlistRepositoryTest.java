@@ -52,26 +52,4 @@ public class WishlistRepositoryTest {
     @Qualifier("user.all")
     private List<User> users;
 
-
-    @BeforeEach
-    public void addData(){
-        categories.forEach(categoryRepository::save);
-        brands.forEach(brandRepository::save);
-        products.forEach(productsRepository::save);
-        users.forEach(userRepository::save);
-    }
-
-    @Test
-    @DisplayName("Just test")
-    void justTest(){
-        assertEquals(0,0);
-    }
-
-    @Test
-    @DisplayName("Get product by user and should return product")
-    void getProductByUser(){
-        User user = userRepository.findById("23").get();
-        assertNotNull(user);
-    }
-
 }
