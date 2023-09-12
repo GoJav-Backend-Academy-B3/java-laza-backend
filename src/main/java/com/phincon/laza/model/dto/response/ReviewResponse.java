@@ -16,6 +16,7 @@ public class ReviewResponse {
     private float rating;
     private LocalDateTime createdAt;
 
+
     public ReviewResponse(Review review) {
         this.id = review.getId();
         this.comment = review.getComment();
@@ -25,5 +26,5 @@ public class ReviewResponse {
         this.name = user.getName();
         this.image = user.getImageUrl();
     }
-
 }
+

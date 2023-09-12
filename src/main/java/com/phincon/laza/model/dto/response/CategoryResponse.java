@@ -13,15 +13,11 @@ import java.util.stream.Collectors;
 public class CategoryResponse {
     private Long id;
     private String category;
-//    private List<ProductsResponse> productList;
+
 
     public CategoryResponse(Category category) {
         this.id = category.getId();
         this.category = category.getCategory();
-//        this.productList = category.getProductList().stream()
-//                .map(ProductsResponse::new)
-//                .collect(Collectors.toList());
-
     }
 
 
