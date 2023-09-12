@@ -51,4 +51,4 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd ~/java-laza-backend
-          sudo docker-compose up -d
+          sudo docker compose up -d
