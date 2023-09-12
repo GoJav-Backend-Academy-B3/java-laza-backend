@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,6 @@ import com.phincon.laza.service.CategoryService;
 import com.phincon.laza.service.CloudinaryImageService;
 import com.phincon.laza.service.ProductsService;
 import com.phincon.laza.service.SizeService;
-
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import com.phincon.laza.utils.GenerateRandom;
 
