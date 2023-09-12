@@ -55,7 +55,7 @@ jobs:
 # mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
 
   deploy:
-    needs: build-docker-image
+    needs: build
     runs-on: ubuntu-latest
     steps:
     - name: SSH and deploy app
