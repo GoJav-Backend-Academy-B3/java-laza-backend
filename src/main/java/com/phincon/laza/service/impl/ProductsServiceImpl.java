@@ -3,6 +3,7 @@ package com.phincon.laza.service.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,6 @@ import com.phincon.laza.service.ProductsService;
 import com.phincon.laza.service.SizeService;
 
 import com.phincon.laza.utils.GenerateRandom;
-
 
 @Service
 public class ProductsServiceImpl implements ProductsService {
@@ -75,7 +75,11 @@ public class ProductsServiceImpl implements ProductsService {
         var sizesCompletable = findSizesByIds(createProductRequest.sizeIds())
                 .thenAcceptAsync(product::setSizes);
 
-        CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
+        try {
+            CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
+        } catch (CompletionException e) {
+            throw (NotFoundException) e.getCause();
+        }
 
         var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products",
                 GenerateRandom.token());
