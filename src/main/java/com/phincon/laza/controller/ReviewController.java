@@ -10,6 +10,7 @@ import com.phincon.laza.model.entity.Review;
 import com.phincon.laza.security.userdetails.CurrentUser;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.ReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class ReviewController {
     }
 
     @PostMapping("/{productId}")
-    public ResponseEntity<DataResponse<ReviewResponse>> createReview(@CurrentUser SysUserDetails ctx, @PathVariable Long productId, @RequestBody ReviewRequest reviewRequest) throws Exception {
+    public ResponseEntity<DataResponse<ReviewResponse>> createReview(@CurrentUser SysUserDetails ctx, @PathVariable Long productId, @Valid @RequestBody ReviewRequest reviewRequest) throws Exception {
         Review createdReview = reviewService.save(ctx.getId(), productId, reviewRequest);
         ReviewResponse reviewResponse = new ReviewResponse(createdReview);
         DataResponse<ReviewResponse> response = new DataResponse<ReviewResponse>(
