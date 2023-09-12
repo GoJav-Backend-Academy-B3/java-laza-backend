@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,43 +20,52 @@ public class WishlistDataConfig {
     @Bean
     @Qualifier("category.all")
     public List<Category> categoryAll(){
-        return Arrays.asList(new Category(0l,"categoryA",null,false)
-        );
+        List<Category> categories = new ArrayList<>();
+        categories.add(new Category(0l,"categoryA",null,false));
+        return categories;
     }
     @Bean
     @Qualifier("brand.all")
     public List<Brand> brandAll(){
-        return Arrays.asList(
-                new Brand(0l,"BrandA","logo",false, null)
-        );
+        List<Brand> brands = new ArrayList<>();
+        brands.add(new Brand(0l,"BrandA","logo",false, null));
+        return brands;
     }
     @Bean
     @Qualifier("product.all")
     public List<Product> productAll(){
-        return Arrays.asList(
-                new Product(90l, "product1", "desc1","image",10000, LocalDateTime.now(),"test", new Brand(10l,"BrandA","logo",false, null),null,new Category(1l,"categoryA",null,false),null,null,null),
-                new Product(91l, "product2", "desc2","image",10000, LocalDateTime.now(),"test", new Brand(10l,"BrandA","logo",false, null),null,new Category(1l,"categoryA",null,false),null,null,null),
-                new Product(93l, "product3", "desc1","image",10000, LocalDateTime.now(),"test",new Brand(10l,"BrandB","logo",false, null),null,new Category(1l,"categoryA",null,false),null,null,null),
-                new Product(94l, "product4", "desc2","image",10000, LocalDateTime.now(),"test",new Brand(10l,"BrandB","logo",false, null),null,new Category(1l,"categoryA",null,false),null,null,null)
-        );
+        List<User> user = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
+        user.add(new User("23", "user1", "user1", "password", "email", "image",true, null,null, null,null,null,null,null,null,null));
+        products.add(new Product(90l, "product1", "desc1","image",10000, LocalDateTime.now(),"test", new Brand(10l,"BrandA","logo",false, null),null,new Category(1l,"categoryA",null,false),user,null,null));
+        products.add(new Product(91l, "product2", "desc2","image",10000, LocalDateTime.now(),"test", new Brand(10l,"BrandA","logo",false, null),null,new Category(1l,"categoryA",null,false),user,null,null));
+        return products;
     }
 
 
     @Bean
     @Qualifier("user.all")
     public List<User> userAll(){
-        List<Product> products = Arrays.asList(
+        List<User> newUser= new ArrayList<>();
+        List<Product> products = new ArrayList<>();
+
+        newUser.add(new User("23", "user1", "user1", "password", "email", "image",true, null,null, null ,null,null,null,null,null,null));
+        products.add(new Product(90l, "product1", "desc1","image",10000, LocalDateTime.now(),"test",null,null,null,newUser,null,null));
+        products.add(new Product(91l, "product2", "desc2","image",10000, LocalDateTime.now(),"test",null,null,null,newUser,null,null));
+
+
+        return new ArrayList<>(Arrays.asList(
+                new User("23", "user1", "user1", "password", "email", "image",true, null,null,products,null,null,null,null,null,null)
+        ));
+    }
+
+    @Bean
+    @Qualifier("user.one")
+    public User userOne(){
+        List<Product> products = new ArrayList<>(Arrays.asList(
                 new Product(90l, "product1", "desc1","image",10000, LocalDateTime.now(),"test",null,null,null,null,null,null),
                 new Product(91l, "product2", "desc2","image",10000, LocalDateTime.now(),"test",null,null,null,null,null,null)
-        );
-        List<Product> products2= Arrays.asList(
-                new Product(93l, "product3", "desc1","image",10000, LocalDateTime.now(),"test",null,null,null,null,null,null),
-                new Product(94l, "product4", "desc2","image",10000, LocalDateTime.now(),"test",null,null,null,null,null,null)
-        );
-
-        return Arrays.asList(
-                new User("23", "user1", "user1", "password", "email", "image",true, null,null,products,null,null,null,null,null,null),
-                new User("24", "user2", "user2", "password", "email", "image",true, null,null,products2,null,null,null,null,null,null)
-        );
+        ));
+        return new User("23", "user1", "user1", "password", "email", "image",true, null,null,products,null,null,null,null,null,null);
     }
 }
