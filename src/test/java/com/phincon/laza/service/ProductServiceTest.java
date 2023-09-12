@@ -183,7 +183,6 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Add one product that one of the checking throws error (brand), then throw NotFoundException")
-    @Disabled("TODO: This throws CompletionException instead of NotFoundException")
     public void addOneProductCheckingFail_exception() throws Exception {
         final long brandId = 3l;
 
