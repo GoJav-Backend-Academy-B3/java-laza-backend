@@ -1,5 +1,6 @@
 package com.phincon.laza.model.dto.response;
 
+import com.phincon.laza.model.entity.Product;
 import com.phincon.laza.model.entity.Review;
 import lombok.Data;
 
@@ -37,7 +38,7 @@ public class ReviewsResponse {
         ReviewData reviewData = new ReviewData();
         reviewData.setReviews(reviewItems);
         reviewData.setTotal_reviews(totalReviews);
-        reviewData.setAverage_rating(averageRating);
+        reviewData.setAverage_rating(Math.round(averageRating * 10.0f) / 10.0f);
         this.data = reviewData;
     }
 

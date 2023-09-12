@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface ReviewService {
     List<Review> getReviewsByProductId(Long productId);
-   Review save(String userId, Long productId, ReviewRequest reviewRequest) throws Exception;
+   Review save(String userId, String orderId, Long productId, ReviewRequest reviewRequest) throws Exception;
     float calculateAverageRating(List<ReviewsResponse.ReviewItem> reviewItems);
 }
