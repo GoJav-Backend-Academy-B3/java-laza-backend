@@ -7,6 +7,8 @@ import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.ReviewResponse;
 import com.phincon.laza.model.dto.response.ReviewsResponse;
 import com.phincon.laza.model.entity.Review;
+import com.phincon.laza.security.userdetails.CurrentUser;
+import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,13 +39,13 @@ public class ReviewController {
     }
 
     @PostMapping("/{productId}/reviews")
-    public ResponseEntity<DataResponse<Review>> createReview(@AuthenticationPrincipal UserDetails ctx, @PathVariable Long productId, @RequestBody ReviewRequest reviewRequest) throws Exception {
-        Review createdReview = reviewService.save(ctx.getUsername(), productId, reviewRequest);
-
-        DataResponse<Review> response = new DataResponse<>(
+    public ResponseEntity<DataResponse<ReviewResponse>> createReview(@CurrentUser SysUserDetails ctx, @PathVariable Long productId, @RequestBody ReviewRequest reviewRequest) throws Exception {
+        Review createdReview = reviewService.save(ctx.getId(), productId, reviewRequest);
+        ReviewResponse reviewResponse = new ReviewResponse(createdReview);
+        DataResponse<ReviewResponse> response = new DataResponse<ReviewResponse>(
                 HttpStatus.CREATED.value(),
                 "Review Created Succesfully",
-                createdReview,
+                reviewResponse,
                 null
         );
         return new ResponseEntity<>(response, HttpStatus.CREATED);

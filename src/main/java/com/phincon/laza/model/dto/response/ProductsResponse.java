@@ -20,7 +20,7 @@ public class ProductsResponse {
     private CategoryResponse category;
     private BrandResponse brand;
     private List<ReviewResponse> review;
-    private List<Size> sizes;
+    private List<SizeResponse> sizes;
 
     public ProductsResponse(Product product) {
         this.id = product.getId();
@@ -35,6 +35,6 @@ public class ProductsResponse {
                 .map(ReviewResponse::new)
                 .collect(Collectors.toList());
 
-        this.sizes = product.getSizes();
+        this.sizes = product.getSizes().stream().map(SizeResponse::new).collect(Collectors.toList());
     }
 }

@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequest {
-    private String imageUrl;
 
     @NotNull(message = "product id is required")
     private Long productId;

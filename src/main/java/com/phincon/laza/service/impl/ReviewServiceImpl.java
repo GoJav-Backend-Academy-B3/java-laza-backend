@@ -28,9 +28,9 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewRepository.findReviewsByProductId(productId);
     }
 
-    public Review save(String id,Long productId, ReviewRequest reviewRequest) throws Exception {
+    public Review save(String userId,Long productId, ReviewRequest reviewRequest) throws Exception {
         Product product = productsService.getProductById(productId);
-        User user = userService.getById(id);
+        User user = userService.getById(userId);
         Review review = new Review();
         review.setComment(reviewRequest.getComment());
         review.setRating(reviewRequest.getRating());
