@@ -26,8 +26,6 @@ public class ReviewsResponse {
         private String image;
         private float rating;
         private String createdAt;
-
-        // Getter and setter methods for ReviewItem properties
     }
     @Data
     public static class ReviewData {

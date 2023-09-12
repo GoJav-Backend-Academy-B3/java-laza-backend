@@ -38,7 +38,7 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/{productId}/reviews")
+    @PostMapping("/{productId}")
     public ResponseEntity<DataResponse<ReviewResponse>> createReview(@CurrentUser SysUserDetails ctx, @PathVariable Long productId, @RequestBody ReviewRequest reviewRequest) throws Exception {
         Review createdReview = reviewService.save(ctx.getId(), productId, reviewRequest);
         ReviewResponse reviewResponse = new ReviewResponse(createdReview);
