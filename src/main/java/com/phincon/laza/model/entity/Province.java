@@ -1,6 +1,7 @@
 package com.phincon.laza.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -20,9 +21,11 @@ import java.util.List;
 public class Province {
 
     @Id
-    private String province_id;
+    private String provinceId;
     private String province;
+
     @OneToMany(mappedBy="provinces")
+    @JsonBackReference
     private List<City> cities;
 
 }

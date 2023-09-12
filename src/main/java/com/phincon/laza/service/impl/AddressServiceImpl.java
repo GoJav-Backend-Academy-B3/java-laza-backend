@@ -4,21 +4,20 @@ import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.AddressRequest;
 import com.phincon.laza.model.entity.Address;
+import com.phincon.laza.model.entity.City;
+import com.phincon.laza.model.entity.Province;
 import com.phincon.laza.model.entity.User;
 import com.phincon.laza.repository.AddressRepository;
+import com.phincon.laza.repository.CityRepository;
+import com.phincon.laza.repository.ProvinceRepository;
 import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.service.AddressService;
-import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @Transactional
@@ -31,7 +30,10 @@ public class AddressServiceImpl implements AddressService {
     private UserRepository userRepository;
 
     @Autowired
-    private RajaongkirService rajaongkirService;
+    private ProvinceRepository provinceRepository;
+
+    @Autowired
+    private CityRepository cityRepository;
 
 
     @Override
@@ -41,25 +43,24 @@ public class AddressServiceImpl implements AddressService {
         Address address = new Address();
 
         Integer addressCount = addressRepository.countByUserId(userId);
-
         boolean isPrimary = (addressCount == 0) || request.isPrimary();
 
-        rajaongkirService.existsProvince(request.getProvinceName().toLowerCase());
-        rajaongkirService.existsCity(request.getCityName().toLowerCase());
+        Province province = provinceRepository.findByProvinceIgnoreCase(request.getProvinceName()).orElseThrow(() -> new NotFoundException("Province not found"));
 
-        address.setPrimary(isPrimary);
-        address.setCityName(request.getCityName());
-        address.setProvinceName(request.getProvinceName());
-        address.setReceiverName(request.getReceiverName());
-        address.setPhoneNumber(request.getPhone());
-        address.setFullAddress(request.getFullAddress());
-        address.setUser(user);
+        City city = cityRepository.findByCityNameIgnoreCaseAndProvincesProvinceId(request.getCityName(), province.getProvinceId()).orElseThrow(() -> new NotFoundException("City not found"));
 
-        if (isPrimary) {
-            addressRepository.setAllAddressesNonPrimary(userId);
-        }
+            address.setPrimary(isPrimary);
+            address.setCity(city);
+            address.setReceiverName(request.getReceiverName());
+            address.setPhoneNumber(request.getPhone());
+            address.setFullAddress(request.getFullAddress());
+            address.setUser(user);
 
-        return addressRepository.save(address);
+            if (isPrimary) {
+                addressRepository.setAllAddressesNonPrimary(userId);
+            }
+
+            return addressRepository.save(address);
 
     }
 
@@ -86,29 +87,28 @@ public class AddressServiceImpl implements AddressService {
 
         Address address = addressRepository.findById(id).orElseThrow(() -> new NotFoundException("Address not founc"));
 
+        Province province = provinceRepository.findByProvinceIgnoreCase(request.getProvinceName()).orElseThrow(() -> new NotFoundException("Province not found"));
+
+        City city = cityRepository.findByCityNameIgnoreCaseAndProvincesProvinceId(request.getCityName(), province.getProvinceId()).orElseThrow(() -> new NotFoundException("City not found"));
 
             /* Jika optionalAddress.get().isPrimary() adalah true dan request.isPrimary() adalah false,
             jangan ubah isPrimary */
-            if (address.isPrimary() && !request.isPrimary()) {
-                throw new BadRequestException("Cannot change address primary to non primary");
-            }
+        if (address.isPrimary() && !request.isPrimary()) {
+            throw new BadRequestException("Cannot change address primary to non primary");
+        }
 
-            if (request.isPrimary()) {
-                addressRepository.setAllAddressesNonPrimary(userId);
-            }
+        if (request.isPrimary()) {
+            addressRepository.setAllAddressesNonPrimary(userId);
+        }
 
-            rajaongkirService.existsProvince(request.getProvinceName().toLowerCase());
-            rajaongkirService.existsCity(request.getCityName().toLowerCase());
+        address.setCity(city);
+        address.setPrimary(request.isPrimary());
+        address.setReceiverName(request.getReceiverName());
+        address.setPhoneNumber(request.getPhone());
+        address.setFullAddress(request.getFullAddress());
+        address.setUser(user);
 
-            address.setCityName(request.getCityName());
-            address.setProvinceName(request.getProvinceName());
-            address.setPrimary(request.isPrimary());
-            address.setReceiverName(request.getReceiverName());
-            address.setPhoneNumber(request.getPhone());
-            address.setFullAddress(request.getFullAddress());
-            address.setUser(user);
-
-            return addressRepository.save(address);
+        return addressRepository.save(address);
 
     }
 

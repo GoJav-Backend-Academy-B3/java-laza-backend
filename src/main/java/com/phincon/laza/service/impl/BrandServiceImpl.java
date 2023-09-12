@@ -45,12 +45,12 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Page<Brand> findAll(Pageable pageable) {
 
-        return brandRepository.findAll(pageable);
+        return brandRepository.findAllByIsDeletedFalse(pageable);
     }
 
     @Override
     public Brand findById(Long id) {
-        return brandRepository.findById(id).orElseThrow(() -> new NotFoundException("brand is doesn't exists"));
+        return brandRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new NotFoundException("brand is doesn't exists"));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Brand update(Long id, BrandRequest request) throws Exception {
-        Optional<Brand> optionalBrand = brandRepository.findById(id);
+        Optional<Brand> optionalBrand = brandRepository.findByIdAndIsDeletedFalse(id);
 
         if (optionalBrand.isPresent()) {
            Optional<Brand> brandExists = brandRepository.findByNameAndIsDeletedFalse(request.getName());
@@ -85,7 +85,7 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public void delete(Long id) {
-        Optional<Brand> optionalBrand = brandRepository.findById(id);
+        Optional<Brand> optionalBrand = brandRepository.findByIdAndIsDeletedFalse(id);
 
         if (optionalBrand.isPresent()) {
             Brand brand = optionalBrand.get();
