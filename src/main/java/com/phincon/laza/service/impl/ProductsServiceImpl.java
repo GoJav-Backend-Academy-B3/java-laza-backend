@@ -27,11 +27,16 @@ import com.phincon.laza.utils.GenerateRandom;
 
 @Service
 public class ProductsServiceImpl implements ProductsService {
-    @Autowired private ProductsRepository productsRepository;
-    @Autowired private BrandService brandService;
-    @Autowired private CategoryService categoryService;
-    @Autowired private SizeService sizeService;
-    @Autowired private CloudinaryImageService cloudinaryImageService;
+    @Autowired
+    private ProductsRepository productsRepository;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private SizeService sizeService;
+    @Autowired
+    private CloudinaryImageService cloudinaryImageService;
 
     @Override
     public Page<Product> getAll(int page, int size) {
@@ -49,7 +54,7 @@ public class ProductsServiceImpl implements ProductsService {
 
     @Override
     public Page<Product> findProductByName(String keyword, int page, int size) {
-       return productsRepository.findByNameContaining(keyword, PageRequest.of(page, size)); 
+        return productsRepository.findByNameContaining(keyword, PageRequest.of(page, size));
     }
 
     @Override
