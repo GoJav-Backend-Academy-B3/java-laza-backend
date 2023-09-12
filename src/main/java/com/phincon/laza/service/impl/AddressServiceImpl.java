@@ -66,13 +66,12 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<Address> findAllByUserId(String userId) {
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Id doesn't exists"));
 
-        if (user.isPresent()) {
-            return addressRepository.findAllByUserId(user.get().getId());
-        }
 
-        throw new NotFoundException("Username doesn't exists");
+        return addressRepository.findAllByUserId(user.getId());
+
+
     }
 
 
@@ -118,12 +117,6 @@ public class AddressServiceImpl implements AddressService {
         Optional<Address> optionalAddress = addressRepository.findById(id);
 
         if (optionalAddress.isPresent()) {
-            Integer count = addressRepository.countByUserId(optionalAddress.get().getUser().getId());
-
-            if (count == 1) {
-                throw new BadRequestException("Cannot delete address");
-            }
-
             if (optionalAddress.get().isPrimary()) {
                 throw new BadRequestException("Cannot delete address primary");
 
