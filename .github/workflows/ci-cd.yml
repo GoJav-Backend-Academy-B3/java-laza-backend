@@ -16,7 +16,6 @@ on:
 
 jobs:
   build:
-#    runs-on: self-hosted
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -28,6 +27,9 @@ jobs:
     - name: Build with Maven
       run: mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
 
+  build-docker-image:
+    runs-on: ubuntu-latest
+    steps:
     - name: Build & push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
@@ -42,6 +44,9 @@ jobs:
 
 # mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
 
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
     - name: SSH and deploy app
       uses: appleboy/ssh-action@master
       with:
