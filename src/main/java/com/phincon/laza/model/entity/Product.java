@@ -78,5 +78,18 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Cart> carts;
+
+    public Product(Long id, String name, String description, String imageUrl, Integer price,
+            Brand brand, List<Size> sizes, Category category) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.price = price;
+        this.brand = brand;
+        this.sizes = sizes;
+        this.category = category;
+    }
+
 }
 
