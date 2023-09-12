@@ -31,6 +31,11 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
         return paymentMethodRepository.findAll();
     }
 
+    @Override
+    public List<PaymentMethod> getAllActivePaymentMethods() {
+        return paymentMethodRepository.findAllByIsActiveIsTrue();
+    }
+
     public PaymentMethod getPaymentMethodById(Long id) {
         Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
 
@@ -64,14 +69,14 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod deactivatePaymentMethod(Long id) {
         PaymentMethod paymentMethod = getPaymentMethodById(id);
-        paymentMethod.setActive(false);
+        paymentMethod.setIsActive(false);
         return updatePaymentMethod(paymentMethod.getId(), paymentMethod);
     }
 
     @Override
     public PaymentMethod activatePaymentMethod(Long id) {
         PaymentMethod paymentMethod = getPaymentMethodById(id);
-        paymentMethod.setActive(false);
+        paymentMethod.setIsActive(true);
         return updatePaymentMethod(paymentMethod.getId(), paymentMethod);
     }
 }

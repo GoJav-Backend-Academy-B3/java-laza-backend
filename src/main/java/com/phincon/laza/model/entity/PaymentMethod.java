@@ -9,9 +9,7 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
-@ToString
+@Data
 @Table(name = "payment_methods")
 @Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -32,7 +30,7 @@ public class PaymentMethod {
     @NotBlank
     private String provider;
 
-    private boolean isActive;
+    private Boolean isActive;
 
     @NotBlank
     private String logoUrl;

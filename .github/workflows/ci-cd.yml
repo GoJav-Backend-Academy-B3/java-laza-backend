@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Java CI with Maven and Build with Docker
 
 on:
   push:
@@ -49,10 +49,6 @@ jobs:
         dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-
-#      run: sudo kill -9 `sudo lsof -t -i:8080` & sudo java -jar /home/ubuntu/actions-runner/_work/java-laza-backend/java-laza-backend/target/laza-0.0.1-SNAPSHOT.jar &
-
-# mvn clean install -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=prod'
 
   deploy:
     needs: build
