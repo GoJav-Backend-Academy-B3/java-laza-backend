@@ -11,8 +11,6 @@ name: Java CI with Maven and Build with Docker
 on:
   push:
     branches: [ "dev" ]
-  pull_request:
-    branches: [ "dev" ]
 
 jobs:
   test:
@@ -64,4 +62,8 @@ jobs:
         script: |
           cd ~/java-laza-backend
           git pull origin dev
+          sudo docker stop java-laza-backend
+          sudo docker rm java-laza-backend
+          sudo docker system prune f
+          sudo docker pull adimaspph/java-laza-backend
           sudo docker compose up -d
