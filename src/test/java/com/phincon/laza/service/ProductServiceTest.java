@@ -107,7 +107,7 @@ public class ProductServiceTest {
         Assertions.assertTrue(CollectionUtils.isEqualCollection(productSlice, actual));
 
         Mockito.verify(repository, Mockito.times(1))
-                .findByNameContaining(keyword, pageRequest);
+                .findByNameContaining(Mockito.eq(keyword), Mockito.eq(pageRequest));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class ProductServiceTest {
         final Product actual = service.getProductById(id);
 
         Assertions.assertEquals(expected, actual);
-        Mockito.verify(repository, Mockito.times(1)).findById(id);
+        Mockito.verify(repository, Mockito.times(1)).findById(Mockito.eq(id));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class ProductServiceTest {
             service.getProductById(id);
         });
 
-        Mockito.verify(repository, Mockito.times(1)).findById(id);
+        Mockito.verify(repository, Mockito.times(1)).findById(Mockito.eq(id));
     }
 
     @Test
@@ -213,10 +213,10 @@ public class ProductServiceTest {
             service.create(request);
         });
 
-        Mockito.verify(categoryService, Mockito.times(1)).getCategoryById(categoryId);
-        Mockito.verify(brandService, Mockito.times(1)).findById(brandId);
-        Mockito.verify(sizeService, Mockito.times(1)).getSizeById(sz1Id);
-        Mockito.verify(sizeService, Mockito.times(1)).getSizeById(sz2Id);
+        Mockito.verify(categoryService, Mockito.times(1)).getCategoryById(Mockito.eq(categoryId));
+        Mockito.verify(brandService, Mockito.times(1)).findById(Mockito.eq(brandId));
+        Mockito.verify(sizeService, Mockito.times(1)).getSizeById(Mockito.eq(sz1Id));
+        Mockito.verify(sizeService, Mockito.times(1)).getSizeById(Mockito.eq(sz2Id));
 
         // verify that these mocks are not touched by the service.
         Mockito.verifyNoInteractions(cloudinaryImageService, repository);
@@ -271,10 +271,10 @@ public class ProductServiceTest {
         Assertions.assertEquals(updated.getCategory(), result.getCategory());
         Assertions.assertTrue(CollectionUtils.isEqualCollection(updated.getSizes(), result.getSizes()));
 
-        Mockito.verify(brandService, Mockito.times(1)).findById(brandId);
-        Mockito.verify(categoryService, Mockito.times(1)).getCategoryById(categoryId);
-        Mockito.verify(sizeService, Mockito.times(1)).getSizeById(sz1Id);
-        Mockito.verify(sizeService, Mockito.times(1)).getSizeById(sz2Id);
+        Mockito.verify(brandService, Mockito.times(1)).findById(Mockito.eq(brandId));
+        Mockito.verify(categoryService, Mockito.times(1)).getCategoryById(Mockito.eq(categoryId));
+        Mockito.verify(sizeService, Mockito.times(1)).getSizeById(Mockito.eq(sz1Id));
+        Mockito.verify(sizeService, Mockito.times(1)).getSizeById(Mockito.eq(sz2Id));
         Mockito.verify(cloudinaryImageService, Mockito.times(1)).delete(Mockito.anyString());
         Mockito.verify(cloudinaryImageService, Mockito.times(1)).upload(Mockito.any(byte[].class),
                 Mockito.eq("products"), Mockito.anyString());
