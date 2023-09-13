@@ -26,7 +26,7 @@ public class CartController {
     private CartService cartService;
 
     @PostMapping("/carts")
-    public ResponseEntity<DataResponse<CartResponse>> saveCart(@CurrentUser SysUserDetails ctx, @Valid @RequestBody CartRequest request)throws  Exception{
+    public ResponseEntity<?> saveCart(@CurrentUser SysUserDetails ctx, @Valid @RequestBody CartRequest request)throws  Exception{
         Cart cart = cartService.saveCart(ctx.getId(),request);
         CartResponse cartResponse = new CartResponse(cart);
         DataResponse<CartResponse> response = new DataResponse<>(
@@ -39,7 +39,7 @@ public class CartController {
     }
 
     @PatchMapping("/carts/{id}")
-    public ResponseEntity<DataResponse<CartResponse>> updateCart(@PathVariable(value = "id") long id) throws  Exception{
+    public ResponseEntity<?> updateCart(@PathVariable(value = "id") long id) throws  Exception{
         Cart cart = cartService.updateCart(id);
         CartResponse cartResponse = new CartResponse(cart);
         DataResponse<CartResponse> response = new DataResponse<>(
@@ -63,7 +63,7 @@ public class CartController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @DeleteMapping("/carts")
+    @DeleteMapping("/carts/all")
     public ResponseEntity<DataResponse<String>> deleteCartByUser(@CurrentUser SysUserDetails ctx){
         cartService.deleteCartByUser(ctx.getId());
         DataResponse<String> response = new DataResponse<>(
