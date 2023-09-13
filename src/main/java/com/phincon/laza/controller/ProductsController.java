@@ -29,10 +29,9 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/product")
+@RequiredArgsConstructor
 public class ProductsController {
-    @Autowired
-    private ProductsService productsService;
-
+    private final ProductsService productsService;
 
     @GetMapping
     public ResponseEntity<DataResponse<List<OverviewProductResponse>>> getAll(
