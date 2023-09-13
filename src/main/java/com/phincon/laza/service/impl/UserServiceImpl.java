@@ -9,6 +9,7 @@ import com.phincon.laza.repository.ProviderRepository;
 import com.phincon.laza.repository.RoleRepository;
 import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.service.UserService;
+import com.phincon.laza.validator.FileValidator;
 import com.phincon.laza.validator.ProviderValidator;
 import com.phincon.laza.validator.RoleValidator;
 import com.phincon.laza.validator.UserValidator;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final RoleValidator roleValidator;
     private final ProviderRepository providerRepository;
     private final ProviderValidator providerValidator;
+    private final FileValidator fileValidator;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryImageServiceImpl cloudinaryImageService;
 
@@ -76,6 +78,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (Objects.nonNull(request.getImage())) {
+            fileValidator.validateMultipartFile(request.getImage());
             CloudinaryUploadResult image = cloudinaryImageService.upload(request.getImage(), "user");
             findUser.get().setImageUrl(image.secureUrl());
         }
