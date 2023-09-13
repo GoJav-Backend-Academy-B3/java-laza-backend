@@ -7,6 +7,7 @@ import com.phincon.laza.model.entity.Category;
 import com.phincon.laza.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/category")
-@RequiredArgsConstructor
 public class CategoryController {
-    private final CategoryService categoryService;
+    @Autowired
+    private CategoryService categoryService;
     @GetMapping
     public ResponseEntity<DataResponse<List<CategoryResponse>>> getAllCategory() {
         List<Category> categories = categoryService.getAllCategory();
@@ -43,7 +44,7 @@ public class CategoryController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<DataResponse<CategoryResponse>> createCategory(@Valid @RequestBody CategoryRequest request) throws Exception {
         Category category = categoryService.save(request);
         CategoryResponse result = new CategoryResponse(category);

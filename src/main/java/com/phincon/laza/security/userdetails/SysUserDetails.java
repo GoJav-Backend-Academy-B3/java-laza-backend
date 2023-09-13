@@ -6,16 +6,18 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.*;
 
 @Data
 @NoArgsConstructor
-public class SysUserDetails implements UserDetails {
+public class SysUserDetails implements OAuth2User, UserDetails {
     private String id;
     private String username;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
+    private Map<String, Object> attributes;
 
     public SysUserDetails(String id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -29,6 +31,12 @@ public class SysUserDetails implements UserDetails {
         user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName().toString())));
 
         return new SysUserDetails(user.getId(), user.getUsername(), user.getPassword(), authorities);
+    }
+
+    public static SysUserDetails create(User user, Map<String, Object> attributes) {
+        SysUserDetails sysUserDetails = SysUserDetails.create(user);
+        sysUserDetails.setAttributes(attributes);
+        return sysUserDetails;
     }
 
     @Override
@@ -64,5 +72,15 @@ public class SysUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public String getName() {
+        return String.valueOf(id);
     }
 }

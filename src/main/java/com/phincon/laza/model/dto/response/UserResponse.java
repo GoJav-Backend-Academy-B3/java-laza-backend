@@ -9,22 +9,23 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserResponse {
     private String id;
-    private String fullName;
+    private String name;
     private String username;
     private String email;
     private String imageUrl;
     private boolean isVerified;
-    private List<Role> roles;
+    private Set<Role> roles;
 
     public UserResponse (User user) {
         this.id = user.getId();
-        this.fullName = user.getFullName();
+        this.name = user.getName();
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.imageUrl = user.getImageUrl();

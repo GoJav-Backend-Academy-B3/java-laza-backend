@@ -3,7 +3,12 @@ package com.phincon.laza.service.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
@@ -18,26 +23,38 @@ import com.phincon.laza.service.CloudinaryImageService;
 import com.phincon.laza.service.ProductsService;
 import com.phincon.laza.service.SizeService;
 
-import lombok.RequiredArgsConstructor;
-
 import com.phincon.laza.utils.GenerateRandom;
 
-
 @Service
-@RequiredArgsConstructor
 public class ProductsServiceImpl implements ProductsService {
-    private final ProductsRepository productsRepository;
-    private final BrandService brandService;
-    private final CategoryService categoryService;
-    private final SizeService sizeService;
-    private final CloudinaryImageService cloudinaryImageService;
+    @Autowired
+    private ProductsRepository productsRepository;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private SizeService sizeService;
+    @Autowired
+    private CloudinaryImageService cloudinaryImageService;
 
+    @Override
+    public Page<Product> getAll(int page, int size) {
+        return productsRepository.findAll(PageRequest.of(page, size));
+    }
+
+    @Override
     public Product getProductById(Long id) throws Exception {
         Optional<Product> productOptional = productsRepository.findById(id);
         if (productOptional.isEmpty()) {
             throw new NotFoundException("Product not found");
         }
         return productOptional.get();
+    }
+
+    @Override
+    public Page<Product> findProductByName(String keyword, int page, int size) {
+        return productsRepository.findByNameContaining(keyword, PageRequest.of(page, size));
     }
 
     @Override
@@ -58,7 +75,11 @@ public class ProductsServiceImpl implements ProductsService {
         var sizesCompletable = findSizesByIds(createProductRequest.sizeIds())
                 .thenAcceptAsync(product::setSizes);
 
-        CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
+        try {
+            CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
+        } catch (CompletionException e) {
+            throw (NotFoundException) e.getCause();
+        }
 
         var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products",
                 GenerateRandom.token());
@@ -134,4 +155,5 @@ public class ProductsServiceImpl implements ProductsService {
             }).collect(Collectors.toList());
         });
     }
+
 }

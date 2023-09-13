@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,24 +33,25 @@ public class CartServiceImpl implements CartService {
     private ProductsService productsService;
 
     @Override
-    public Cart saveCart(String userName,CartRequest cartRequest) throws Exception{
-        Product product = productsService.getProductById(cartRequest.getProductId());
-        Size size = sizeService.getSizeById(cartRequest.getSizeId());
-        User user = userService.getById(userName);
-        Cart cart = new Cart();
-        cart.setUser(user);
-        cart.setProduct(product);
-        cart.setSize(size);
+    public Cart saveCart(String userId,CartRequest cartRequest) throws Exception{
 
-        Cart cartFind = cartRepository.findByUserIdAndProductIdAndSizeId(
-                cart.getUser().getId(),
+        Optional<Cart> cartFind = cartRepository.findByUserIdAndProductIdAndSizeId(
+                userId,
                 cartRequest.getProductId(),
                 cartRequest.getSizeId());
 
-        cart.setId((cartFind==null) ? 0 : cartFind.getId());
-        cart.setQuantity((cartFind==null ? 0 : cartFind.getQuantity()) +1);
-        Cart result = cartRepository.save(cart);
-        return cartRepository.findById(result.getId()).get();
+        if (cartFind.isPresent()){
+            Cart cart = cartFind.get();
+            cart.setQuantity(cart.getQuantity() + 1);
+            return cartRepository.save(cart);
+        }
+
+        Product product = productsService.getProductById(cartRequest.getProductId());
+        Size size = sizeService.getSizeById(cartRequest.getSizeId());
+        User user = userService.getById(userId);
+
+
+        return cartRepository.save(new Cart(0l, user, product, size,1));
     }
 
     @Override
@@ -68,8 +70,28 @@ public class CartServiceImpl implements CartService {
         }
 
         cartRepository.updateQuantityById(getCart.get().getQuantity()-1, getCart.get().getId());
-        Cart result = cartRepository.findById(getCart.get().getId()).get();
-        result.setQuantity(result.getQuantity()-1);
-        return result;
+        Optional<Cart> result = cartRepository.findById(getCart.get().getId());
+        result.get().setQuantity(result.get().getQuantity()-1);
+        return result.get();
+    }
+
+    @Override
+    public void deleteCart(Long cartId) throws Exception {
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        if (!cart.isPresent()){
+            throw new NotFoundException("Cart not found");
+        }
+        cartRepository.deleteById(cartId);
+    }
+
+    @Override
+    public void deleteCartByUser(String userId) {
+        cartRepository.deleteByUserId(userId);
+    }
+
+    @Override
+    public List<Cart> findCartByUser(String userId) {
+        List<Cart> carts = cartRepository.findByUser_Id(userId);
+        return carts;
     }
 }

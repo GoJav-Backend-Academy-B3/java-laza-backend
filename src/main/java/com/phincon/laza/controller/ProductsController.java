@@ -1,12 +1,9 @@
 package com.phincon.laza.controller;
 
-import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
-import com.phincon.laza.model.dto.response.CreateUpdateProductResponse;
-import com.phincon.laza.model.dto.response.DataResponse;
-import com.phincon.laza.model.dto.response.ProductsResponse;
-import com.phincon.laza.model.entity.Product;
-import com.phincon.laza.service.ProductsService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,20 +13,32 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
+import com.phincon.laza.model.dto.response.CreateUpdateProductResponse;
+import com.phincon.laza.model.dto.response.DataResponse;
+import com.phincon.laza.model.dto.response.OverviewProductResponse;
+import com.phincon.laza.model.dto.response.PaginationMeta;
+import com.phincon.laza.model.dto.response.ProductsResponse;
+import com.phincon.laza.model.entity.Product;
+import com.phincon.laza.service.ProductsService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/product")
-@RequiredArgsConstructor
 public class ProductsController {
-
-    private final ProductsService productsService;
+    @Autowired
+    private ProductsService productsService;
 
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
         Product product = productsService.getProductById(id);
         ProductsResponse result = new ProductsResponse(product);
-        DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.OK.value(), "Success", result, null);
+        DataResponse<ProductsResponse> dataResponse = new DataResponse<ProductsResponse>(HttpStatus.OK.value(),
+                "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
@@ -49,7 +58,8 @@ public class ProductsController {
             @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.update(id, request);
         CreateUpdateProductResponse result = CreateUpdateProductResponse.fromProductEntity(product);
-        DataResponse<CreateUpdateProductResponse> dataResponse = new DataResponse<CreateUpdateProductResponse>(HttpStatus.OK.value(),
+        DataResponse<CreateUpdateProductResponse> dataResponse = new DataResponse<CreateUpdateProductResponse>(
+                HttpStatus.OK.value(),
                 "Success", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
