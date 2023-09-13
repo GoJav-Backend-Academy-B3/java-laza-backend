@@ -57,8 +57,10 @@ public class ProductDataConfig {
     @Bean
     @Qualifier("product.one")
     public Product productOne() {
-        return new Product(99l, "New product 99", "Product 99 description", "image_url", 10, brandInit().get(2),
+        var p = new Product(99l, "New product 99", "Product 99 description", "image_url", 10, brandInit().get(2),
                 Arrays.asList(sizeInit().get(0), sizeInit().get(1)), categoryInit().get(0));
+        p.setReviewList(Arrays.asList());
+        return p;
     }
 
     @Bean
