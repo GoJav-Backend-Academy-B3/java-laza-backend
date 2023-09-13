@@ -10,11 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RajaongkirService {
-    public List<ProvinceResponse> findAllProvince();
-    public List<CityResponse> findAllCityByProvinceId(String provinceId);
-    public void existsProvince(String provinceName);
-    public void existsCity(String cityName) ;
-    public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception;
 
+    public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception;
 
 }

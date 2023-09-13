@@ -45,7 +45,7 @@ public class CartServiceTesting {
 
 
     @BeforeEach
-    void setData() throws Exception{
+    void init() throws Exception{
 
         this.users.add(new User("23", "user1", "user1", "password", "email", "image",true, null,null, null,null,null,null,null,null,null));
         this.users.add(new User("24", "user2", "user2", "password", "email", "image",true, null,null, null,null,null,null,null,null,null));
@@ -74,7 +74,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] CreateCart (add an existing product cart) should return cart")
-    void createCart() throws Exception{
+    void whenCreateCart_thenCorrectResponse() throws Exception{
         Cart addCart = cartDataTest.get(0);
         addCart.setQuantity(2);
         Optional<Cart> cartOptional = Optional.of(addCart);
@@ -93,7 +93,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] CreateCart (adding products that are not yet in the cart) should return cart")
-    void createCartNoCart() throws Exception{
+    void whenCreateCart_thenThrowException() throws Exception{
         // "[CartService] CreateCart (adding products that are not yet in the cart) should return cart"
         CartRequest requestBodyI = new CartRequest(products.get(2).getId(), sizes.get(1).getId());
         lenient().when(cartRepository.findByUserIdAndProductIdAndSizeId(users.get(0).getId(),
@@ -111,7 +111,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] CreateCart (Product not found) should throw Not Found Error")
-    void createCartNotFoundProduct() throws Exception{
+    void whenCreateCart_thenThrowExceptionProductNotFound() throws Exception{
         CartRequest requestBodyI = new CartRequest(100l, sizes.get(1).getId());
         lenient().when(cartRepository.findByUserIdAndProductIdAndSizeId(users.get(0).getId(),
                         requestBodyI.getProductId(), requestBodyI.getSizeId()))
@@ -126,7 +126,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] CreateCart (Product not found) should throw Not Found Error")
-    void createCartNotFoundSize() throws Exception{
+    void whenCreateCart_thenThrowExceptionSizeNotFound() throws Exception{
         CartRequest requestBodyI = new CartRequest(products.get(2).getId(), 100l);
         lenient().when(sizeService.getSizeById(requestBodyI.getSizeId()))
                 .thenThrow(new NotFoundException("Size not found"));
@@ -139,7 +139,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] updateCart (Cart not found) should throw Not Found Error")
-    void updateCartNotFound(){
+    void whenUpdateCart_thenThrowException(){
         lenient().when(cartRepository.findById(10l)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, ()->{
             cartService.updateCart(10l);
@@ -148,7 +148,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] updateCart (The number of products in the cart is 1) should return cart")
-    void updateCartOneQuantity() throws Exception{
+    void whenUpdateCart_thenCorrectResponse() throws Exception{
         long cartId = 1l;
         lenient().when(cartRepository.findById(cartId)).thenReturn(Optional.of(cartDataTest.get(0)));
         doNothing().when(cartRepository).deleteById(cartId);
@@ -159,7 +159,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] updateCart (The number of products in the cart is more than 1) should return cart")
-    void updateCartMoreThanOne() throws Exception{
+    void whenUpdateCart_thenCorrectResponseMoreThanOne() throws Exception{
         long cartId = cartDataTest.get(1).getId();
         Cart cartUpdate = new Cart(2l, users.get(0), products.get(1),sizes.get(1), 2);
 
@@ -175,7 +175,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] deleteCart by invalid Cart Id should return throw NotFoundException")
-    void deleteCartByInvalidId(){
+    void whenDeleteCart_thenThrowException(){
         long cartId =999l;
         lenient().when(cartRepository.findById(cartId)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, ()->{
@@ -185,7 +185,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] deleteCart by Cart Id")
-    void deleteCartById() throws Exception{
+    void whenDeleteCart_thenCorrectResponse() throws Exception{
         long cartId =cartDataTest.get(0).getId();
         lenient().when(cartRepository.findById(cartId)).thenReturn(Optional.of(cartDataTest.get(0)));
         cartService.deleteCart(cartId);
@@ -193,7 +193,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] deleteCartByUser by User Id")
-    void deleteCartByUserId() throws Exception{
+    void whenDeleteCartByUserId_thenCorrectResponse() throws Exception{
        String userId = users.get(0).getId();
        doNothing().when(cartRepository).deleteByUserId(userId);
        cartService.deleteCartByUser(userId);
@@ -201,7 +201,7 @@ public class CartServiceTesting {
 
     @Test
     @DisplayName("[CartService] findCartByUser by User Id")
-    void findCartByUser() throws Exception{
+    void whenFindCartByUser_thenCorrectResponse() throws Exception{
         String userId = users.get(0).getId();
         lenient().when(cartRepository.findByUser_Id(userId)).thenReturn(cartDataTest);
         cartService.findCartByUser(userId);
