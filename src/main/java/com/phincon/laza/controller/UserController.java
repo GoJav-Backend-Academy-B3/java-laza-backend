@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/users/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<DataResponse<UserResponse>> update(@CurrentUser SysUserDetails ctx, @Valid @ModelAttribute UserRequest request) throws Exception {
+    public ResponseEntity<DataResponse<UserResponse>> update(@CurrentUser SysUserDetails ctx, @Valid @ModelAttribute("request") UserRequest request) throws Exception {
         User user = userService.update(ctx.getId(), request);
         UserResponse result = new UserResponse(user);
         DataResponse<UserResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), result, null);
