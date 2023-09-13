@@ -28,7 +28,7 @@ public class ImageUploadInterceptor implements HandlerInterceptor {
                 || contentType.equalsIgnoreCase("image/webp")) {
             return true;
         } else {
-            String format = "Supported files are: image/png, image/jpeg, image/webp. But it's %s you dumbass.";
+            String format = "Supported files are: image/png, image/jpeg, image/webp. But provided %s.";
             throw new BadRequestException(String.format(format, contentType));
         }
     }
