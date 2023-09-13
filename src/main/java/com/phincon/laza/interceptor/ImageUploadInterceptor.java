@@ -13,8 +13,9 @@ public class ImageUploadInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        
-        // allow request to passthrough this interceptor if the request is neither POST or PUT 
+
+        // allow request to passthrough this interceptor if the request is neither POST
+        // or PUT
         if (!request.getMethod().equalsIgnoreCase("POST") && !request.getMethod().equalsIgnoreCase("PUT")) {
             return true;
         }
