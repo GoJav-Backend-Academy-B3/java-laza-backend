@@ -63,11 +63,8 @@ public class ProductControllerTest {
         assert (products != null);
         var page = new PageImpl<>(products, PageRequest.of(0, 10), products.size());
         Mockito.when(service.getAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(page);
-
         var action = mockmvc.perform(MockMvcRequestBuilders.get("/product"));
-
-        action.andExpectAll(
-                MockMvcResultMatchers.status().isOk(),
+        action.andExpectAll(MockMvcResultMatchers.status().isOk(),
                 MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON),
                 MockMvcResultMatchers.jsonPath("$.metadata.page", Matchers.equalTo(0)),
                 MockMvcResultMatchers.jsonPath("$.metadata.count", Matchers.equalTo(products.size())),
