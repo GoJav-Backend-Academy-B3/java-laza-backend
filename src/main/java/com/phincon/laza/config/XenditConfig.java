@@ -1,15 +1,19 @@
 package com.phincon.laza.config;
 
 import com.xendit.XenditClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class XenditConfig {
+
+    @Value("${xendit.api.key.secret}")
+    private String XENDIT_API_KEY;
     @Bean
     public XenditClient xenditClient() {
         return new XenditClient.Builder()
-                .setApikey("xnd_development_ARKvHGZFnj1BlGLgUn6jVFJauA6MmY6dbcwxUOYU8s8fyhbQ5zyaszBcRo17j0cf")
+                .setApikey(XENDIT_API_KEY)
                 .build();
     }
 

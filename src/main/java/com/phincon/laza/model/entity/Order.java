@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -23,9 +22,9 @@ public class Order {
 
     private Integer amount;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     private LocalDateTime paidAt;
 
@@ -62,12 +61,12 @@ public class Order {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new Date();
-        updatedAt = createdAt;
+        this.setCreatedAt(LocalDateTime.now());
+        this.setUpdatedAt(this.getCreatedAt());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = new Date();
+        updatedAt = LocalDateTime.now();
     }
 }

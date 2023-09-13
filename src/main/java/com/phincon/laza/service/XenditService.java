@@ -9,4 +9,5 @@ public interface XenditService {
     public PaymentDetail chargeEwallet(PaymentMethod paymentMethod, Order order, String callbackUrl) throws XenditException;
 
     public PaymentDetail chargeVirtualAccount(PaymentMethod paymentMethod, Order order) throws XenditException;
+
 }
