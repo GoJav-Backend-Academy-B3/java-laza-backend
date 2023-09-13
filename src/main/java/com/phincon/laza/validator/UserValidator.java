@@ -26,19 +26,19 @@ public class UserValidator {
         }
     }
 
-    public void validateUsernameIsExists(Optional<User> findByUsername) {
+    public void validateUserUsernameIsExists(Optional<User> findByUsername) {
         if (findByUsername.isPresent()) {
             throw new ConflictException("Username has been exists");
         }
     }
 
-    public void validateEmailIsExists(Optional<User> findByEmail) {
+    public void validateUserEmailIsExists(Optional<User> findByEmail) {
         if (findByEmail.isPresent()) {
             throw new ConflictException("Email has been exists");
         }
     }
 
-    public void validateUserNotIsVerfied(Optional<User> findUser) {
+    public void validateUserNotIsVerified(Optional<User> findUser) {
         if (Objects.isNull(findUser.get().isVerified()) || !findUser.get().isVerified()) {
             throw new BadRequestException("User not verification account!, please confirm account");
         }

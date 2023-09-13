@@ -66,6 +66,7 @@ public class SecurityConfiguration {
             "/provinces",
             "/cities",
             "/costs",
+            "/callback/**",
             "/existsProvince/**",
             "/existsCity/**",
             "/brands/**",
