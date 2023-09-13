@@ -19,10 +19,11 @@ public class ImageUploadInterceptor implements HandlerInterceptor {
         if (!request.getMethod().equalsIgnoreCase("POST") && !request.getMethod().equalsIgnoreCase("PUT")) {
             return true;
         }
-        var filePart = request.getPart("image_file");
-        String contentType = filePart.getContentType();
-        long size = filePart.getSize();
-        log.info("From {} got a file with Content-Type: {} and size: {}", request.getRemoteAddr(), contentType, size);
+        var parts = request.getPart("image_file");
+        String contentType = parts.getContentType();
+        long size = parts.getSize();
+        log.info("From {} got a file with Content-Type: {} and size: {}", request.getRemoteAddr(), contentType,
+                size);
         if (contentType.equalsIgnoreCase("image/png") || contentType.equalsIgnoreCase("image/jpeg")
                 || contentType.equalsIgnoreCase("image/webp")) {
             return true;
