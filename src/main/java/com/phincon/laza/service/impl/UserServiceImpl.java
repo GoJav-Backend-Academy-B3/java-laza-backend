@@ -65,13 +65,13 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
         if (!findUser.get().getUsername().equals(findByUsername.get().getUsername())) {
-            userValidator.validateUsernameIsExists(findByUsername);
+            userValidator.validateUserUsernameIsExists(findByUsername);
             findUser.get().setUsername(request.getUsername());
         }
 
         Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
         if (!findUser.get().getEmail().equals(findByEmail.get().getEmail())) {
-            userValidator.validateEmailIsExists(findByEmail);
+            userValidator.validateUserEmailIsExists(findByEmail);
 
             findUser.get().setEmail(request.getEmail());
             findUser.get().setVerified(false);

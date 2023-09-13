@@ -67,10 +67,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User register(RegisterRequest request) throws Exception {
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
-        userValidator.validateUsernameIsExists(findByUsername);
+        userValidator.validateUserUsernameIsExists(findByUsername);
 
         Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
-        userValidator.validateEmailIsExists(findByEmail);
+        userValidator.validateUserEmailIsExists(findByEmail);
 
         Set<Provider> listProvider =  new HashSet<>();
         Optional<Provider> findProvider = providerRepository.findByName(EProvider.LOCAL);
