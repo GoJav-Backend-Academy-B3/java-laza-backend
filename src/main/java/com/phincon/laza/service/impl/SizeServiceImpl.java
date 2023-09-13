@@ -33,12 +33,6 @@ public class SizeServiceImpl implements SizeService {
         return sizeOptional.get();
     }
     @Override
-    public Size getSizeByName(String size) throws Exception {
-        Optional<Size> categori = sizeRepository.findBySize(size);
-        sizeValidator.validateSizeNotFound(categori);
-        return categori.get();
-    }
-    @Override
     public Size save(SizeRequest sizeRequest) throws Exception {
         String sizeName = sizeRequest.getSize();
         sizeValidator.validateSizeAlreadyExists(sizeName);

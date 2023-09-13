@@ -38,12 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryValidator.validateCategoryNotFound(categories);
         return categories.get();
     }
-    @Override
-    public Category getCategoryByName(String category) throws Exception {
-        Optional<Category> categori = categoryRepository.findByCategory(category);
-        categoryValidator.validateCategoryNotFound(categori);
-        return categori.get();
-    }
+
     @Override
     public Category update(Long id, CategoryRequest updatedCategory) throws Exception {
         Optional<Category> existingCategoryOptional = categoryRepository.findById(id);
