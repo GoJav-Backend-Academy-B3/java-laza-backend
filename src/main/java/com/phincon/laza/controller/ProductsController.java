@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,9 +29,21 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/product")
+@RequiredArgsConstructor
 public class ProductsController {
-    @Autowired
-    private ProductsService productsService;
+    private final ProductsService productsService;
+
+    @GetMapping
+    public ResponseEntity<DataResponse<List<OverviewProductResponse>>> getAll(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        var productPage = productsService.getAll(page, size);
+        PaginationMeta meta = new PaginationMeta(page, size, productPage.getNumberOfElements());
+        var data = productPage.get()
+                .map(OverviewProductResponse::fromProductEntity)
+                .collect(Collectors.toList());
+        return DataResponse.ok(data, meta);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
@@ -74,5 +87,11 @@ public class ProductsController {
                 .map(OverviewProductResponse::fromProductEntity)
                 .collect(Collectors.toList());
         return DataResponse.ok(data, meta);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) throws Exception {
+        productsService.delete(id);
+        return DataResponse.ok(null);
     }
 }
