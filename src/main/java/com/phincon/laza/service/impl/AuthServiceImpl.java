@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
         userValidator.validateUserNotFound(findByUsername);
         userValidator.validateUserBadProviderLocal(findByUsername);
         userValidator.validateUserBadCredentials(findByUsername, request.getPassword());
-        userValidator.validateUserNotIsVerfied(findByUsername);
+        userValidator.validateUserNotIsVerified(findByUsername);
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
@@ -67,10 +67,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User register(RegisterRequest request) throws Exception {
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
-        userValidator.validateUsernameIsExists(findByUsername);
+        userValidator.validateUserUsernameIsExists(findByUsername);
 
         Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
-        userValidator.validateEmailIsExists(findByEmail);
+        userValidator.validateUserEmailIsExists(findByEmail);
 
         Set<Provider> listProvider =  new HashSet<>();
         Optional<Provider> findProvider = providerRepository.findByName(EProvider.LOCAL);
@@ -135,17 +135,20 @@ public class AuthServiceImpl implements AuthService {
         findToken.get().setConfirmedAt(LocalDateTime.now());
         verificationTokenRepository.save(findToken.get());
 
-        findToken.get().getUser().setVerified(true);
-        userRepository.save(findToken.get().getUser());
+        Optional<User> findUser = userRepository.findById(findToken.get().getUser().getId());
+        userValidator.validateUserNotFound(findUser);
 
-        log.info("User id={} success verification token", findToken.get().getUser().getId());
+        findUser.get().setVerified(true);
+        userRepository.save(findUser.get());
+
+        log.info("User id={} success verification token", findUser.get().getId());
     }
 
     @Override
     public void forgotPassword(RecoveryRequest request) throws Exception {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         String code = GenerateRandom.code();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
@@ -164,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
     public void forgotPasswordConfirm(VerificationCodeRequest request) {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         Optional<VerificationCode> findCode = verificationCodeRepository.findByCodeAndUserId(request.getCode(), findUser.get().getId());
         verificationCodeValidator.validateVerificationCodeNotFound(findCode);
@@ -180,7 +183,7 @@ public class AuthServiceImpl implements AuthService {
     public void resetPassword(ResetPasswordRequest request) {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         Optional<VerificationCode> findCode = verificationCodeRepository.findByCodeAndUserId(request.getCode(), findUser.get().getId());
         verificationCodeValidator.validateVerificationCodeNotFound(findCode);
@@ -220,7 +223,7 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse token(UserDetails request) {
         Optional<User> findUser = userRepository.findByUsername(request.getUsername());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         String accessToken = jwtService.generateToken(request);
         String refreshToken = jwtService.generateRefreshToken(request);
