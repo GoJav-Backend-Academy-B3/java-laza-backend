@@ -20,6 +20,7 @@ public class ImageUploadInterceptor implements HandlerInterceptor {
             return true;
         }
         var parts = request.getPart("image_file");
+        if (parts == null) return true;
         String contentType = parts.getContentType();
         long size = parts.getSize();
         log.info("From {} got a file with Content-Type: {} and size: {}", request.getRemoteAddr(), contentType,
