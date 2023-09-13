@@ -60,6 +60,8 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder(Order order) {
         try {
             order.setId(generateOrderId());
+            order.setCreatedAt(LocalDateTime.now());
+            order.setUpdatedAt(order.getCreatedAt());
             return orderRepository.save(order);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new ConflictException(e.getMessage());

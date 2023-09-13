@@ -1,6 +1,5 @@
 package com.phincon.laza.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -24,9 +22,9 @@ public class Order {
 
     private Integer amount;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     private LocalDateTime paidAt;
 
@@ -45,9 +43,9 @@ public class Order {
     @JsonIgnore
     private User user;
 
-//    @JsonBackReference
-//    @OneToOne(mappedBy = "order")
-//    private Review review;
+    @JsonIgnore
+    @OneToOne(mappedBy = "order")
+    private Review review;
 
     @OneToOne(mappedBy = "order")
     private AddressOrderDetail addressOrderDetail;
@@ -63,12 +61,12 @@ public class Order {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new Date();
-        updatedAt = createdAt;
+        this.setCreatedAt(LocalDateTime.now());
+        this.setUpdatedAt(this.getCreatedAt());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = new Date();
+        updatedAt = LocalDateTime.now();
     }
 }

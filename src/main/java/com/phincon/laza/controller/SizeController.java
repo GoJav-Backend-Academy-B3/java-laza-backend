@@ -9,6 +9,7 @@ import com.phincon.laza.model.entity.Size;
 import com.phincon.laza.service.SizeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/size")
-@RequiredArgsConstructor
+
 public class SizeController {
-    private final SizeService sizeService;
+    @Autowired
+    private SizeService sizeService;
 
     @GetMapping
     public ResponseEntity<DataResponse<List<SizeResponse>>> getAllSizes() {

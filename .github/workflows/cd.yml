@@ -64,6 +64,6 @@ jobs:
           git pull origin dev
           sudo docker stop java-laza-backend
           sudo docker rm java-laza-backend
-          sudo docker system prune f
+          sudo docker system prune -f
           sudo docker pull adimaspph/java-laza-backend
           sudo docker compose up -d
