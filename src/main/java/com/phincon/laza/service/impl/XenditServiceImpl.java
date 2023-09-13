@@ -48,12 +48,10 @@ public class XenditServiceImpl implements XenditService {
             // Todo: implement get phone number
             channelProperties.put("mobile_number", "+628123123123");
         } else if (paymentMethod.getCode().equalsIgnoreCase("ID_SHOPEEPAY")) {
-            channelProperties.put("success_return_url", callbackUrl);
+            channelProperties.put("success_redirect_url", callbackUrl);
         }
 
         EWalletCharge eWalletCharge = xenditClient.eWallet.createEWalletCharge(params);
-
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + eWalletCharge);
 
         order.setOrderStatus(eWalletCharge.getStatus().toLowerCase());
 
@@ -67,7 +65,8 @@ public class XenditServiceImpl implements XenditService {
         transaction.setTransactionStatus(eWalletCharge.getStatus());
         transaction.setCreatedAt(LocalDateTime.now());
         transaction.setUpdatedAt(LocalDateTime.now());
-        transactionService.createTransaction(transaction);
+
+        order.setTransaction(transactionService.createTransaction(transaction));
 
         // add payment detail to database
         PaymentDetail paymentDetail = new PaymentDetail();
@@ -75,9 +74,9 @@ public class XenditServiceImpl implements XenditService {
         paymentDetail.setType(paymentMethod.getType());
         paymentDetail.setCode(paymentMethod.getCode());
         paymentDetail.setProvider(paymentMethod.getProvider());
-        paymentDetail.setDeeplink(eWalletCharge.getCallbackUrl());
         if (eWalletCharge.getActions() != null) {
             paymentDetail.setQrCode(eWalletCharge.getActions().get("qr_checkout_string"));
+            paymentDetail.setDeeplink(eWalletCharge.getActions().get("mobile_deeplink_checkout_url"));
         }
         paymentDetail.setOrder(order);
 
