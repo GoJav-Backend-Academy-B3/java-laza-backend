@@ -138,4 +138,35 @@ public class ProductControllerTest {
         var action = mockmvc.perform(request);
         action.andExpectAll(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    @DisplayName("update one product with correct data should return OK")
+    public void updateOneProduct_ok() throws Exception {
+        assert (productOne != null);
+        Long updateId = 91l;
+        var product = productUpdated;
+        var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
+                product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getCategory().getId(), product.getBrand().getId());
+        Mockito.when(service.update(Mockito.anyLong(), Mockito.any(CreateUpdateProductRequest.class)))
+                .thenReturn(product);
+        var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/product/{id}", updateId)
+                .param("name", requestData.name()).param("description", requestData.description())
+                .param("price", requestData.price().toString()).param("categoryId", requestData.categoryId().toString())
+                .param("brandId", requestData.brandId().toString());
+        requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
+        var action = mockmvc.perform(request);
+        action.andExpectAll(MockMvcResultMatchers.status().isOk(),
+                MockMvcResultMatchers.jsonPath("$.data.name").value(requestData.name()),
+                MockMvcResultMatchers.jsonPath("$.data.description").value(requestData.description()),
+                MockMvcResultMatchers.jsonPath("$.data.price").value(requestData.price()),
+                MockMvcResultMatchers.jsonPath("$.data.category.id").value(requestData.categoryId()),
+                MockMvcResultMatchers.jsonPath("$.data.category.category").value(product.getCategory().getCategory()),
+                MockMvcResultMatchers.jsonPath("$.data.brand.id").value(requestData.brandId()),
+                MockMvcResultMatchers.jsonPath("$.data.brand.name").value(product.getBrand().getName()),
+                MockMvcResultMatchers.jsonPath("$.data.sizes").isArray(),
+                MockMvcResultMatchers.jsonPath("$.data.sizes[*].size").exists());
+        Mockito.verify(service, Mockito.times(1)).update(updateId, requestData);
+    }
+
 }
