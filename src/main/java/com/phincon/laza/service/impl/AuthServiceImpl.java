@@ -135,10 +135,13 @@ public class AuthServiceImpl implements AuthService {
         findToken.get().setConfirmedAt(LocalDateTime.now());
         verificationTokenRepository.save(findToken.get());
 
-        findToken.get().getUser().setVerified(true);
-        userRepository.save(findToken.get().getUser());
+        Optional<User> findUser = userRepository.findById(findToken.get().getUser().getId());
+        userValidator.validateUserNotFound(findUser);
 
-        log.info("User id={} success verification token", findToken.get().getUser().getId());
+        findUser.get().setVerified(true);
+        userRepository.save(findUser.get());
+
+        log.info("User id={} success verification token", findUser.get().getId());
     }
 
     @Override
