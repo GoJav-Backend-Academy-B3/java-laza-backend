@@ -84,18 +84,45 @@ public class XenditServiceImpl implements XenditService {
     }
 
     public PaymentDetail chargeVirtualAccount(PaymentMethod paymentMethod, Order order) throws XenditException {
+        Map<String, String> channelProperties = new HashMap<>();
+        channelProperties.put("customer_name", order.getUser().getName());
+        channelProperties.put("email", order.getUser().getEmail());
 
         Map<String, Object> params = new HashMap<>();
         params.put("external_id", order.getId());
+        params.put("country", "ID");
+        params.put("currency", "IDR");
         params.put("bank_code", paymentMethod.getCode());
         params.put("name", order.getUser().getName());
+        params.put("is_closed", true);
         params.put("expected_amount", order.getAmount());
+        params.put("is_single_use", true);
+        params.put("channel_properties", channelProperties);
+
 
         FixedVirtualAccount closedVirtualAccount = xenditClient.fixedVirtualAccount.createClosed(params);
 
+        order.setOrderStatus(closedVirtualAccount.getStatus().toLowerCase());
+
+        // add transaction to database
+        Transaction transaction = new Transaction();
+        transaction.setOrder(order);
+        transaction.setReferenceId(closedVirtualAccount.getId());
+        transaction.setAmount(Math.toIntExact(closedVirtualAccount.getExpectedAmount()));
+        transaction.setProvider("xendit");
+        transaction.setCurrency(closedVirtualAccount.getCurrency());
+        transaction.setTransactionStatus(closedVirtualAccount.getStatus());
+        transaction.setCreatedAt(LocalDateTime.now());
+        transaction.setUpdatedAt(LocalDateTime.now());
+
+        order.setTransaction(transactionService.createTransaction(transaction));
+
+        // add payment detail to database
         PaymentDetail paymentDetail = new PaymentDetail();
+        paymentDetail.setPaymentMethod(paymentMethod.getName());
         paymentDetail.setType(paymentMethod.getType());
         paymentDetail.setCode(paymentMethod.getCode());
+        paymentDetail.setProvider(paymentMethod.getProvider());
         paymentDetail.setBank(closedVirtualAccount.getBankCode());
         paymentDetail.setVaNumber(closedVirtualAccount.getAccountNumber());
         paymentDetail.setOrder(order);

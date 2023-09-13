@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-public class XenditController {
+@RestController(value = "callback")
+public class XenditCallbackController {
 
     @Value("${xendit.callback.token}")
     private String XENDIT_CALLBACK_TOKEN;
@@ -22,8 +22,32 @@ public class XenditController {
     @Autowired
     private XenditCallbackService xenditCallbackService;
 
-    @PostMapping("/callback/ewallet")
+    @PostMapping("/ewallet")
     public ResponseEntity<DataResponse<String>> callbackEwallet(HttpServletRequest request, @RequestBody EwalletCallbackRequest body) throws XenditException {
+
+        if (request.getHeader("X-CALLBACK-TOKEN").equals(XENDIT_CALLBACK_TOKEN)) {
+            ResponseEntity.badRequest();
+        }
+
+        xenditCallbackService.callbackEwallet(body);
+
+        return DataResponse.ok("callback accepted");
+    }
+
+    @PostMapping("/fva/paid")
+    public ResponseEntity<DataResponse<String>> callbackPaidFVA(HttpServletRequest request, @RequestBody EwalletCallbackRequest body) throws XenditException {
+
+        if (request.getHeader("X-CALLBACK-TOKEN").equals(XENDIT_CALLBACK_TOKEN)) {
+            ResponseEntity.badRequest();
+        }
+
+        xenditCallbackService.callbackEwallet(body);
+
+        return DataResponse.ok("callback accepted");
+    }
+
+    @PostMapping("/fva/created")
+    public ResponseEntity<DataResponse<String>> callbackCreatedFVA(HttpServletRequest request, @RequestBody EwalletCallbackRequest body) throws XenditException {
 
         if (request.getHeader("X-CALLBACK-TOKEN").equals(XENDIT_CALLBACK_TOKEN)) {
             ResponseEntity.badRequest();
