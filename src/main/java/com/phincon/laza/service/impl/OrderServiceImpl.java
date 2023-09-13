@@ -60,6 +60,8 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder(Order order) {
         try {
             order.setId(generateOrderId());
+            order.setCreatedAt(LocalDateTime.now());
+            order.setUpdatedAt(order.getCreatedAt());
             return orderRepository.save(order);
         } catch (DataIntegrityViolationException | ConstraintViolationException e) {
             throw new ConflictException(e.getMessage());
@@ -67,10 +69,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order requestCreateOrder(String username, CheckoutRequest checkoutRequest) {
+    public Order requestCreateOrder(String userId, CheckoutRequest checkoutRequest) {
         try {
-            User user = userService.getByUsername(username);
+            User user = userService.getById(userId);
 
+            PaymentMethod paymentMethod = paymentMethodService.getPaymentMethodById(checkoutRequest.getPaymentMethodId());
+
+            if (!paymentMethod.getIsActive()) {
+                throw new NotProcessException("payment method inactive");
+            }
 
             Order order = new Order();
 
@@ -98,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
             if (checkoutRequest.getPaymentMethod().equalsIgnoreCase("credit_card")) {
 
             } else {
-                PaymentMethod paymentMethod = paymentMethodService.getPaymentMethodById(checkoutRequest.getPaymentMethodId());
+
 
                 // xendet payment gateway
                 if (paymentMethod.getProvider().equalsIgnoreCase("xendit")) {
@@ -144,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
 
     private String generateOrderId() {
         LocalDateTime date = LocalDateTime.now();
-        String orderId = String.format("ORD-%s%s%s-", date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+        String orderId = String.format("ORD-%02d%02d%s-", date.getDayOfMonth(), date.getMonthValue(), date.getYear());
 
         String result = orderId + GenerateRandom.generateRandomNumber(10);
 

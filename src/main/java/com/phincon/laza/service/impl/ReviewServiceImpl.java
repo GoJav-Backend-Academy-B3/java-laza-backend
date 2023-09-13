@@ -1,50 +1,69 @@
 package com.phincon.laza.service.impl;
 
-import com.phincon.laza.exception.custom.NotFoundException;
-        import com.phincon.laza.model.dto.request.ReviewRequest;
-        import com.phincon.laza.model.entity.Product;
-        import com.phincon.laza.model.entity.Review;
-import com.phincon.laza.model.entity.User;
-import com.phincon.laza.repository.ProductsRepository;
-        import com.phincon.laza.repository.ReviewRepository;
-import com.phincon.laza.service.ProductsService;
-import com.phincon.laza.service.ReviewService;
-import com.phincon.laza.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.stereotype.Service;
-        import java.time.LocalDateTime;
-        import java.util.List;
+    import com.phincon.laza.model.dto.request.ReviewRequest;
+    import com.phincon.laza.model.dto.response.ReviewsResponse;
+    import com.phincon.laza.model.entity.Order;
+    import com.phincon.laza.model.entity.Product;
+    import com.phincon.laza.model.entity.Review;
+    import com.phincon.laza.model.entity.User;
+    import com.phincon.laza.repository.ReviewRepository;
+    import com.phincon.laza.service.OrderService;
+    import com.phincon.laza.service.ProductsService;
+    import com.phincon.laza.service.ReviewService;
+    import com.phincon.laza.service.UserService;
+    import com.phincon.laza.validator.ReviewValidator;
+    import lombok.RequiredArgsConstructor;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Service;
+    import java.time.LocalDateTime;
+    import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-
 public class ReviewServiceImpl implements ReviewService {
-    private final ReviewRepository reviewRepository;
-    private final ProductsService productsService;
-    private final UserService userService;
-
-
-   @Override
-
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private ProductsService productsService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private UserService userService;
+    @Override
     public List<Review> getReviewsByProductId(Long productId) {
         return reviewRepository.findReviewsByProductId(productId);
     }
-
     @Override
-    public Review save(String id,Long productId, ReviewRequest reviewRequest) throws Exception {
-
+    public Review save(String userId,String orderId, Long productId, ReviewRequest reviewRequest) throws Exception {
+        Order order = orderService.getOrderById(orderId);
+        String orderUserId = order.getUser().getId();
+        if (!userId.equals(orderUserId)) {
+            throw new Exception("User is not authorized to add a review for this order.");
+        }
+        if (!"completed".equalsIgnoreCase(order.getOrderStatus())) {
+            throw new Exception("Order is not completed, cannot add a review.");
+        }
         Product product = productsService.getProductById(productId);
-
-        User user = userService.getById(id);
-
+        User user = userService.getById(userId);
         Review review = new Review();
         review.setComment(reviewRequest.getComment());
         review.setRating(reviewRequest.getRating());
         review.setCreatedAt(LocalDateTime.now());
         review.setUser(user);
         review.setProduct(product);
-
-        return reviewRepository.save(review);
+        review.setOrder(order);
+        reviewRepository.save(review);
+        return review;
     }
+    @Override
+    public float calculateAverageRating(List<ReviewsResponse.ReviewItem> reviewItems) {
+        if (reviewItems.isEmpty()) {
+            return 0.0f;
+        }
+        float totalRating = 0.0f;
+        for (ReviewsResponse.ReviewItem reviewItem : reviewItems) {
+            totalRating += reviewItem.getRating();
+        }
+        return totalRating / reviewItems.size();
+    }
+
 }

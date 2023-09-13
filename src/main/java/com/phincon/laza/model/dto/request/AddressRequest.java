@@ -11,14 +11,15 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-
 public class AddressRequest {
 
     @NotBlank(message = "province is required")
-    private String province_id;
+    @JsonProperty("province_name")
+    private String provinceName;
 
     @NotBlank(message = "city is required")
-    private String city_id;
+    @JsonProperty("city_name")
+    private String cityName;
 
     @NotBlank(message = "full address is required")
     @JsonProperty("full_address")

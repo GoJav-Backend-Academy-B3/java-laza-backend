@@ -2,6 +2,8 @@ package com.phincon.laza.controller;
 
 
 import com.phincon.laza.model.dto.rajaongkir.CityResponse;
+import com.phincon.laza.model.dto.rajaongkir.CostsResponse;
+import com.phincon.laza.model.dto.rajaongkir.CourierResponse;
 import com.phincon.laza.model.dto.rajaongkir.ProvinceResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.model.dto.response.*;
@@ -51,9 +53,9 @@ public class RajaongkirController {
     }
 
     @PostMapping("/costs")
-    public ResponseEntity<DataResponse<Optional>> findCostCourierService(@Valid @RequestBody ROCostRequest roCostRequest) throws Exception{
-        Optional courierCost = rajaongkirService.findCostCourierService(roCostRequest);
-        DataResponse<Optional> dataResponse = new DataResponse<>(
+    public ResponseEntity<DataResponse<List<CourierResponse>>> findCostCourierService(@Valid @RequestBody ROCostRequest roCostRequest) throws Exception{
+        List<CourierResponse> courierCost = rajaongkirService.findCostCourierService(roCostRequest);
+        DataResponse<List<CourierResponse>> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
                 "OK",
                 courierCost,
