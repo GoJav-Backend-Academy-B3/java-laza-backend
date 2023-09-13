@@ -37,7 +37,7 @@ public class WishlistServiceTest {
     private WishlistService wishlistService = new WishlistServiceImpl();
 
     @BeforeEach
-    void setData(){
+    void init(){
         List<User> userDataTest = new ArrayList<>();
         List<Product> productDataTest = new ArrayList<>();
 
@@ -78,8 +78,8 @@ public class WishlistServiceTest {
     }
 
     @Test
-    @DisplayName("findWishlistByUser should return products list")
-    void findWishlistByUser(){
+    @DisplayName("[WishlistService] findWishlistByUser should return products list")
+    void whenFindWishlistByUser_thenCorrectResponse(){
         String userId = "23";
         List<Product> productResult = wishlistService.findWishlistByUser(userId);
         assertNotNull(productResult);
@@ -87,16 +87,16 @@ public class WishlistServiceTest {
     }
 
     @Test
-    @DisplayName("findWishlistByUser should return empty product list")
-    void findWishlistByUserEmpty(){
+    @DisplayName("[WishlistService] findWishlistByUser should return empty product list")
+    void whenFindWishlistByUser_thenCorrectResponseEmpty(){
         String userId = "no";
         List<Product> productResult = wishlistService.findWishlistByUser(userId);
         assertEquals(Arrays.asList(), productResult);
     }
 
     @Test
-    @DisplayName("saveWishlist (there is wishlist) should return product (delete wishlist)")
-    void saveWishlist() throws Exception{
+    @DisplayName("[WishlistService] saveWishlist (there is wishlist) should return product (delete wishlist)")
+    void whenSaveWishlist_thenCorrectResponse() throws Exception{
         WishlistRequest wishlistRequest = new WishlistRequest(90l);
         String userId = "23";
         Product productWishlist = wishlistService.createWishlist(userId, wishlistRequest);
@@ -105,8 +105,8 @@ public class WishlistServiceTest {
     }
 
     @Test
-    @DisplayName("saveWishlist (there is no wishlist) should return product (add wishlist)")
-    void saveWishlistWithNoWishlist() throws  Exception{
+    @DisplayName("[WishlistService] saveWishlist (there is no wishlist) should return product (add wishlist)")
+    void whenSaveWishlistWithNoWishlist_thenCorrectResponse() throws  Exception{
         WishlistRequest wishlistRequest = new WishlistRequest(90l);
         String userId = "24";
         Product productWishlist = wishlistService.createWishlist(userId, wishlistRequest);
@@ -115,8 +115,8 @@ public class WishlistServiceTest {
     }
 
     @Test
-    @DisplayName("saveWishlist (there is no product) should throw NotFoundException")
-    void saveWishlistWithNoProduct() throws Exception{
+    @DisplayName("[WishlistService] saveWishlist (there is no product) should throw NotFoundException")
+    void whenSaveWishlistWithNoProduct_thenCorrectResponse() throws Exception{
         WishlistRequest wishlistRequest = new WishlistRequest(200l);
         String userId = "23";
         assertThrows(NotFoundException.class, ()->{
