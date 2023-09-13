@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "providers")
-public class Provider {
+public class    Provider {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

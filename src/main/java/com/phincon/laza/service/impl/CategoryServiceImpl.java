@@ -1,8 +1,12 @@
 package com.phincon.laza.service.impl;
 
 
+import com.phincon.laza.exception.custom.BadRequestException;
+import com.phincon.laza.exception.custom.ConflictException;
+import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CategoryRequest;
 import com.phincon.laza.model.entity.Category;
+import com.phincon.laza.model.entity.Size;
 import com.phincon.laza.repository.CategoryRepository;
 import com.phincon.laza.service.CategoryService;
 import com.phincon.laza.validator.CategoryValidator;
@@ -27,7 +31,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category save(CategoryRequest categoryRequest) throws Exception {
         String categoryName = categoryRequest.getCategory();
-        categoryValidator.validateCategoryAlreadyExists(categoryName);
+        Optional<Category> existingCategory = categoryRepository.findByCategory(categoryName);
+        if (existingCategory.isPresent()) {
+            throw new ConflictException("Category already exists");
+        }
         Category category = new Category();
         category.setCategory(categoryName);
         return categoryRepository.save(category);
@@ -35,14 +42,19 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getCategoryById(Long id) throws Exception {
         Optional<Category> categories = categoryRepository.findById(id);
-        categoryValidator.validateCategoryNotFound(categories);
+        if (categories.isEmpty()) {
+            throw new NotFoundException("Category not found");
+        }
         return categories.get();
     }
 
     @Override
     public Category update(Long id, CategoryRequest updatedCategory) throws Exception {
         Optional<Category> existingCategoryOptional = categoryRepository.findById(id);
-        categoryValidator.validateCategoryNotFound(existingCategoryOptional);
+//        categoryValidator.validateCategoryNotFound(existingCategoryOptional);
+        if (existingCategoryOptional.isEmpty()) {
+            throw new NotFoundException("Category not found");
+        }
         Category existingCategory = existingCategoryOptional.get();
         String updatedCategoryName = updatedCategory.getCategory();
         existingCategory.setCategory(updatedCategoryName);
@@ -57,7 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
             categoryRepository.save(category);
             return;
         }
-        categoryValidator.validateCategoryNotFound(existingCategoryOptional);
+        throw new NotFoundException("Category Not Found");
 
     }
 }

@@ -1,6 +1,9 @@
 package com.phincon.laza.service.impl;
 
 
+import com.phincon.laza.exception.custom.BadRequestException;
+import com.phincon.laza.exception.custom.ConflictException;
+import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.SizeRequest;
 import com.phincon.laza.model.entity.Size;
 import com.phincon.laza.repository.SizeRepository;
@@ -14,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class SizeServiceImpl implements SizeService {
 
     @Autowired
@@ -29,25 +31,32 @@ public class SizeServiceImpl implements SizeService {
     @Override
     public Size getSizeById(Long id) throws Exception {
         Optional<Size> sizeOptional = sizeRepository.findById(id);
-        sizeValidator.validateSizeNotFound(sizeOptional);
+        if (!sizeOptional.isPresent()) {
+            throw new NotFoundException("Size not found with id: " + id);
+        }
         return sizeOptional.get();
     }
     @Override
     public Size save(SizeRequest sizeRequest) throws Exception {
         String sizeName = sizeRequest.getSize();
-        sizeValidator.validateSizeAlreadyExists(sizeName);
+        Optional<Size> existingSize = sizeRepository.findBySize(sizeName);
+        if (existingSize.isPresent()) {
+            throw new ConflictException("Size already exists");
+        }
         Size size = new Size();
         size.setSize(sizeName);
-
         return sizeRepository.save(size);
     }
     @Override
     public Size update(Long id, SizeRequest updatedSize) throws Exception {
         Optional<Size> existingSizeOptional = sizeRepository.findById(id);
-        sizeValidator.validateSizeNotFound(existingSizeOptional);
+        if (existingSizeOptional.isEmpty()) {
+            throw new NotFoundException("Size not found");
+        }
         Size existingSize = existingSizeOptional.get();
         String updatedSizeName = updatedSize.getSize();
         existingSize.setSize(updatedSizeName);
+
         return sizeRepository.save(existingSize);
     }
     @Override
@@ -56,11 +65,12 @@ public class SizeServiceImpl implements SizeService {
 
         if (existingSizeOptional.isPresent()) {
             Size sizes = existingSizeOptional.get();
-
             sizes.setIsDeleted(true);
             sizeRepository.save(sizes);
             return;
         }
-        sizeValidator.validateSizeNotFound(existingSizeOptional);
+        throw new NotFoundException("Sizes Not Found");
     }
+
+
 }
