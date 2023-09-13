@@ -2,7 +2,6 @@ package com.phincon.laza.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,14 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import com.phincon.laza.config.ProductDataConfig;
+import com.phincon.laza.exception.CustomExceptionHandler;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
 import com.phincon.laza.model.entity.Product;
@@ -31,21 +31,15 @@ import com.phincon.laza.service.ProductsService;
 @SpringJUnitConfig({ ProductDataConfig.class })
 @TestInstance(Lifecycle.PER_CLASS)
 public class ProductControllerTest {
-
     ProductsService service;
-
     ProductsController controller;
-
     MockMvc mockmvc;
-
     @Autowired
     @Qualifier("product.all")
     private List<Product> products;
-
     @Autowired
     @Qualifier("product.one")
     private Product productOne;
-
     @Autowired
     @Qualifier("product.update")
     private Product productUpdated;
