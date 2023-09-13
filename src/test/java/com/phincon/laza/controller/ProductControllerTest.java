@@ -194,4 +194,35 @@ public class ProductControllerTest {
         action.andExpectAll(MockMvcResultMatchers.status().isNotFound());
         Mockito.verify(service, Mockito.times(1)).update(updateId, requestData);
     }
+
+    @Test
+    @DisplayName("delete product with existing id should OK")
+    public void deleteProduct_ok() throws Exception {
+        Long deleteId = 1l;
+
+        var request = MockMvcRequestBuilders.delete("/product/{id}", deleteId);
+
+        var action = mockmvc.perform(request);
+
+        action.andExpectAll(MockMvcResultMatchers.status().isOk(),
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+
+        Mockito.verify(service, Mockito.times(1)).delete(deleteId);
+    }
+
+    @Test
+    @DisplayName("delete product with inexisting id should NotFound")
+    public void deleteProductNonexistentId_NotFound() throws Exception {
+        Long deleteId = 2l;
+        Mockito.doThrow(NotFoundException.class).when(service).delete(Mockito.anyLong());
+
+        var request = MockMvcRequestBuilders.delete("/product/{id}", deleteId);
+
+        var action = mockmvc.perform(request);
+
+        action.andExpectAll(MockMvcResultMatchers.status().isNotFound(),
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
+
+        Mockito.verify(service, Mockito.times(1)).delete(deleteId);
+    }
 }
