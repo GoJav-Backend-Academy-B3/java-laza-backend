@@ -27,7 +27,7 @@ public class WishlistController {
     private WishlistService wishlistService;
 
     @PostMapping("/wishlist")
-    public ResponseEntity<DataResponse<WishlistResponse>> saveWishlist(@CurrentUser SysUserDetails ctx, @Valid @RequestBody WishlistRequest wishlistRequest) throws Exception{
+    public ResponseEntity<?> saveWishlist(@CurrentUser SysUserDetails ctx, @Valid @RequestBody WishlistRequest wishlistRequest) throws Exception{
         Product product = wishlistService.createWishlist(ctx.getId(), wishlistRequest);
         WishlistResponse wishlistResponse = new WishlistResponse(
                 product
@@ -42,7 +42,7 @@ public class WishlistController {
     }
 
     @GetMapping("/wishlist")
-    public ResponseEntity<DataResponse<List<WishlistResponse>>> getProductWishlist(@CurrentUser SysUserDetails ctx)
+    public ResponseEntity<?> getProductWishlist(@CurrentUser SysUserDetails ctx)
     {
         List<Product> products = wishlistService.findWishlistByUser(ctx.getId());
         List<WishlistResponse> wishlistResponses = new ArrayList<>();
