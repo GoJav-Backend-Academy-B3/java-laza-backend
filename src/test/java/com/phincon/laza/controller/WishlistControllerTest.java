@@ -23,12 +23,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import java.util.Arrays;
@@ -67,15 +69,14 @@ public class WishlistControllerTest {
     }
 
     @Test
-    @DisplayName("Post saveWishlist and should return status OK")
-    void postSaveWishlist() throws Exception{
+    @DisplayName("[WishlistController] Post saveWishlist and should return status OK")
+    void whenPostSaveWishlist_thenCorrectResponse() throws Exception{
 
         WishlistResponse wishlistResponse = new WishlistResponse(10l, "Product1", "Image Url", 100000, "X");
 
         String requestBody = "{\"productId\": 10}";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/wishlist").with(user(userDetail))
-                        .header("X-Auth-Token", "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGRpcmFtZGFuIiwiaWF0IjoxNjk0NDg1NDQ1LCJleHAiOjE2OTQ1NzE4NDV9.cYChZ4276CRsYhqpg4SXmTQhGYHm5uH_Jj9WRv5hWtQ")
                         .with(csrf())
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,19 +85,19 @@ public class WishlistControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").value(wishlistResponse));
     }
 
-//    @Test
-//    @DisplayName("Post saveWishlist with invalid product id and should return status not found")
-//    void postSaveWishlistBadRequest() throws  Exception{
-//        String requestBody = "{\"productId\": 11}";
-//
-//        mockMvc.perform(MockMvcRequestBuilders.post("/wishlist").with(user(userDetail))
-//                        .header("X-Auth-Token", "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGRpcmFtZGFuIiwiaWF0IjoxNjk0NDg1NDQ1LCJleHAiOjE2OTQ1NzE4NDV9.cYChZ4276CRsYhqpg4SXmTQhGYHm5uH_Jj9WRv5hWtQ")
-//                        .with(csrf())
-//                        .content(requestBody)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(MockMvcResultMatchers.status().isNotFound())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Product not found"));
-//    }
+    @Test
+    @DisplayName("[WishlistController] get getProductWishlist and should return status OK")
+    void whenGetProductWishlist_thenCorrectResponse() throws Exception{
+        when(wService.findWishlistByUser()).
+        mockMvc.perform(MockMvcRequestBuilders.post("/wishlist").with(user(userDetail))
+                        .with(csrf())
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").value(wishlistResponse));
+    }
+
+
 
 }
