@@ -214,7 +214,7 @@ public class ProductControllerTest {
     @DisplayName("delete product with inexisting id should NotFound")
     public void deleteProductNonexistentId_NotFound() throws Exception {
         Long deleteId = 2l;
-        Mockito.doThrow(NotFoundException.class).when(service).delete(Mockito.anyLong());
+        Mockito.doThrow(NotFoundException.class).when(service).delete(Mockito.eq(deleteId));
 
         var request = MockMvcRequestBuilders.delete("/product/{id}", deleteId);
 
