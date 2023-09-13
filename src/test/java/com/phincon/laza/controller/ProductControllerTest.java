@@ -31,15 +31,21 @@ import com.phincon.laza.service.ProductsService;
 @SpringJUnitConfig({ ProductDataConfig.class })
 @TestInstance(Lifecycle.PER_CLASS)
 public class ProductControllerTest {
+
     ProductsService service;
+
     ProductsController controller;
+
     MockMvc mockmvc;
+
     @Autowired
     @Qualifier("product.all")
     private List<Product> products;
+
     @Autowired
     @Qualifier("product.one")
     private Product productOne;
+
     @Autowired
     @Qualifier("product.update")
     private Product productUpdated;
