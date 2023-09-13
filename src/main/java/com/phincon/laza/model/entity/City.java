@@ -1,6 +1,8 @@
 package com.phincon.laza.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,8 +28,14 @@ public class City {
 
     @ManyToOne
     @JoinColumn(name = "province_id")
+    @JsonManagedReference
     private Province provinces;
+
     private String type;
     private String cityName;
     private String postalCode;
+
+    @OneToMany(mappedBy = "city")
+    @JsonBackReference
+    private List<Address> addresses;
 }
