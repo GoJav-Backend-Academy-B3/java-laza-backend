@@ -169,4 +169,23 @@ public class ProductControllerTest {
         Mockito.verify(service, Mockito.times(1)).update(updateId, requestData);
     }
 
+    @Test
+    @DisplayName("update one product with invalid id should return NotFound")
+    public void updateProductInvalidId_notFound() throws Exception {
+        Long updateId = 92l;
+        var product = productUpdated;
+        var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
+                product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getCategory().getId(), product.getBrand().getId());
+        Mockito.when(service.update(Mockito.anyLong(), Mockito.any(CreateUpdateProductRequest.class)))
+                .thenThrow(NotFoundException.class);
+        var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/product/{id}", updateId)
+                .param("name", requestData.name()).param("description", requestData.description())
+                .param("price", requestData.price().toString()).param("categoryId", requestData.categoryId().toString())
+                .param("brandId", requestData.brandId().toString());
+        requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
+        var action = mockmvc.perform(request);
+        action.andExpectAll(MockMvcResultMatchers.status().isNotFound());
+        Mockito.verify(service, Mockito.times(1)).update(updateId, requestData);
+    }
 }
