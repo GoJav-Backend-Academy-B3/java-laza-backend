@@ -45,18 +45,6 @@ public class ProductsController {
         return DataResponse.ok(data, meta);
     }
 
-    @GetMapping
-    public ResponseEntity<DataResponse<List<OverviewProductResponse>>> getAll(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
-        var productPage = productsService.getAll(page, size);
-        PaginationMeta meta = new PaginationMeta(page, size, productPage.getNumberOfElements());
-        var data = productPage.get()
-                .map(OverviewProductResponse::fromProductEntity)
-                .collect(Collectors.toList());
-        return DataResponse.ok(data, meta);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
         Product product = productsService.getProductById(id);

@@ -27,30 +27,6 @@ public class RajaongkirController {
     @Autowired
     private RajaongkirService rajaongkirService;
 
-    @GetMapping("/provinces")
-    public ResponseEntity<DataResponse<List<ProvinceResponse>>> findAllProvince(
-    ){
-        List<ProvinceResponse> provinces = rajaongkirService.findAllProvince();
-        DataResponse<List<ProvinceResponse>> dataResponse = new DataResponse<>(
-                HttpStatus.OK.value(),
-                "OK",
-                provinces,
-                null);
-        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
-    }
-
-    @GetMapping("/cities")
-    public ResponseEntity<DataResponse< List<CityResponse>>> findAllCity(@RequestParam(value = "province", required = false)
-                                                                          String province){
-        List<CityResponse> cities = rajaongkirService.findAllCityByProvinceId(province);
-        DataResponse< List<CityResponse>> dataResponse = new DataResponse<>(
-                HttpStatus.OK.value(),
-                "OK",
-                cities,
-                null);
-
-        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
-    }
 
     @PostMapping("/costs")
     public ResponseEntity<DataResponse<List<CourierResponse>>> findCostCourierService(@Valid @RequestBody ROCostRequest roCostRequest) throws Exception{

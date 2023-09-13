@@ -29,51 +29,10 @@ public class RajaongkirServiceImpl implements RajaongkirService {
 
     @Autowired
     private RajaongkirRepository rajaongkirRepository;
-    @Autowired
-    private ProvinceRepository provinceRepository;
 
-    @Autowired
-    private CityRepository cityRepository;
-
-    @Override
-    public List<ProvinceResponse> findAllProvince() {
-        AllProvinceResponse provinceResponse = rajaongkirRepository.findAllProvince();
-        return provinceResponse.getResults();
-    }
-
-
-    @Override
-    public List<CityResponse> findAllCityByProvinceId(String provinceId) {
-        AllCityResponse cityResponse = rajaongkirRepository.findCityByProvinceId(provinceId);
-        return cityResponse.getResults();
-    }
-
-    @Override
-    public void existsProvince(String provinceName) {
-        AllProvinceResponse allProvinces = rajaongkirRepository.findAllProvince();
-        for (ProvinceResponse province: allProvinces.getResults()){
-            if (province.getProvince().toLowerCase().equals(provinceName)){
-               return;
-            }
-        }
-        throw new NotFoundException("Province doesn't exists");
-    }
-
-    @Override
-    public void existsCity(String cityName) {
-        AllCityResponse allCityResponse = rajaongkirRepository.findCityByProvinceId("");
-        for (CityResponse city: allCityResponse.getResults()){
-            if (Objects.equals(city.getCity_name().toLowerCase(), cityName)){
-                return;
-            }
-        }
-        throw new NotFoundException("City doesn't exists");
-    }
 
     @Override
     public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception{
         return rajaongkirRepository.findCostCourierService(roCostRequest).getResults();
     }
-
-
 }
