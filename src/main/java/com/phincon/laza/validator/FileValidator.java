@@ -16,7 +16,6 @@ public class FileValidator {
             "image/webp",
     };
     public void validateMultipartFile(MultipartFile file) {
-        System.out.println(file.getSize());
         if (Arrays.stream(IMAGE_MIME_TYPE).noneMatch(image -> image.equalsIgnoreCase(file.getContentType()))) {
             throw new BadRequestException("file format is not allowed. Please upload a JPEG, JPG, PNG or WEBP image");
         } else if (file.getSize() > TWO_MB_IN_BYTES) {
