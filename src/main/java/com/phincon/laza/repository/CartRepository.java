@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface CartRepository extends JpaRepository<Cart,Long> {
-    Cart findByUserIdAndProductIdAndSizeId(String userId, Long productId, Long sizeId);
+    Optional<Cart> findByUserIdAndProductIdAndSizeId(String userId, Long productId, Long sizeId);
 
     @Modifying
     @Query("UPDATE Cart c SET c.quantity = ?1 WHERE c.id = ?2")
