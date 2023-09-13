@@ -70,7 +70,6 @@ public class ProductControllerTest {
                 MockMvcResultMatchers.jsonPath("$.metadata.count", Matchers.equalTo(products.size())),
                 MockMvcResultMatchers.jsonPath("$.data").isArray(),
                 MockMvcResultMatchers.jsonPath("$.data", Matchers.hasSize(products.size())));
-
         Mockito.verify(service, Mockito.times(1)).getAll(0, 10);
     }
 
@@ -81,9 +80,7 @@ public class ProductControllerTest {
         var product = productOne;
         Long requestId = product.getId();
         Mockito.when(service.getProductById(Mockito.anyLong())).thenReturn(product);
-
         var action = mockmvc.perform(MockMvcRequestBuilders.get("/product/{id}", requestId));
-
         action.andExpectAll(MockMvcResultMatchers.status().isOk(),
                 MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON),
                 MockMvcResultMatchers.jsonPath("$.data.id").value(requestId),
@@ -93,7 +90,6 @@ public class ProductControllerTest {
                 MockMvcResultMatchers.jsonPath("$.data.brand").exists(),
                 MockMvcResultMatchers.jsonPath("$.data.review").exists(),
                 MockMvcResultMatchers.jsonPath("$.data.sizes").exists());
-
         Mockito.verify(service, Mockito.times(1)).getProductById(requestId);
     }
 
@@ -103,33 +99,25 @@ public class ProductControllerTest {
         assert (productOne != null);
         var product = productOne;
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), null,
-                product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), product.getBrand().getId());
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenReturn(product);
-
-        var request = MockMvcRequestBuilders.multipart("/product")
-                .param("name", requestData.name())
-                .param("description", requestData.description())
-                .param("price", requestData.price().toString())
+        var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/product").param("name", requestData.name())
+                .param("description", requestData.description()).param("price", requestData.price().toString())
                 .param("categoryId", requestData.categoryId().toString())
                 .param("brandId", requestData.brandId().toString());
         requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
-
         var action = mockmvc.perform(request);
-
         action.andExpectAll(MockMvcResultMatchers.status().isCreated(),
-            MockMvcResultMatchers.jsonPath("$.data.name").value(requestData.name()),
-            MockMvcResultMatchers.jsonPath("$.data.description").value(requestData.description()),
-            MockMvcResultMatchers.jsonPath("$.data.price").value(requestData.price()),
-            MockMvcResultMatchers.jsonPath("$.data.category.id").value(requestData.categoryId()),
-            MockMvcResultMatchers.jsonPath("$.data.category.category").value(product.getCategory().getCategory()),
-            MockMvcResultMatchers.jsonPath("$.data.brand.id").value(requestData.brandId()),
-            MockMvcResultMatchers.jsonPath("$.data.brand.name").value(product.getBrand().getName()),
-            MockMvcResultMatchers.jsonPath("$.data.sizes").isArray(),
-            MockMvcResultMatchers.jsonPath("$.data.sizes[*].size").exists()
-        );
-
+                MockMvcResultMatchers.jsonPath("$.data.name").value(requestData.name()),
+                MockMvcResultMatchers.jsonPath("$.data.description").value(requestData.description()),
+                MockMvcResultMatchers.jsonPath("$.data.price").value(requestData.price()),
+                MockMvcResultMatchers.jsonPath("$.data.category.id").value(requestData.categoryId()),
+                MockMvcResultMatchers.jsonPath("$.data.category.category").value(product.getCategory().getCategory()),
+                MockMvcResultMatchers.jsonPath("$.data.brand.id").value(requestData.brandId()),
+                MockMvcResultMatchers.jsonPath("$.data.brand.name").value(product.getBrand().getName()),
+                MockMvcResultMatchers.jsonPath("$.data.sizes").isArray(),
+                MockMvcResultMatchers.jsonPath("$.data.sizes[*].size").exists());
         Mockito.verify(service, Mockito.times(1)).create(requestData);
     }
 
@@ -139,21 +127,15 @@ public class ProductControllerTest {
         assert (productOne != null);
         var product = productOne;
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), null,
-                product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), 120l);
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenThrow(NotFoundException.class);
-        
-        var request = MockMvcRequestBuilders.multipart("/product")
-                .param("name", requestData.name())
-                .param("description", requestData.description())
-                .param("price", requestData.price().toString())
+        var request = MockMvcRequestBuilders.multipart("/product").param("name", requestData.name())
+                .param("description", requestData.description()).param("price", requestData.price().toString())
                 .param("categoryId", requestData.categoryId().toString())
                 .param("brandId", requestData.brandId().toString());
         requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
-        
         var action = mockmvc.perform(request);
-        
         action.andExpectAll(MockMvcResultMatchers.status().isNotFound());
     }
 }
