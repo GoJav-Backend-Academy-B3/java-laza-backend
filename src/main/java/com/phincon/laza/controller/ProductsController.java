@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,5 +87,11 @@ public class ProductsController {
                 .map(OverviewProductResponse::fromProductEntity)
                 .collect(Collectors.toList());
         return DataResponse.ok(data, meta);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) throws Exception {
+        productsService.delete(id);
+        return DataResponse.ok(null);
     }
 }
