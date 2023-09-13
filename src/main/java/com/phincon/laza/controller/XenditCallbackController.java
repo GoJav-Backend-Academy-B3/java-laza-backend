@@ -3,6 +3,7 @@ package com.phincon.laza.controller;
 
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.xendit.ewallet.EwalletCallbackRequest;
+import com.phincon.laza.model.dto.xendit.fva.FVACallbackRequest;
 import com.phincon.laza.service.XenditCallbackService;
 import com.xendit.exception.XenditException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,26 +36,15 @@ public class XenditCallbackController {
     }
 
     @PostMapping("/fva/paid")
-    public ResponseEntity<DataResponse<String>> callbackPaidFVA(HttpServletRequest request, @RequestBody EwalletCallbackRequest body) throws XenditException {
+    public ResponseEntity<DataResponse<String>> callbackPaidFVA(HttpServletRequest request, @RequestBody FVACallbackRequest body) throws XenditException {
 
         if (request.getHeader("X-CALLBACK-TOKEN").equals(XENDIT_CALLBACK_TOKEN)) {
             ResponseEntity.badRequest();
         }
 
-        xenditCallbackService.callbackEwallet(body);
+        xenditCallbackService.callbackFVA(body);
 
         return DataResponse.ok("callback accepted");
     }
 
-    @PostMapping("/fva/created")
-    public ResponseEntity<DataResponse<String>> callbackCreatedFVA(HttpServletRequest request, @RequestBody EwalletCallbackRequest body) throws XenditException {
-
-        if (request.getHeader("X-CALLBACK-TOKEN").equals(XENDIT_CALLBACK_TOKEN)) {
-            ResponseEntity.badRequest();
-        }
-
-        xenditCallbackService.callbackEwallet(body);
-
-        return DataResponse.ok("callback accepted");
-    }
 }

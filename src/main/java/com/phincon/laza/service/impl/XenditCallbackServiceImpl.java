@@ -2,6 +2,7 @@ package com.phincon.laza.service.impl;
 
 import com.phincon.laza.model.dto.xendit.ewallet.EwalletCallbackRequest;
 import com.phincon.laza.model.dto.xendit.ewallet.XenditEwalletData;
+import com.phincon.laza.model.dto.xendit.fva.FVACallbackRequest;
 import com.phincon.laza.model.entity.Order;
 import com.phincon.laza.service.OrderService;
 import com.phincon.laza.service.XenditCallbackService;
@@ -38,5 +39,24 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         } else {
             throw new XenditException("unknown callback");
         }
+    }
+
+    @Override
+    public void callbackFVA(FVACallbackRequest fvaCallbackRequest) {
+        Order order = orderService.getOrderById(fvaCallbackRequest.getExternalId());
+
+        // todo: implement overpayment
+        if (fvaCallbackRequest.getAmount() == order.getAmount()) {
+            order.setOrderStatus("paid");
+        } else if (fvaCallbackRequest.getAmount() > order.getAmount()) { // todo: implement overpayment
+            order.setOrderStatus("overpayment");
+        } else if (fvaCallbackRequest.getAmount() < order.getAmount()) { // todo: implement insufficient payment
+            order.setOrderStatus("pending");
+        }
+        order.setPaidAt((fvaCallbackRequest.getTransactionTimestamp()));
+
+        orderService.updateOrder(order.getId(), order);
+
+        // todo: implement push notification
     }
 }
