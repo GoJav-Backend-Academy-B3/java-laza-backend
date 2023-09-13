@@ -38,7 +38,7 @@ public class UserValidator {
         }
     }
 
-    public void validateUserNotIsVerfied(Optional<User> findUser) {
+    public void validateUserNotIsVerified(Optional<User> findUser) {
         if (Objects.isNull(findUser.get().isVerified()) || !findUser.get().isVerified()) {
             throw new BadRequestException("User not verification account!, please confirm account");
         }

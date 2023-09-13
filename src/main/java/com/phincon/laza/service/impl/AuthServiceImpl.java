@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
         userValidator.validateUserNotFound(findByUsername);
         userValidator.validateUserBadProviderLocal(findByUsername);
         userValidator.validateUserBadCredentials(findByUsername, request.getPassword());
-        userValidator.validateUserNotIsVerfied(findByUsername);
+        userValidator.validateUserNotIsVerified(findByUsername);
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
@@ -145,7 +145,7 @@ public class AuthServiceImpl implements AuthService {
     public void forgotPassword(RecoveryRequest request) throws Exception {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         String code = GenerateRandom.code();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
@@ -164,7 +164,7 @@ public class AuthServiceImpl implements AuthService {
     public void forgotPasswordConfirm(VerificationCodeRequest request) {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         Optional<VerificationCode> findCode = verificationCodeRepository.findByCodeAndUserId(request.getCode(), findUser.get().getId());
         verificationCodeValidator.validateVerificationCodeNotFound(findCode);
@@ -180,7 +180,7 @@ public class AuthServiceImpl implements AuthService {
     public void resetPassword(ResetPasswordRequest request) {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         Optional<VerificationCode> findCode = verificationCodeRepository.findByCodeAndUserId(request.getCode(), findUser.get().getId());
         verificationCodeValidator.validateVerificationCodeNotFound(findCode);
@@ -220,7 +220,7 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse token(UserDetails request) {
         Optional<User> findUser = userRepository.findByUsername(request.getUsername());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         String accessToken = jwtService.generateToken(request);
         String refreshToken = jwtService.generateRefreshToken(request);
