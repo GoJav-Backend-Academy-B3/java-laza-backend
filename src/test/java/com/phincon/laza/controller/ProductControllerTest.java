@@ -48,7 +48,7 @@ public class ProductControllerTest {
     public void setup() {
         service = Mockito.mock(ProductsService.class);
         controller = new ProductsController(service);
-        mockmvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockmvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(CustomExceptionHandler.class).build();
     }
 
     @Test
