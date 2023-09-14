@@ -27,13 +27,13 @@ public class AuthValidator {
         }
     }
 
-    public void validateAuthUsernameNull(String username) {
+    public void validateAuthUsernameIsNull(String username) {
         if (Objects.isNull(username)) {
             throw new NotFoundException("username is not found");
         }
     }
 
-    public void validateAuthEmailNull(String email) {
+    public void validateAuthEmailIsNull(String email) {
         if (Objects.isNull(email)) {
             throw new OAuth2ProcessingException("email not found from OAuth2 provider");
         }

@@ -203,7 +203,7 @@ public class AuthServiceImpl implements AuthService {
         authValidator.validateAuthHeaderNotFound(authHeader);
         String refreshToken = authHeader.substring(7);
         String username = jwtService.extractUsername(refreshToken);
-        authValidator.validateAuthUsernameNull(username);
+        authValidator.validateAuthUsernameIsNull(username);
 
         Optional<User> findByUsername = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findByUsername);
