@@ -7,6 +7,7 @@ import com.phincon.laza.model.dto.request.UserRequest;
 import com.phincon.laza.model.entity.*;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -33,6 +34,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserControllerTest {
@@ -105,6 +107,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.metadata.count").value(1));
 
         verify(userService, times(1)).getAll(any());
+
+        log.info("[COMPLETE] testing controller user getAll then correct");
     }
 
     @Test
@@ -118,6 +122,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.sub_error").value("Forbidden"));
 
         verify(userService, times(0)).getAll(any());
+
+        log.info("[COMPLETE] testing controller user getAll then forbidden");
     }
 
     @Test
@@ -132,6 +138,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.data").isNotEmpty());
 
         verify(userService, times(1)).getById(anyString());
+
+        log.info("[COMPLETE] testing controller user profile then correct");
     }
 
     @Test
@@ -153,6 +161,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.data").isNotEmpty());
 
         verify(userService, times(1)).update(anyString(), any());
+
+        log.info("[COMPLETE] testing controller user update then correct");
     }
 
 
@@ -175,6 +185,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.sub_error.email").value("email is required"));
 
         verify(userService, times(0)).update(anyString(), any());
+
+        log.info("[COMPLETE] testing controller user update then method invalid arguments blank");
     }
 
     @Test
@@ -199,6 +211,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.sub_error.email").value("input must be an email format"));
 
         verify(userService, times(0)).update(anyString(), any());
+
+        log.info("[COMPLETE] testing controller user update then method invalid arguments not blank");
     }
 
     @Test
@@ -219,6 +233,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message").value(HttpStatus.OK.name()));
 
         verify(userService, times(1)).changePassword(anyString(), any());
+
+        log.info("[COMPLETE] testing controller user changePassword then correct");
     }
 
     @Test
@@ -239,6 +255,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.sub_error.confirmPassword").value("confirm password is required"));
 
         verify(userService, times(0)).changePassword(anyString(), any());
+
+        log.info("[COMPLETE] testing controller user changePassword then method invalid arguments blank");
     }
 
     @Test
@@ -261,6 +279,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.sub_error.confirmPassword").value("password must be minimum 8 characters"));
 
         verify(userService, times(0)).changePassword(anyString(), any());
+
+        log.info("[COMPLETE] testing controller user changePassword then method invalid arguments not blank");
     }
 
     @Test
@@ -279,6 +299,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message").value(HttpStatus.OK.name()));
 
         verify(userService, times(1)).updateRole(any());
+
+        log.info("[COMPLETE] testing controller user updateRole then correct");
     }
 
     @Test
@@ -298,6 +320,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.sub_error.roles").value("roles is required"));
 
         verify(userService, times(0)).updateRole(any());
+
+        log.info("[COMPLETE] testing controller user updateRole then method invalid arguments blank");
     }
 
     @Test
@@ -318,6 +342,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.sub_error.username").value("username must be alphanumeric and not whitespace"));
 
         verify(userService, times(0)).updateRole(any());
+
+        log.info("[COMPLETE] testing controller user updateRole then method invalid arguments not blank");
     }
 
     @Test
@@ -331,5 +357,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.sub_error").value("Forbidden"));
 
         verify(userService, times(0)).updateRole(any());
+
+        log.info("[COMPLETE] testing controller user updateRole then forbidden");
     }
 }
