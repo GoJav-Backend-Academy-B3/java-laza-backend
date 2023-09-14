@@ -3,6 +3,7 @@ package com.phincon.laza.validator;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.entity.Provider;
 import com.phincon.laza.repository.ProviderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class ProviderValidatorTest {
     @Mock
@@ -38,5 +40,7 @@ public class ProviderValidatorTest {
         assertThrows(NotFoundException.class, () -> {
             providerValidator.validateProviderNotFound(findProvider);
         });
+
+        log.info("[COMPLETE] testing validate provider then not found");
     }
 }

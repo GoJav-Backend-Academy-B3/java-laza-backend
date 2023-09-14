@@ -11,6 +11,7 @@ import com.phincon.laza.service.impl.UserServiceImpl;
 import com.phincon.laza.validator.ProviderValidator;
 import com.phincon.laza.validator.RoleValidator;
 import com.phincon.laza.validator.UserValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
     @Mock
@@ -110,6 +112,8 @@ public class UserServiceTest {
         assertEquals(1, users.getTotalPages());
 
         verify(userRepository, times(1)).findAll(pageable);
+
+        log.info("[COMPLETE] testing service user getAll then correct");
     }
 
     @Test
@@ -122,6 +126,8 @@ public class UserServiceTest {
         assertEquals("johndoe@mail.com", user.getEmail());
 
         verify(userRepository, times(1)).findById(anyString());
+
+        log.info("[COMPLETE] testing service user getById then correct");
     }
 
     @Test
@@ -134,6 +140,8 @@ public class UserServiceTest {
         assertEquals("johndoe@mail.com", user.getEmail());
 
         verify(userRepository, times(1)).findByUsername(anyString());
+
+        log.info("[COMPLETE] testing service user getByUsername then correct");
     }
 
     @Test
@@ -157,6 +165,8 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findByUsername(anyString());
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(userRepository, times(1)).save(user);
+
+        log.info("[COMPLETE] testing service user update then correct");
     }
 
     @Test
@@ -187,5 +197,7 @@ public class UserServiceTest {
         verify(roleRepository, times(2)).findByName(any());
         verify(userRepository, times(1)).findByUsername(anyString());
         verify(userRepository, times(1)).save(any());
+
+        log.info("[COMPLETE] testing service user updateRole then correct");
     }
 }
