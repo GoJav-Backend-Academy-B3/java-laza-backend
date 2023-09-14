@@ -5,6 +5,7 @@ import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.exception.custom.NotProcessException;
 import com.phincon.laza.model.entity.VerificationCode;
 import com.phincon.laza.repository.VerificationCodeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class VerificationCodeValidatorTest {
     @Mock
@@ -41,6 +43,8 @@ public class VerificationCodeValidatorTest {
         assertThrows(NotFoundException.class, () -> {
             verificationCodeValidator.validateVerificationCodeNotFound(findCode);
         });
+
+        log.info("[COMPLETE] testing validate verification code then not found");
     }
 
     @Test
@@ -54,6 +58,8 @@ public class VerificationCodeValidatorTest {
         assertThrows(NotProcessException.class, () -> {
             verificationCodeValidator.validateVerificationCodeAlreadyConfirm(findCode);
         });
+
+        log.info("[COMPLETE] testing validate verification code then already confirm");
     }
 
     @Test
@@ -64,6 +70,8 @@ public class VerificationCodeValidatorTest {
         assertThrows(BadRequestException.class, () -> {
             verificationCodeValidator.validateVerificationCodeNotAlreadyConfirm(findCode);
         });
+
+        log.info("[COMPLETE] testing validate verification code then not already confirm");
     }
 
     @Test
@@ -77,5 +85,7 @@ public class VerificationCodeValidatorTest {
         assertThrows(NotProcessException.class, () -> {
             verificationCodeValidator.validateVerificationCodeAlreadyExpire(findCode);
         });
+
+        log.info("[COMPLETE] testing validate verification code then already expire");
     }
 }

@@ -92,6 +92,9 @@ public class AddressServiceTest {
         lenient().when(addressRepository.findAllByUserId("1")).thenReturn(addresses);
         lenient().when(addressRepository.findById(1L)).thenReturn(Optional.of(address));
         lenient().when(addressRepository.countByUserId("1")).thenReturn(2);
+
+        lenient().when(cityRepository.findByCityNameIgnoreCaseAndProvincesProvinceId("Jakarta", "1")).thenReturn(Optional.empty());
+
     }
 
     @Test
@@ -165,7 +168,6 @@ public class AddressServiceTest {
     @Test
     @DisplayName("Add address when city not found")
     public void whenAddRequestToAddressAndCityNotFound_thenThrowException() {
-        when(cityRepository.findByCityNameIgnoreCaseAndProvincesProvinceId(anyString(), anyString())).thenReturn(Optional.empty());
 
         AddressRequest addressRequest = new AddressRequest();
         addressRequest.setFullAddress("Jln. Jalan");
@@ -192,7 +194,7 @@ public class AddressServiceTest {
     @Test
     @DisplayName("find all address when user not found")
     public void whenFindAllAddressAndUserNotFound_thenThrowException() {
-        when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+        lenient().when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> addressService.findAllByUserId("1"));
     }

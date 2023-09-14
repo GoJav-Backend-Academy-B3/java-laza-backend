@@ -10,6 +10,7 @@ import com.phincon.laza.security.jwt.JwtService;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.AuthService;
 import com.phincon.laza.utils.GenerateRandom;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AuthControllerTest {
@@ -100,6 +102,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.data").isNotEmpty());
 
         verify(authService, times(1)).login(any());
+
+        log.info("[COMPLETE] testing controller auth login then correct");
     }
 
     @Test
@@ -118,6 +122,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.password").value("password is required"));
 
         verify(authService, times(0)).login(any());
+
+        log.info("[COMPLETE] testing controller auth login then method invalid arguments blank");
     }
 
     @Test
@@ -138,6 +144,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.password").value("password must be minimum 8 characters"));
 
         verify(authService, times(0)).login(any());
+
+        log.info("[COMPLETE] testing controller auth login then method invalid argument not blank");
     }
 
     @Test
@@ -158,6 +166,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.data").isNotEmpty());
 
         verify(authService, times(1)).register(any());
+
+        log.info("[COMPLETE] testing controller auth register then correct");
     }
 
     @Test
@@ -178,6 +188,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.password").value("password is required"));
 
         verify(authService, times(0)).register(any());
+
+        log.info("[COMPLETE] testing controller auth register then method invalid argument blank");
     }
 
     @Test
@@ -202,6 +214,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.password").value("password must be minimum 8 characters"));
 
         verify(authService, times(0)).register(any());
+
+        log.info("[COMPLETE] testing controller auth register then method invalid argument not blank");
     }
 
     @Test
@@ -218,6 +232,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value(HttpStatus.OK.name()));
 
         verify(authService, times(1)).registerResend(any());
+
+        log.info("[COMPLETE] testing controller auth registerResend then correct");
     }
 
     @Test
@@ -235,6 +251,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.email").value("email is required"));
 
         verify(authService, times(0)).registerResend(any());
+
+        log.info("[COMPLETE] testing controller auth registerResend then method invalid argument blank");
     }
 
     @Test
@@ -253,6 +271,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.email").value("input must be an email format"));
 
         verify(authService, times(0)).registerResend(any());
+
+        log.info("[COMPLETE] testing controller auth registerResend then method invalid argument not blank");
     }
 
     @Test
@@ -264,6 +284,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value(HttpStatus.OK.name()));
 
         verify(authService, times(1)).registerConfirm(anyString());
+
+        log.info("[COMPLETE] testing controller auth registerConfirm then correct");
     }
 
     @Test
@@ -280,6 +302,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value(HttpStatus.OK.name()));
 
         verify(authService, times(1)).forgotPassword(any());
+
+        log.info("[COMPLETE] testing controller auth forgotPassword then correct");
     }
 
     @Test
@@ -297,6 +321,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.email").value("email is required"));
 
         verify(authService, times(0)).forgotPassword(any());
+
+        log.info("[COMPLETE] testing controller auth forgotPassword then method invalid argument blank");
     }
 
     @Test
@@ -315,6 +341,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.email").value("input must be an email format"));
 
         verify(authService, times(0)).forgotPassword(any());
+
+        log.info("[COMPLETE] testing controller auth forgotPassword then method invalid argument not blank");
     }
 
     @Test
@@ -332,6 +360,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value(HttpStatus.OK.name()));
 
         verify(authService, times(1)).forgotPasswordConfirm(any());
+
+        log.info("[COMPLETE] testing controller auth forgotPasswordConfirm then correct");
     }
 
     @Test
@@ -350,6 +380,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.email").value("email is required"));
 
         verify(authService, times(0)).forgotPasswordConfirm(any());
+
+        log.info("[COMPLETE] testing controller auth forgotPasswordConfirm then method invalid argument blank");
     }
 
     @Test
@@ -370,6 +402,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.email").value("input must be an email format"));
 
         verify(authService, times(0)).forgotPasswordConfirm(any());
+
+        log.info("[COMPLETE] testing controller auth forgotPasswordConfirm then method invalid argument not blank");
     }
 
     @Test
@@ -389,6 +423,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value(HttpStatus.OK.name()));
 
         verify(authService, times(1)).resetPassword(any());
+
+        log.info("[COMPLETE] testing controller auth resetPassword then correct");
     }
 
     @Test
@@ -409,6 +445,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.confirmPassword").value("confirm password is required"));
 
         verify(authService, times(0)).resetPassword(any());
+
+        log.info("[COMPLETE] testing controller auth resetPassword then method invalid argument blank");
     }
 
     @Test
@@ -433,6 +471,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.sub_error.confirmPassword").value("password must be minimum 8 characters"));
 
         verify(authService, times(0)).resetPassword(any());
+
+        log.info("[COMPLETE] testing controller auth resetPassword then method invalid argument not blank");
     }
 
     @Test
@@ -448,6 +488,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.data").isNotEmpty());
 
         verify(authService, times(1)).refreshToken(anyString());
+
+        log.info("[COMPLETE] testing controller auth refreshToken then correct");
     }
 
     @Test
@@ -461,5 +503,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.data").isNotEmpty());
 
         verify(authService, times(1)).token(any());
+
+        log.info("[COMPLETE] testing controller auth token oauth2 then correct");
     }
 }
