@@ -12,6 +12,8 @@ public class OAuth2UserInfoFactory {
                 return new GoogleOAuth2UserInfo(attributes);
             case FACEBOOK:
                 return new FacebookOAuth2UserInfo(attributes);
+            case TWITTER:
+                return new TwitterOAuth2UserInfo(attributes);
             default:
                 throw new OAuth2ProcessingException(String.format("Sorry! Login with %s is not supported yet.", registrationId));
         }
