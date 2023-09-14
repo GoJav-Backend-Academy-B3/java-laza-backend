@@ -29,9 +29,9 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/product")
-@RequiredArgsConstructor
 public class ProductsController {
-    private final ProductsService productsService;
+    @Autowired
+    private ProductsService productsService;
 
     @GetMapping("/{id}")
     public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
