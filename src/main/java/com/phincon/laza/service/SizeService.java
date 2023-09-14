@@ -10,7 +10,6 @@ public interface SizeService {
     List<Size> getAllSize();
     Size getSizeById(Long id) throws Exception;
     Size save( SizeRequest size) throws Exception;
-    Size getSizeByName(String size) throws Exception;
     Size update(Long id, SizeRequest size) throws  Exception;
     void delete(Long id) throws Exception;
 }

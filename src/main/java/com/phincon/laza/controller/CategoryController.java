@@ -36,14 +36,6 @@ public class CategoryController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @GetMapping("/name")
-    public ResponseEntity<DataResponse<CategoryResponse>> GetCategoryByName(@RequestParam(name = "category") String categoryName) throws Exception {
-        Category category = categoryService.getCategoryByName(categoryName);
-        CategoryResponse result = new CategoryResponse(category);
-        DataResponse<CategoryResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", result, null);
-        return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
-    }
-
     @PostMapping
     public ResponseEntity<DataResponse<CategoryResponse>> createCategory(@Valid @RequestBody CategoryRequest request) throws Exception {
         Category category = categoryService.save(request);
