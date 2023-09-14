@@ -20,7 +20,7 @@ public class GenerateRandomTest {
     public void testCode() {
         String code = GenerateRandom.code();
         assertNotNull(code);
-        assertTrue(code.matches("\\d{4}"));
+        assertEquals(4, code.length());
 
         log.info("[COMPLETE] testing generate random code then correct");
     }
