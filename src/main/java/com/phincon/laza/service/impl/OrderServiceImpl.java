@@ -1,5 +1,7 @@
 package com.phincon.laza.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.midtrans.httpclient.error.MidtransError;
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotProcessException;
 import com.phincon.laza.model.dto.request.CheckoutRequest;
@@ -8,10 +10,7 @@ import com.phincon.laza.model.entity.PaymentDetail;
 import com.phincon.laza.model.entity.PaymentMethod;
 import com.phincon.laza.model.entity.User;
 import com.phincon.laza.repository.OrderRepository;
-import com.phincon.laza.service.OrderService;
-import com.phincon.laza.service.PaymentMethodService;
-import com.phincon.laza.service.UserService;
-import com.phincon.laza.service.XenditService;
+import com.phincon.laza.service.*;
 import com.phincon.laza.utils.GenerateRandom;
 import com.phincon.laza.validator.OrderValidator;
 import com.xendit.exception.XenditException;
@@ -41,6 +40,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private XenditService xenditService;
+
+    @Autowired
+    private MidtransService midtransService;
 
     @Override
     public List<Order> getAllOrders() {
@@ -114,6 +116,10 @@ public class OrderServiceImpl implements OrderService {
                     } else if (paymentMethod.getType().equalsIgnoreCase("virtual_account")) {
                         paymentDetail = xenditService.chargeVirtualAccount(paymentMethod, order);
                     }
+                } else if (paymentMethod.getProvider().equalsIgnoreCase("midtrans")) {
+                    if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
+                        paymentDetail = midtransService.chargeGopay(paymentMethod, order, checkoutRequest.getCallbackUrl());
+                    }
                 }
             }
 
@@ -127,6 +133,8 @@ public class OrderServiceImpl implements OrderService {
             return createdOrder;
         } catch (XenditException e) {
             throw new NotProcessException(e.getMessage());
+        } catch (MidtransError | JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
