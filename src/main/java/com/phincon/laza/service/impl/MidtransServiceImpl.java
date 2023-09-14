@@ -1,9 +1,16 @@
 package com.phincon.laza.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.midtrans.httpclient.error.MidtransError;
 import com.midtrans.service.MidtransCoreApi;
+import com.phincon.laza.model.dto.midtrans.CreditCardTokenData;
+import com.phincon.laza.model.dto.midtrans.CreditCardTokenRequest;
+import com.phincon.laza.model.dto.midtrans.CreditCardTokenResponse;
+import com.phincon.laza.model.dto.midtrans.TransactionDataRequest;
+import com.phincon.laza.model.dto.midtrans.TransactionDataResponse;
+import com.phincon.laza.model.dto.midtrans.TransactionDetailsData;
 import com.phincon.laza.model.dto.midtrans.gopay.GoPayTransaction;
 import com.phincon.laza.model.dto.midtrans.gopay.TransactionAction;
 import com.phincon.laza.model.entity.Order;
@@ -36,7 +43,8 @@ public class MidtransServiceImpl implements MidtransService {
     private PaymentDetailService paymentDetailService;
 
     @Override
-    public PaymentDetail chargeGopay(PaymentMethod paymentMethod, Order order, String callbackUrl) throws MidtransError, JsonProcessingException {
+    public PaymentDetail chargeGopay(PaymentMethod paymentMethod, Order order, String callbackUrl)
+            throws MidtransError, JsonProcessingException {
         Map<String, Object> chargeParams = new HashMap<>();
 
         Map<String, Object> transactionDetails = new HashMap<>();
@@ -89,5 +97,65 @@ public class MidtransServiceImpl implements MidtransService {
 
         return paymentDetailService.createPaymentDetail(paymentDetail);
 
+    }
+
+    @Override
+    public PaymentDetail chargeCreditCard(CreditCardTokenRequest request, PaymentMethod method, Order order,
+            String callbackUrl)
+            throws MidtransError, JsonProcessingException, Exception {
+        var mapper = new ObjectMapper();
+
+        Map<String, String> requestToMap = mapper.convertValue(request,
+                new TypeReference<Map<String, String>>() {
+                });
+        JSONObject jTokenResponse = coreApi.cardToken(requestToMap);
+
+        CreditCardTokenResponse tokenResponse = mapper.convertValue(jTokenResponse.toString(),
+                CreditCardTokenResponse.class);
+        if (Integer.parseInt(tokenResponse.statusCode()) != 200) {
+            // TODO Finer exception throw
+            throw new Exception();
+        }
+
+        TransactionDataRequest transactionRequest = new TransactionDataRequest("credit_card",
+                new CreditCardTokenData(tokenResponse.tokenId()),
+                new TransactionDetailsData(order.getId(), order.getAmount()));
+        Map<String, Object> transactionRequestToMap = mapper.convertValue(transactionRequest,
+                new TypeReference<Map<String, Object>>() {
+                });
+        JSONObject jTransactionResponse = coreApi.chargeTransaction(transactionRequestToMap);
+
+        TransactionDataResponse transactionResponse = mapper.convertValue(jTransactionResponse.toString(),
+                TransactionDataResponse.class);
+
+        if (!transactionResponse.transactionStatus().equalsIgnoreCase("capture")
+                && !transactionResponse.fraudStatus().equalsIgnoreCase("accept")) {
+            // TODO final exception throwing
+            throw new Exception();
+        }
+        order.setOrderStatus(transactionResponse.transactionStatus());
+        Transaction transaction = new Transaction(null,
+                transactionResponse.transactionId(),
+                Double.valueOf(transactionResponse.grossAmount()).intValue(), transactionResponse.statusMessage(),
+                "credit_card",
+                "midtrans",
+                transactionResponse.currency(),
+                transactionResponse.transactionStatus(),
+                LocalDateTime.parse(transactionResponse.transactionTime()),
+                LocalDateTime.parse(transactionResponse.transactionTime()), order);
+        order.setTransaction(transactionService.createTransaction(transaction));
+
+        PaymentDetail paymentDetail = new PaymentDetail();
+        paymentDetail.setPaymentMethod(method.getName());
+        paymentDetail.setType(method.getType());
+        paymentDetail.setBank(transactionResponse.bank());
+        paymentDetail.setCode(method.getCode());
+        paymentDetail.setProvider(method.getProvider());
+        paymentDetail.setCreditCardNumber(transactionResponse.maskedCard());
+        paymentDetail.setRedirectUrl(transactionResponse.redirectUrl());
+
+        paymentDetail.setOrder(order);
+
+        return paymentDetailService.createPaymentDetail(paymentDetail);
     }
 }
