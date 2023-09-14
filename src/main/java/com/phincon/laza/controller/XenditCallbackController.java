@@ -52,7 +52,7 @@ public class XenditCallbackController {
 
     @PostMapping("/fva/created")
     public ResponseEntity<DataResponse<String>> callbackCreatedFVA(HttpServletRequest request, @RequestBody FVACallbackCreated body) throws XenditException {
-        System.out.println(">>>>>>>>> masuuukkkk callback fva created");
+
         if (request.getHeader("X-CALLBACK-TOKEN").equals(XENDIT_CALLBACK_TOKEN)) {
             ResponseEntity.badRequest();
         }
