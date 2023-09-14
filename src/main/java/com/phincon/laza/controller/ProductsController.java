@@ -28,13 +28,12 @@ import com.phincon.laza.service.ProductsService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/product")
 @RequiredArgsConstructor
 public class ProductsController {
     @Autowired
     private final ProductsService productsService;
 
-    @GetMapping
+    @GetMapping("/products")
     public ResponseEntity<DataResponse<List<OverviewProductResponse>>> getAll(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size) {
@@ -46,7 +45,7 @@ public class ProductsController {
         return DataResponse.ok(data, meta);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/products/{id}")
     public ResponseEntity<DataResponse<ProductsResponse>> getProductById(@PathVariable Long id) throws Exception {
         Product product = productsService.getProductById(id);
         ProductsResponse result = new ProductsResponse(product);
@@ -55,7 +54,7 @@ public class ProductsController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PostMapping
+    @PostMapping("/management/products")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> createProduct(
             @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.create(request);
@@ -65,7 +64,7 @@ public class ProductsController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/management/products/{id}")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> updateProduct(
             @PathVariable Long id,
             @ModelAttribute CreateUpdateProductRequest request) throws Exception {
@@ -90,7 +89,7 @@ public class ProductsController {
         return DataResponse.ok(data, meta);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/management/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) throws Exception {
         productsService.delete(id);
         return DataResponse.ok(null);
