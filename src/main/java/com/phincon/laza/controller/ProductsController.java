@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -54,6 +53,19 @@ public class ProductsController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
+    @GetMapping("/products/search")
+    public ResponseEntity<DataResponse<List<OverviewProductResponse>>> searchProduct(
+            @RequestParam(name = "q", required = true) String query,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
+        var productPage = productsService.findProductByName(query, page, size);
+        PaginationMeta meta = new PaginationMeta(page, size, productPage.getNumberOfElements());
+        var data = productPage.get()
+                .map(OverviewProductResponse::fromProductEntity)
+                .collect(Collectors.toList());
+        return DataResponse.ok(data, meta);
+    }
+
     @PostMapping("/management/products")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> createProduct(
             @ModelAttribute CreateUpdateProductRequest request) throws Exception {
@@ -76,20 +88,7 @@ public class ProductsController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<DataResponse<List<OverviewProductResponse>>> searchProduct(
-            @RequestParam(name = "q", required = true) String query,
-            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size) {
-        var productPage = productsService.findProductByName(query, page, size);
-        PaginationMeta meta = new PaginationMeta(page, size, productPage.getNumberOfElements());
-        var data = productPage.get()
-                .map(OverviewProductResponse::fromProductEntity)
-                .collect(Collectors.toList());
-        return DataResponse.ok(data, meta);
-    }
-
-    @DeleteMapping("/management/{id}")
+    @DeleteMapping("/management/products/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) throws Exception {
         productsService.delete(id);
         return DataResponse.ok(null);
