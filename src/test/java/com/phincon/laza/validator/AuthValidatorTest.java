@@ -82,7 +82,7 @@ public class AuthValidatorTest {
     @Test
     public void testValidateAuth_thenUsernameNull() {
         assertThrows(NotFoundException.class, () -> {
-            authValidator.validateAuthUsernameNull(null);
+            authValidator.validateAuthUsernameIsNull(null);
         });
 
         log.info("[COMPLETE] testing validate auth then username null");
@@ -91,7 +91,7 @@ public class AuthValidatorTest {
     @Test
     public void testValidateAuth_thenEmailNull() {
         assertThrows(AuthenticationException.class, () -> {
-            authValidator.validateAuthEmailNull(null);
+            authValidator.validateAuthEmailIsNull(null);
         });
 
         log.info("[COMPLETE] testing validate auth then email null");
