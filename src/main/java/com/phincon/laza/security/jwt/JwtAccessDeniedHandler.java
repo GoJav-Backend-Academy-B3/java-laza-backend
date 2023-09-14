@@ -18,11 +18,14 @@ import java.io.IOException;
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        ErrorResponse errorResponse = new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, e.getMessage(), "Forbidden");
+        ErrorResponse errorResponse = new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, e.getMessage(), null);
+
         log.warn("AccessDeniedHandler error: {}", e.getMessage());
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(), errorResponse);
+
+        response.resetBuffer();
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getOutputStream().print(new ObjectMapper().writeValueAsString(errorResponse));
+        response.flushBuffer();
     }
 }

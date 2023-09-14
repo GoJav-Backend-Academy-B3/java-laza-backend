@@ -28,10 +28,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         DataResponse<TokenResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), HttpStatus.OK.name(), token, null);
 
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.resetBuffer();
         response.setStatus(HttpServletResponse.SC_OK);
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(), dataResponse);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getOutputStream().print(new ObjectMapper().writeValueAsString(dataResponse));
+        response.flushBuffer();
 
         clearAuthenticationAttributes(request, response);
     }
