@@ -4,6 +4,8 @@ import com.phincon.laza.model.entity.ERole;
 import com.phincon.laza.security.jwt.JwtAccessDeniedHandler;
 import com.phincon.laza.security.jwt.JwtAuthenticationEntryPoint;
 import com.phincon.laza.security.jwt.JwtAuthenticationFilter;
+import com.phincon.laza.security.oauth2.OAuth2FailureHandler;
+import com.phincon.laza.security.oauth2.OAuth2SuccessHandler;
 import com.phincon.laza.security.oauth2.SysOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,8 @@ public class SecurityConfiguration {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final SysOAuth2UserService sysOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,7 +50,8 @@ public class SecurityConfiguration {
                                 .baseUri("/oauth2/callback/**"))
                         .userInfoEndpoint(user -> user
                                 .userService(sysOAuth2UserService))
-                        .defaultSuccessUrl("/auth/token", true))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
@@ -62,7 +67,7 @@ public class SecurityConfiguration {
             "/oauth2/**",
             "/size/**",
             "/category/**",
-            "/product/**",
+            "/products/**",
             "/provinces",
             "/cities",
             "/costs",

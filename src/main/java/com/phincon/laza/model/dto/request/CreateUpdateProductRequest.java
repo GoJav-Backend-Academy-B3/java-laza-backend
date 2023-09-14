@@ -10,7 +10,7 @@ public record CreateUpdateProductRequest(
         String name,
         String description,
         Integer price,
-        MultipartFile file,
+        MultipartFile imageFile,
         @JsonProperty("size_ids") List<Long> sizeIds,
         @JsonProperty("category_id") Long categoryId,
         @JsonProperty("brand_id") Long brandId) {
