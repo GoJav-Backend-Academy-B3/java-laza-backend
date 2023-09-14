@@ -112,6 +112,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateRole(RoleRequest request) {
+        roleValidator.validateRoleDuplicate(request.getRoles());
+
         Optional<User> findUser = userRepository.findByUsername(request.getUsername());
         userValidator.validateUserNotFound(findUser);
 
