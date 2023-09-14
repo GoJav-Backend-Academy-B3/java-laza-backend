@@ -28,6 +28,7 @@ public class Address {
     @Column(columnDefinition = "TEXT")
     private String fullAddress;
 
+    @Column(nullable = false)
     private String receiverName;
 
     @Column(nullable = false)
