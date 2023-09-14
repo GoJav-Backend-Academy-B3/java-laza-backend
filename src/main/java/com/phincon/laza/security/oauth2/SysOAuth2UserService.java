@@ -44,7 +44,7 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
-        authValidator.validateAuthEmailNull(oAuth2UserInfo.getEmail());
+        authValidator.validateAuthEmailIsNull(oAuth2UserInfo.getEmail());
 
         Optional<User> findUser = userRepository.findByEmail(oAuth2UserInfo.getEmail());
 
