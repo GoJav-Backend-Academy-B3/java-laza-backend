@@ -2,7 +2,6 @@ package com.phincon.laza.validator;
 
 import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.NotFoundException;
-import com.phincon.laza.exception.custom.NotProcessException;
 import com.phincon.laza.model.entity.ERole;
 import com.phincon.laza.model.entity.Role;
 import com.phincon.laza.model.entity.User;
@@ -16,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.HashSet;
@@ -90,7 +90,7 @@ public class AuthValidatorTest {
 
     @Test
     public void testValidateAuth_thenEmailNull() {
-        assertThrows(NotProcessException.class, () -> {
+        assertThrows(AuthenticationException.class, () -> {
             authValidator.validateAuthEmailNull(null);
         });
 
