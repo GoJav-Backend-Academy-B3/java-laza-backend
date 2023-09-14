@@ -19,7 +19,7 @@ public class ImageUploadInterceptor implements HandlerInterceptor {
         if (!request.getMethod().equalsIgnoreCase("POST") && !request.getMethod().equalsIgnoreCase("PUT")) {
             return true;
         }
-        var parts = request.getPart("image_file");
+        var parts = request.getPart("imageFile");
         if (parts == null) return true;
         String contentType = parts.getContentType();
         long size = parts.getSize();

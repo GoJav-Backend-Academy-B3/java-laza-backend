@@ -62,7 +62,7 @@ public class SecurityConfiguration {
             "/oauth2/**",
             "/size/**",
             "/category/**",
-            "/product/**",
+            "/products/**",
             "/provinces",
             "/cities",
             "/costs",

@@ -15,6 +15,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
             .addPathPatterns(
                 "/management/brands/**", 
                 "/users/update", 
-                "/product/**");  
+                "/management/products/**");  
     }
 }
