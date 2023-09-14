@@ -1,6 +1,6 @@
 package com.phincon.laza.service.impl;
 
-import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
+import com.phincon.laza.model.dto.cloudinary.CloudinaryUploadResult;
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
 import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;
@@ -9,6 +9,7 @@ import com.phincon.laza.repository.ProviderRepository;
 import com.phincon.laza.repository.RoleRepository;
 import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.service.UserService;
+import com.phincon.laza.validator.FileValidator;
 import com.phincon.laza.validator.ProviderValidator;
 import com.phincon.laza.validator.RoleValidator;
 import com.phincon.laza.validator.UserValidator;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final RoleValidator roleValidator;
     private final ProviderRepository providerRepository;
     private final ProviderValidator providerValidator;
+    private final FileValidator fileValidator;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryImageServiceImpl cloudinaryImageService;
 
@@ -63,19 +65,20 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
         if (!findUser.get().getUsername().equals(findByUsername.get().getUsername())) {
-            userValidator.validateUsernameIsExists(findByUsername);
+            userValidator.validateUserUsernameIsExists(findByUsername);
             findUser.get().setUsername(request.getUsername());
         }
 
         Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
         if (!findUser.get().getEmail().equals(findByEmail.get().getEmail())) {
-            userValidator.validateEmailIsExists(findByEmail);
+            userValidator.validateUserEmailIsExists(findByEmail);
 
             findUser.get().setEmail(request.getEmail());
             findUser.get().setVerified(false);
         }
 
         if (Objects.nonNull(request.getImage())) {
+            fileValidator.validateMultipartFile(request.getImage());
             CloudinaryUploadResult image = cloudinaryImageService.upload(request.getImage(), "user");
             findUser.get().setImageUrl(image.secureUrl());
         }

@@ -7,6 +7,7 @@ import com.phincon.laza.service.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,11 +16,7 @@ public class ProvinceServiceImpl implements ProvinceService {
     private ProvinceRepository provinceRepository;
 
     @Override
-    public Boolean existProvince(String provinceId) {
-        Optional<Province> province = provinceRepository.findById(provinceId);
-        if (province.isEmpty()){
-            throw new NotFoundException("Province not found");
-        }
-        return true;
+    public List<Province> findAllProvince() {
+        return provinceRepository.findAll();
     }
 }

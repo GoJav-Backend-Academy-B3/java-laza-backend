@@ -11,12 +11,14 @@ import com.phincon.laza.service.UserService;
 import com.phincon.laza.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 
 @Service
+@Transactional
 public class WishlistServiceImpl implements WishlistService {
 
     @Autowired
@@ -27,11 +29,12 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     public Product createWishlist(String userId,WishlistRequest wishlistRequest) throws Exception {
         Optional<Product> product1Wishlist = productsRepository.findByIdAndWishlistById(wishlistRequest.getProductId(),userId);
-        User user = userRepository.findById(userId).get();
+        Optional<User> user = userRepository.findById(userId);
+        User userWishlist = user.get();
 
         if (product1Wishlist.isPresent()){
-            user.removeProductWishlist(wishlistRequest.getProductId());
-            userRepository.save(user);
+            userWishlist.removeProductWishlist(wishlistRequest.getProductId());
+            userRepository.save(userWishlist);
             return product1Wishlist.get();
         }
 
@@ -39,8 +42,8 @@ public class WishlistServiceImpl implements WishlistService {
         if (product.isEmpty()){
             throw new NotFoundException("Product not found");
         }
-        user.addWishlist(product.get());
-        userRepository.save(user);
+        userWishlist.addWishlist(product.get());
+        userRepository.save(userWishlist);
         return product.get();
     }
 

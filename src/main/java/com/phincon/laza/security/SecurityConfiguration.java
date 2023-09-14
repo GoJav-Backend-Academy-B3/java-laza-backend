@@ -4,7 +4,6 @@ import com.phincon.laza.model.entity.ERole;
 import com.phincon.laza.security.jwt.JwtAccessDeniedHandler;
 import com.phincon.laza.security.jwt.JwtAuthenticationEntryPoint;
 import com.phincon.laza.security.jwt.JwtAuthenticationFilter;
-import com.phincon.laza.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.phincon.laza.security.oauth2.SysOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +27,6 @@ public class SecurityConfiguration {
     private final SysOAuth2UserService sysOAuth2UserService;
 
     @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf
@@ -47,8 +41,7 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(endpoint -> endpoint
-                                .baseUri("/oauth2/authorize")
-                                .authorizationRequestRepository(cookieAuthorizationRequestRepository()))
+                                .baseUri("/oauth2/authorize"))
                         .redirectionEndpoint(redirect -> redirect
                                 .baseUri("/oauth2/callback/**"))
                         .userInfoEndpoint(user -> user
@@ -69,7 +62,7 @@ public class SecurityConfiguration {
             "/oauth2/**",
             "/size/**",
             "/category/**",
-            "/product/**",
+            "/products/**",
             "/provinces",
             "/cities",
             "/costs",

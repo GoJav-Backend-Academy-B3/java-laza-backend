@@ -1,27 +1,18 @@
 package com.phincon.laza.service.impl;
 
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.rajaongkir.*;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.model.entity.City;
-import com.phincon.laza.model.entity.Province;
 import com.phincon.laza.repository.CityRepository;
-import com.phincon.laza.repository.ProvinceRepository;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.service.RajaongkirService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import java.lang.reflect.Field;
-import java.sql.Struct;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,51 +20,21 @@ public class RajaongkirServiceImpl implements RajaongkirService {
 
     @Autowired
     private RajaongkirRepository rajaongkirRepository;
-    @Autowired
-    private ProvinceRepository provinceRepository;
 
     @Autowired
     private CityRepository cityRepository;
 
-    @Override
-    public List<ProvinceResponse> findAllProvince() {
-        AllProvinceResponse provinceResponse = rajaongkirRepository.findAllProvince();
-        return provinceResponse.getResults();
-    }
-
-
-    @Override
-    public List<CityResponse> findAllCityByProvinceId(String provinceId) {
-        AllCityResponse cityResponse = rajaongkirRepository.findCityByProvinceId(provinceId);
-        return cityResponse.getResults();
-    }
-
-    @Override
-    public void existsProvince(String provinceName) {
-        AllProvinceResponse allProvinces = rajaongkirRepository.findAllProvince();
-        for (ProvinceResponse province: allProvinces.getResults()){
-            if (province.getProvince().toLowerCase().equals(provinceName)){
-               return;
-            }
-        }
-        throw new NotFoundException("Province doesn't exists");
-    }
-
-    @Override
-    public void existsCity(String cityName) {
-        AllCityResponse allCityResponse = rajaongkirRepository.findCityByProvinceId("");
-        for (CityResponse city: allCityResponse.getResults()){
-            if (Objects.equals(city.getCity_name().toLowerCase(), cityName)){
-                return;
-            }
-        }
-        throw new NotFoundException("City doesn't exists");
-    }
 
     @Override
     public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception{
+
+        if (cityRepository.findById(roCostRequest.getOrigin()).isEmpty()){
+            throw new NotFoundException("Origin city not found");
+        }
+
+        if (cityRepository.findById(roCostRequest.getDestination()).isEmpty()){
+            throw new NotFoundException("Destination city not found");
+        }
         return rajaongkirRepository.findCostCourierService(roCostRequest).getResults();
     }
-
-
 }

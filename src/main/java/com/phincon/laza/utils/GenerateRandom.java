@@ -11,7 +11,7 @@ public class GenerateRandom {
 
     public static String code() {
         Random random = new Random();
-        int min = 0000;
+        int min = 1000;
         int max = 9999;
         int randomNumber = random.nextInt(max - min + 1) + min;
         return String.valueOf(randomNumber);

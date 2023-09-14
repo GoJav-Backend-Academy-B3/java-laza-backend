@@ -1,6 +1,7 @@
 package com.phincon.laza.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
@@ -23,15 +24,11 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String provinceName;
-
-    @Column(nullable = false)
-    private String cityName;
 
     @Column(columnDefinition = "TEXT")
     private String fullAddress;
 
+    @Column(nullable = false)
     private String receiverName;
 
     @Column(nullable = false)
@@ -39,6 +36,11 @@ public class Address {
 
     @Column(nullable = false)
     private boolean isPrimary;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id",nullable = false)
+    @JsonManagedReference
+    private City city;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)

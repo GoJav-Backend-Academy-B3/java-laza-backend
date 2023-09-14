@@ -29,4 +29,9 @@ public class Size {
     @JsonIgnore
     private Boolean isDeleted = false;
 
+    public Size(long id, String size) {
+        this.id = id;
+        this.size = size;
+    }
+
 }
