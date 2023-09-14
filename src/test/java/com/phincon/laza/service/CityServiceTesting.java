@@ -39,8 +39,9 @@ public class CityServiceTesting {
     @Test
     @DisplayName("[CityService] findAllCity")
     void whenFindAllCity_thenCorrectResponse(){
-        when(cityRepository.findAll()).thenReturn(cities);
-        List<City> result = cityService.findAllCity();
+        String provinceId = "55";
+        when(cityRepository.findByProvincesProvinceId(provinceId)).thenReturn(cities);
+        List<City> result = cityService.findAllCity(provinceId);
         assertEquals(cities, result);
         assertEquals(cities.get(0), result.get(0));
         assertEquals(cities.get(1), result.get(1));
