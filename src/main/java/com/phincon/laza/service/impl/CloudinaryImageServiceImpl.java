@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
+import com.phincon.laza.model.dto.cloudinary.CloudinaryUploadResult;
 import com.phincon.laza.service.CloudinaryImageService;
 
 import lombok.extern.slf4j.Slf4j;

@@ -8,7 +8,7 @@ import java.nio.file.StandardOpenOption;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
+import com.phincon.laza.model.dto.cloudinary.CloudinaryUploadResult;
 import com.phincon.laza.service.CloudinaryImageService;
 
 @Service

@@ -1,6 +1,6 @@
 package com.phincon.laza.service.impl;
 
-import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
+import com.phincon.laza.model.dto.cloudinary.CloudinaryUploadResult;
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
 import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;

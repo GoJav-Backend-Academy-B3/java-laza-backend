@@ -1,7 +1,7 @@
 package com.phincon.laza.service.impl;
 
 import com.phincon.laza.exception.custom.ConflictException;
-import com.phincon.laza.model.dto.other.CloudinaryUploadResult;
+import com.phincon.laza.model.dto.cloudinary.CloudinaryUploadResult;
 import com.phincon.laza.model.entity.PaymentMethod;
 import com.phincon.laza.repository.PaymentMethodRepository;
 import com.phincon.laza.service.PaymentMethodService;
