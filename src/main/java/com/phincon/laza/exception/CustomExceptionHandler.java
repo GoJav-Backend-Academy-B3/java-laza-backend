@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.thymeleaf.exceptions.TemplateInputException;
 
 import java.util.HashMap;
@@ -62,6 +63,13 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), null);
         log.warn("ConflictException: {}", e.getMessage());
+        return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse);
+    }
+
+    @ExceptionHandler(value = MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE.value(), e.getMessage(), null);
+        log.warn("MaxUploadSizeExceededException: {}", e.getMessage());
         return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse);
     }
 
