@@ -3,6 +3,7 @@ package com.phincon.laza.validator;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.entity.Role;
 import com.phincon.laza.repository.RoleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class RoleValidatorTest {
     @Mock
@@ -38,5 +40,7 @@ public class RoleValidatorTest {
         assertThrows(NotFoundException.class, () -> {
             roleValidator.validateRoleNotFound(findRole);
         });
+
+        log.info("[COMPLETE] testing validate role then not found");
     }
 }

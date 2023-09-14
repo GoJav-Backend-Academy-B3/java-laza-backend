@@ -27,13 +27,12 @@ public class RajaongkirServiceImpl implements RajaongkirService {
 
     @Override
     public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception{
-        Optional<City> origin = cityRepository.findById(roCostRequest.getOrigin());
-        if (origin.isEmpty()){
+
+        if (cityRepository.findById(roCostRequest.getOrigin()).isEmpty()){
             throw new NotFoundException("Origin city not found");
         }
 
-        Optional<City> destination = cityRepository.findById(roCostRequest.getDestination());
-        if (destination.isEmpty()){
+        if (cityRepository.findById(roCostRequest.getDestination()).isEmpty()){
             throw new NotFoundException("Destination city not found");
         }
         return rajaongkirRepository.findCostCourierService(roCostRequest).getResults();

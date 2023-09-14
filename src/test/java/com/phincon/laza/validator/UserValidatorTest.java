@@ -9,6 +9,7 @@ import com.phincon.laza.model.entity.Provider;
 import com.phincon.laza.model.entity.User;
 import com.phincon.laza.repository.ProviderRepository;
 import com.phincon.laza.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class UserValidatorTest {
     @Mock
@@ -53,6 +55,8 @@ public class UserValidatorTest {
         assertThrows(NotFoundException.class, () -> {
             userValidator.validateUserNotFound(findUser);
         });
+
+        log.info("[COMPLETE] testing validate user then not found");
     }
 
     @Test
@@ -63,6 +67,8 @@ public class UserValidatorTest {
         assertThrows(ConflictException.class, () -> {
             userValidator.validateUserUsernameIsExists(findUser);
         });
+
+        log.info("[COMPLETE] testing validate user then username exists");
     }
 
     @Test
@@ -71,8 +77,10 @@ public class UserValidatorTest {
         lenient().when(userRepository.findById(anyString())).thenReturn(findUser);
 
         assertThrows(ConflictException.class, () -> {
-            userValidator.validateUserUsernameIsExists(findUser);
+            userValidator.validateUserEmailIsExists(findUser);
         });
+
+        log.info("[COMPLETE] testing validate user then email exists");
     }
 
     @Test
@@ -83,6 +91,8 @@ public class UserValidatorTest {
         assertThrows(BadRequestException.class, () -> {
             userValidator.validateUserNotIsVerified(findUser);
         });
+
+        log.info("[COMPLETE] testing validate user then not verified");
     }
 
     @Test
@@ -96,6 +106,8 @@ public class UserValidatorTest {
         assertThrows(BadRequestException.class, () -> {
             userValidator.validateUserBadCredentials(findUser, "password");
         });
+
+        log.info("[COMPLETE] testing validate user then bad credentials");
     }
 
     @Test
@@ -113,6 +125,8 @@ public class UserValidatorTest {
         assertThrows(NotProcessException.class, () -> {
             userValidator.validateUserBadProviderLocal(findUser);
         });
+
+        log.info("[COMPLETE] testing validate user then bad provider local");
     }
 
     @Test
@@ -130,6 +144,8 @@ public class UserValidatorTest {
         assertThrows(NotProcessException.class, () -> {
             userValidator.validateUserNotEqualProvider(findUser, "local");
         });
+
+        log.info("[COMPLETE] testing validate user then not equals provider");
     }
 
     @Test
@@ -137,6 +153,8 @@ public class UserValidatorTest {
         assertThrows(BadRequestException.class, () -> {
             userValidator.validateUserPasswordNotMatch("pass", "password");
         });
+
+        log.info("[COMPLETE] testing validate user then password not match");
     }
 
     @Test
@@ -144,5 +162,7 @@ public class UserValidatorTest {
         assertThrows(BadRequestException.class, () -> {
             userValidator.validateUserInvalidOldPassword(passwordEncoder.encode("pass"), "password");
         });
+
+        log.info("[COMPLETE] testing validate user then invalid old password");
     }
 }

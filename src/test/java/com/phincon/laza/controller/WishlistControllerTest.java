@@ -23,22 +23,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-<<<<<<< HEAD
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
-=======
->>>>>>> dev
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-<<<<<<< HEAD
 import static org.mockito.Mockito.when;
-=======
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
->>>>>>> dev
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import java.time.LocalDateTime;
