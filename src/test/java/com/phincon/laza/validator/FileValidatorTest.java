@@ -1,6 +1,7 @@
 package com.phincon.laza.validator;
 
 import com.phincon.laza.exception.custom.BadRequestException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class FileValidatorTest {
     @InjectMocks
@@ -32,6 +34,8 @@ public class FileValidatorTest {
         );
 
         fileValidator.validateMultipartFile(file);
+
+        log.info("[COMPLETE] testing validate file jpg then correct");
     }
 
     @Test
@@ -44,6 +48,8 @@ public class FileValidatorTest {
         );
 
         fileValidator.validateMultipartFile(file);
+
+        log.info("[COMPLETE] testing validate file jpeg then correct");
     }
 
     @Test
@@ -56,6 +62,8 @@ public class FileValidatorTest {
         );
 
         fileValidator.validateMultipartFile(file);
+
+        log.info("[COMPLETE] testing validate file png then correct");
     }
 
     @Test
@@ -68,6 +76,8 @@ public class FileValidatorTest {
         );
 
         fileValidator.validateMultipartFile(file);
+
+        log.info("[COMPLETE] testing validate file webp then correct");
     }
 
 
@@ -83,6 +93,8 @@ public class FileValidatorTest {
         assertThrows(BadRequestException.class, () -> {
             fileValidator.validateMultipartFile(file);
         });
+
+        log.info("[COMPLETE] testing validate file pdf then invalid content type file");
     }
 
     @Test
@@ -97,5 +109,7 @@ public class FileValidatorTest {
         assertThrows(BadRequestException.class, () -> {
             fileValidator.validateMultipartFile(file);
         });
+
+        log.info("[COMPLETE] testing validate file jpg then max file size");
     }
 }

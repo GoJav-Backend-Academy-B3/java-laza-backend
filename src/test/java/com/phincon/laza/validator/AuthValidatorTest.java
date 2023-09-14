@@ -8,6 +8,7 @@ import com.phincon.laza.model.entity.Role;
 import com.phincon.laza.model.entity.User;
 import com.phincon.laza.security.jwt.JwtService;
 import com.phincon.laza.security.userdetails.SysUserDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class AuthValidatorTest {
     @Mock
@@ -40,6 +42,8 @@ public class AuthValidatorTest {
         assertThrows(NotFoundException.class, () -> {
             authValidator.validateAuthHeaderNotFound("random header");
         });
+
+        log.info("[COMPLETE] testing validate auth then header not found");
     }
 
     @Test
@@ -71,6 +75,8 @@ public class AuthValidatorTest {
         assertThrows(BadRequestException.class, () -> {
             authValidator.validateAuthTokenInvalid(String.format("Bearer %s", refreshToken), user1Details);
         });
+
+        log.info("[COMPLETE] testing validate auth then token invalid");
     }
 
     @Test
@@ -78,6 +84,8 @@ public class AuthValidatorTest {
         assertThrows(NotFoundException.class, () -> {
             authValidator.validateAuthUsernameNull(null);
         });
+
+        log.info("[COMPLETE] testing validate auth then username null");
     }
 
     @Test
@@ -85,5 +93,7 @@ public class AuthValidatorTest {
         assertThrows(NotProcessException.class, () -> {
             authValidator.validateAuthEmailNull(null);
         });
+
+        log.info("[COMPLETE] testing validate auth then email null");
     }
 }

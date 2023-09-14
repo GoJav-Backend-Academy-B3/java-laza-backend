@@ -3,6 +3,7 @@ package com.phincon.laza.repository;
 import com.phincon.laza.model.entity.Provider;
 import com.phincon.laza.model.entity.Role;
 import com.phincon.laza.model.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -55,6 +57,8 @@ public class UserRepositoryTest {
         List<User> listUser = userRepository.findAll();
 
         assertEquals(2, listUser.size());
+
+        log.info("[COMPLETE] testing repository user save all and find all then correct");
     }
 
     @Test
@@ -76,6 +80,8 @@ public class UserRepositoryTest {
 
         assertTrue(findUser.isPresent());
         assertEquals(findUser.get().getId(), user.getId());
+
+        log.info("[COMPLETE] testing repository user save and find by id then correct");
     }
 
     @Test
@@ -97,6 +103,8 @@ public class UserRepositoryTest {
 
         assertTrue(findUser.isPresent());
         assertEquals(findUser.get().getUsername(), user.getUsername());
+
+        log.info("[COMPLETE] testing repository user save and find by username then correct");
     }
 
     @Test
@@ -127,6 +135,8 @@ public class UserRepositoryTest {
         assertEquals(findUser.get().getName(), user.getName());
         assertEquals(findUser.get().getUsername(), user.getUsername());
         assertEquals(findUser.get().getEmail(), user.getEmail());
+
+        log.info("[COMPLETE] testing repository user update and findById then correct");
     }
 
 }

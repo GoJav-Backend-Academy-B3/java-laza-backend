@@ -1,15 +1,19 @@
 package com.phincon.laza.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 public class GenerateRandomTest {
     @Test
     public void testToken() {
         String token = GenerateRandom.token();
         assertNotNull(token);
         assertEquals(32, token.length());
+
+        log.info("[COMPLETE] testing generate random token then correct");
     }
 
     @Test
@@ -17,5 +21,7 @@ public class GenerateRandomTest {
         String code = GenerateRandom.code();
         assertNotNull(code);
         assertTrue(code.matches("\\d{4}"));
+
+        log.info("[COMPLETE] testing generate random code then correct");
     }
 }

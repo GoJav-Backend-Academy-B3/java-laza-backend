@@ -5,6 +5,7 @@ import com.phincon.laza.model.entity.Role;
 import com.phincon.laza.model.entity.User;
 import com.phincon.laza.model.entity.VerificationCode;
 import com.phincon.laza.utils.GenerateRandom;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -61,5 +63,7 @@ public class VerificationCodeRepositoryTest {
         assertTrue(findCode.isPresent());
         assertEquals(findCode.get().getCode(), verificationCode.getCode());
         assertEquals(findCode.get().getUser().getId(), user.getId());
+
+        log.info("[COMPLETE] testing repository verification code findByCode then correct");
     }
 }

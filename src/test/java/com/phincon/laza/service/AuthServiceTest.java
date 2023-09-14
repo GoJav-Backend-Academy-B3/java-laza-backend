@@ -9,6 +9,7 @@ import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.impl.AuthServiceImpl;
 import com.phincon.laza.utils.GenerateRandom;
 import com.phincon.laza.validator.*;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
     @Mock
@@ -138,6 +140,8 @@ public class AuthServiceTest {
         assertNotNull(tokenResponse);
 
         verify(userRepository, times(1)).findByUsername(anyString());
+
+        log.info("[COMPLETE] testing service auth login then correct");
     }
 
     @Test
@@ -163,6 +167,8 @@ public class AuthServiceTest {
         verify(roleRepository, times(1)).findByName(any());
         verify(providerRepository, times(1)).findByName(any());
         verify(verificationTokenRepository, times(1)).save(any());
+
+        log.info("[COMPLETE] testing service auth register then correct");
     }
 
     @Test
@@ -174,6 +180,8 @@ public class AuthServiceTest {
 
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(verificationTokenRepository, times(1)).save(any());
+
+        log.info("[COMPLETE] testing service auth registerResend then correct");
     }
 
     @Test
@@ -185,6 +193,8 @@ public class AuthServiceTest {
         verify(userRepository, times(1)).save(any());
         verify(verificationTokenRepository, times(1)).findByToken(anyString());
         verify(verificationTokenRepository, times(1)).save(any());
+
+        log.info("[COMPLETE] testing service auth registerConfirm then correct");
     }
 
     @Test
@@ -196,6 +206,8 @@ public class AuthServiceTest {
 
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(verificationCodeRepository, times(1)).save(any());
+
+        log.info("[COMPLETE] testing service auth forgotPassword then correct");
     }
 
     @Test
@@ -209,6 +221,8 @@ public class AuthServiceTest {
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(verificationCodeRepository, times(1)).findByCodeAndUserId(anyString(), any());
         verify(verificationCodeRepository, times(1)).save(any());
+
+        log.info("[COMPLETE] testing service auth forgotPasswordConfirm then correct");
     }
 
     @Test
@@ -224,6 +238,8 @@ public class AuthServiceTest {
         verify(userRepository, times(1)).findByEmail(anyString());
         verify(userRepository, times(1)).save(any());
         verify(verificationCodeRepository, times(1)).findByCodeAndUserId(anyString(), any());
+
+        log.info("[COMPLETE] testing service auth resetPassword then correct");
     }
 
     @Test
@@ -252,6 +268,8 @@ public class AuthServiceTest {
         assertEquals("valid_refresh_token", tokenResponse.getRefreshToken());
 
         verify(userRepository, times(1)).findByUsername(anyString());
+
+        log.info("[COMPLETE] testing service auth refreshToken then correct");
     }
 
     @Test
@@ -272,5 +290,7 @@ public class AuthServiceTest {
         assertNotNull(token);
 
         verify(userRepository, times(1)).findByUsername(anyString());
+
+        log.info("[COMPLETE] testing service auth token oauth2 then correct");
     }
 }
