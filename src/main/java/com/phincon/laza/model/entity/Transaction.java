@@ -40,7 +40,7 @@ public class Transaction {
 
     private LocalDateTime updatedAt;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="order_id", nullable=false)
     @JsonIgnore
     private Order order;

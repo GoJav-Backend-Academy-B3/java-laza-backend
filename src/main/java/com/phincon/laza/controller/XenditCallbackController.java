@@ -3,6 +3,7 @@ package com.phincon.laza.controller;
 
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.xendit.ewallet.EwalletCallbackRequest;
+import com.phincon.laza.model.dto.xendit.fva.FVACallbackCreated;
 import com.phincon.laza.model.dto.xendit.fva.FVACallbackRequest;
 import com.phincon.laza.service.XenditCallbackService;
 import com.xendit.exception.XenditException;
@@ -12,9 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController(value = "callback")
+@RestController
+@RequestMapping(value = "/callback")
 public class XenditCallbackController {
 
     @Value("${xendit.callback.token}")
@@ -42,7 +45,19 @@ public class XenditCallbackController {
             ResponseEntity.badRequest();
         }
 
-        xenditCallbackService.callbackFVA(body);
+        xenditCallbackService.callbackFVAPaid(body);
+
+        return DataResponse.ok("callback accepted");
+    }
+
+    @PostMapping("/fva/created")
+    public ResponseEntity<DataResponse<String>> callbackCreatedFVA(HttpServletRequest request, @RequestBody FVACallbackCreated body) throws XenditException {
+        System.out.println(">>>>>>>>> masuuukkkk callback fva created");
+        if (request.getHeader("X-CALLBACK-TOKEN").equals(XENDIT_CALLBACK_TOKEN)) {
+            ResponseEntity.badRequest();
+        }
+
+        xenditCallbackService.callbackFVACreate(body);
 
         return DataResponse.ok("callback accepted");
     }
