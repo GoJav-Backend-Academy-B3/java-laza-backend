@@ -3,10 +3,7 @@ package com.phincon.laza.service.impl;
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotProcessException;
 import com.phincon.laza.model.dto.request.CheckoutRequest;
-import com.phincon.laza.model.entity.Order;
-import com.phincon.laza.model.entity.PaymentDetail;
-import com.phincon.laza.model.entity.PaymentMethod;
-import com.phincon.laza.model.entity.User;
+import com.phincon.laza.model.entity.*;
 import com.phincon.laza.repository.OrderRepository;
 import com.phincon.laza.service.OrderService;
 import com.phincon.laza.service.PaymentMethodService;
@@ -21,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -138,6 +136,17 @@ public class OrderServiceImpl implements OrderService {
 
         updatedOrder.setId(id);
         return orderRepository.save(updatedOrder);
+    }
+
+    @Override
+    public Order addOrderTransaction(Order order, Transaction transaction) {
+        if (order.getTransaction() == null) {
+            List<Transaction> transactions = new ArrayList<>();
+            order.setTransaction(transactions);
+        }
+
+        order.getTransaction().add(transaction);
+        return order;
     }
 
     @Override
