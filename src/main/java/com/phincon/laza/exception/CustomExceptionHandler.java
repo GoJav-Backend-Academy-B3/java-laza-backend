@@ -30,7 +30,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         Map<String, Object> mapError = new HashMap<>();
         e.getFieldErrors().forEach(error -> mapError.put(error.getField(), error.getDefaultMessage()));
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Error validation", mapError);
@@ -39,7 +39,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(IllegalArgumentException e) {
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
         log.warn("IllegalArgumentException: {}", e.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
@@ -53,7 +53,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(value = NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage(), null);
         log.warn("NotFoundException: {}", e.getMessage());
         return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse);
@@ -74,7 +74,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(value = NotProcessException.class)
-    public ResponseEntity<ErrorResponse> handleNotProcess(NotProcessException e) {
+    public ResponseEntity<ErrorResponse> handleNotProcessException(NotProcessException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage(), null);
         log.warn("NotProcessException: {}", e.getMessage());
         return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse);
