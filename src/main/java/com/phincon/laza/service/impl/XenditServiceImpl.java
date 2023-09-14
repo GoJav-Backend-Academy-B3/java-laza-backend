@@ -61,7 +61,7 @@ public class XenditServiceImpl implements XenditService {
         transaction.setOrder(order);
         transaction.setReferenceId(eWalletCharge.getId());
         transaction.setAmount(Integer.valueOf(eWalletCharge.getChargeAmount()));
-        transaction.setType("invoice");
+        transaction.setType("e-wallet");
         transaction.setProvider("xendit");
         transaction.setCurrency(eWalletCharge.getCurrency());
         transaction.setTransactionStatus(eWalletCharge.getStatus());
