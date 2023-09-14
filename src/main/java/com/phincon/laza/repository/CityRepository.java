@@ -9,7 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface CityRepository extends JpaRepository<City, String > {
-//    Boolean existsByCityNameAndProvinces(String cityName, String provinceId);
-
     Optional<City> findByCityNameIgnoreCaseAndProvincesProvinceId(String name, String provinceId);
 }
