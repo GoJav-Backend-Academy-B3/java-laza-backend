@@ -234,7 +234,6 @@ public class AuthControllerTest {
         verify(authService, times(1)).registerResend(any());
 
         log.info("[COMPLETE] testing controller auth registerResend then correct");
-
     }
 
     @Test
