@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import com.phincon.laza.model.entity.CreditCard;
-import com.phincon.laza.model.entity.User;
 
 
 @TestConfiguration
@@ -22,5 +21,11 @@ public class CreditCardDataConfig {
             new CreditCard("cc02", "2503234676183548", 3, 24, null),
             new CreditCard("cc03", "3881845703890574", 10, 24, null)
         );
+    }
+
+    @Bean
+    @Qualifier("cc.one")
+    public CreditCard creditCardOne() {
+        return new CreditCard("cc009", "5391887052246895", 4, 26, null);
     }
 }
