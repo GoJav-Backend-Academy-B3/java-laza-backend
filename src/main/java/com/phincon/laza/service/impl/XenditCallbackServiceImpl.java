@@ -63,12 +63,11 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         transaction.setTransactionStatus("SUCCEEDED");
         transaction.setUpdatedAt(convertDateTime(fvaCallbackRequest.getUpdated()));
 
-        // todo: implement overpayment
         if (fvaCallbackRequest.getAmount() == order.getAmount()) {
             order.setOrderStatus("paid");
-        } else if (fvaCallbackRequest.getAmount() > order.getAmount()) { // todo: implement overpayment
+        } else if (fvaCallbackRequest.getAmount() > order.getAmount()) {
             order.setOrderStatus("overpayment");
-        } else if (fvaCallbackRequest.getAmount() < order.getAmount()) { // todo: implement insufficient payment
+        } else if (fvaCallbackRequest.getAmount() < order.getAmount()) {
             order.setOrderStatus("insufficient payment");
         }
 
