@@ -21,6 +21,7 @@ public class CreditCard {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(unique = true)
     @NotBlank(message = "card number is mandatory")
     private String cardNumber;
 
