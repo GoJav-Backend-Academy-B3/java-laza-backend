@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,17 +23,25 @@ public class PaymentMethod {
     private Long id;
 
     @NotBlank
+    @Column(nullable = false)
     private String name;
 
     private String code;
 
     @NotBlank
+    @Column(nullable = false)
     private String type;
 
     @NotBlank
+    @Column(nullable = false)
     private String provider;
 
+    @NotNull
+    @Column(nullable = false)
+    private Integer adminFee;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Column(nullable = false)
     private Boolean isActive;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
