@@ -61,7 +61,7 @@ public class UserValidatorTest {
     }
 
     @Test
-    public void testValidateUser_thenUsernameExists() {
+    public void testValidateUser_thenUsernameIsExists() {
         Optional<User> findUser = Optional.of(new User());
         lenient().when(userRepository.findById(anyString())).thenReturn(findUser);
 
@@ -73,7 +73,7 @@ public class UserValidatorTest {
     }
 
     @Test
-    public void testValidateUser_thenEmailExists() {
+    public void testValidateUser_thenEmailIsExists() {
         Optional<User> findUser = Optional.of(new User());
         lenient().when(userRepository.findById(anyString())).thenReturn(findUser);
 
@@ -101,7 +101,7 @@ public class UserValidatorTest {
         Optional<User> findUser = Optional.of(new User());
         lenient().when(userRepository.findById(anyString())).thenReturn(findUser);
 
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(NotProcessException.class, () -> {
             userValidator.validateUserNotIsVerified(findUser);
         });
 

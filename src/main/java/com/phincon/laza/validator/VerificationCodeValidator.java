@@ -1,6 +1,5 @@
 package com.phincon.laza.validator;
 
-import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.exception.custom.NotProcessException;
 import com.phincon.laza.model.entity.VerificationCode;
@@ -26,7 +25,7 @@ public class VerificationCodeValidator {
 
     public void validateVerificationCodeNotAlreadyConfirm(Optional<VerificationCode> findCode) {
         if (Objects.isNull(findCode.get().getConfirmedAt())) {
-            throw new BadRequestException("Account is not already verification!, please verification");
+            throw new NotProcessException("Account is not already verification code!, please verification code");
         }
     }
 
