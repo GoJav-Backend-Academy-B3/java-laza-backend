@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
@@ -20,6 +21,8 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     Address findFirstByUserIdOrderByCreatedAtDesc(String userId);
 
     List<Address> findAllByUserId(String userId);
+
+    Optional<Address> findByIdAndUserId(Long id, String userId);
 
     Integer countByUserId(String userId);
 }

@@ -10,8 +10,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,8 +48,8 @@ public class AddressController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) throws Exception {
-        Address address = addressService.findById(id);
+    public ResponseEntity<?> getById(@CurrentUser SysUserDetails ctx, @PathVariable Long id) throws Exception {
+        Address address = addressService.findByIdAndByUserId(ctx.getId(), id);
 
         DataResponse<Address> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
@@ -76,8 +74,8 @@ public class AddressController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) throws Exception {
-        addressService.delete(id);
+    public ResponseEntity<?> delete(@CurrentUser SysUserDetails ctx, @PathVariable Long id) throws Exception {
+        addressService.delete(ctx.getId(), id);
 
         DataResponse<Address> dataResponse = new DataResponse<>(
                 HttpStatus.OK.value(),
