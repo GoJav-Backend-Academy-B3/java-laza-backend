@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 @Configuration
 public class RajaongkirConfig {
 
-    @Value("${rajaongkir.key}")
+    @Value("${com.phincon.laza.rajaongkir.key}")
     private String RAJAONGKIR_KEY;
 
     public HttpEntity<String> headerConfig(String... params){
