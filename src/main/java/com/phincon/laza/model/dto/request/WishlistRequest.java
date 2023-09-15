@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WishlistRequest {
-    @NotNull(message = "ProductId is required")
-    private Long productId;
+    @NotNull(message = "product_id is required")
+    private Long product_id;
 }
