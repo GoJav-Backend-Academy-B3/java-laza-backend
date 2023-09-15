@@ -60,6 +60,7 @@ public class SecurityConfiguration {
             "/error",
             "/auth/**",
             "/oauth2/**",
+            "/rmq/**",
             "/size/**",
             "/category/**",
             "/product/**",
