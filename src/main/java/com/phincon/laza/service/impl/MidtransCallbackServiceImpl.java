@@ -46,16 +46,20 @@ public class MidtransCallbackServiceImpl implements MidtransCallbackService {
 
             Transaction transaction = transactionService.getTransactionByReferenceId(goPayCallbackRequest.getTransactionId());
 
-            if (goPayCallbackRequest.getTransactionStatus().equals("settlement")) {
+            if (goPayCallbackRequest.getTransactionStatus().equals("pending")) {
+                transaction.setUpdatedAt(convertDateTime(goPayCallbackRequest.getTransactionTime()));
+
+            } else if (goPayCallbackRequest.getTransactionStatus().equals("settlement")) {
                 order.setOrderStatus("paid");
                 transaction.setTransactionStatus(goPayCallbackRequest.getTransactionStatus());
                 transaction.setUpdatedAt(convertDateTime(goPayCallbackRequest.getSettlementTime()));
-
+                order.setPaidAt(convertDateTime(goPayCallbackRequest.getSettlementTime()));
             }
+
 
             transactionService.updateTransaction(transaction.getId(), transaction);
 
-            order.setPaidAt(convertDateTime(goPayCallbackRequest.getSettlementTime()));
+
             orderService.updateOrder(order.getId(), order);
 
         } else {

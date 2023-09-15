@@ -1,7 +1,5 @@
 package com.phincon.laza.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.midtrans.httpclient.error.MidtransError;
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotProcessException;
 import com.phincon.laza.model.dto.rajaongkir.CourierResponse;
@@ -121,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
             }
 
             // Todo: implement add address order detail
-            Address address = addressService.findById(checkoutRequest.getAddressId());
+            Address address = addressService.findByIdAndByUserId(userId, checkoutRequest.getAddressId());
             AddressOrderDetail addressOrderDetail = new AddressOrderDetail();
             addressOrderDetail.setOrder(order);
             addressOrderDetail.setFullAddress(address.getFullAddress());
