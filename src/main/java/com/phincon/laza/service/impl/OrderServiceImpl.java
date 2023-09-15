@@ -126,10 +126,6 @@ public class OrderServiceImpl implements OrderService {
             Address address = addressService.findById(checkoutRequest.getAddressId());
             AddressOrderDetail addressOrderDetail = getAddressOrderDetail(order, address);
 
-            // flat admin fee
-            amount += 1000;
-            order.setAdminFee(1000);
-
             // get shipping fee
             ROCostRequest roCostRequest =  new ROCostRequest();
             roCostRequest.setOrigin("153");
@@ -142,6 +138,11 @@ public class OrderServiceImpl implements OrderService {
             int shippingFee = courierResponseList.get(0).getCosts().get(0).getCost().get(0).getValue();
             order.setShippingFee(shippingFee);
             amount += shippingFee;
+
+            // add admin fee
+            int adminFee = paymentMethod.getAdminFee();
+            amount += adminFee;
+            order.setAdminFee(adminFee);
 
             // set amount from user cart
             order.setAmount(amount);
