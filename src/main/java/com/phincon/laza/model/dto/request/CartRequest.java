@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CartRequest {
 
-    @NotNull(message = "product id is required")
+    @NotNull(message = "product_id id is required")
     @JsonProperty("product_id")
     private Long productId;
 
-    @NotNull(message = "sizeId id is required")
+    @NotNull(message = "size_id id is required")
     @JsonProperty("size_id")
     private Long sizeId;
 }
