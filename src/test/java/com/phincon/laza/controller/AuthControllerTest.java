@@ -1,6 +1,9 @@
 package com.phincon.laza.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phincon.laza.exception.custom.BadRequestException;
+import com.phincon.laza.exception.custom.ConflictException;
+import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.*;
 import com.phincon.laza.model.dto.response.TokenResponse;
 import com.phincon.laza.model.entity.ERole;
@@ -149,6 +152,65 @@ public class AuthControllerTest {
     }
 
     @Test
+    public void testLoginRequestToAuth_thenNotFound() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setUsername("johndoe");
+        request.setPassword("password");
+
+        when(authService.login(request)).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()));
+
+        verify(authService, times(1)).login(any());
+
+        log.info("[COMPLETE] testing controller auth login then not found");
+    }
+
+    @Test
+    public void testLoginRequestToAuth_thenBadRequest() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setUsername("johndoe");
+        request.setPassword("password");
+
+        when(authService.login(request)).thenThrow(BadRequestException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.BAD_REQUEST.value()));
+
+        verify(authService, times(1)).login(any());
+
+        log.info("[COMPLETE] testing controller auth login then bad request");
+    }
+
+    public void testLoginRequestToAuth_thenNotProcess() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setUsername("johndoe");
+        request.setPassword("password");
+
+        when(authService.login(request)).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+
+        verify(authService, times(1)).login(any());
+
+        log.info("[COMPLETE] testing controller auth login then not process entity");
+    }
+
+    @Test
     public void testRegisterRequestToAuth_thenCorrect() throws Exception {
         RegisterRequest request = new RegisterRequest();
         request.setName("John Doe");
@@ -216,6 +278,50 @@ public class AuthControllerTest {
         verify(authService, times(0)).register(any());
 
         log.info("[COMPLETE] testing controller auth register then method invalid argument not blank");
+    }
+
+    @Test
+    public void testRegisterRequestToAuth_thenNotFound() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setName("John Doe");
+        request.setUsername("johndoe");
+        request.setEmail("johndoe@mail.com");
+        request.setPassword("password");
+
+        when(authService.register(request)).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()));
+
+        verify(authService, times(1)).register(any());
+
+        log.info("[COMPLETE] testing controller auth register then not found");
+    }
+
+    @Test
+    public void testRegisterRequestToAuth_thenConflict() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setName("John Doe");
+        request.setUsername("johndoe");
+        request.setEmail("johndoe@mail.com");
+        request.setPassword("password");
+
+        when(authService.register(request)).thenThrow(ConflictException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.CONFLICT.value()));
+
+        verify(authService, times(1)).register(any());
+
+        log.info("[COMPLETE] testing controller auth register then conflict entity");
     }
 
     @Test
