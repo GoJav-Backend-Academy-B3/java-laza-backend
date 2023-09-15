@@ -50,4 +50,19 @@ public class CreditCardServiceTest {
         Assertions.assertTrue(CollectionUtils.isEqualCollection(creditCards, lists));
         Mockito.verify(repository, Mockito.times(1)).findAllByUserId(userId);
     }
+
+    @Test
+    @DisplayName("get one credit card should return data")
+    public void getOneCreditCards_data() {
+        final CreditCard creditCard = creditCardOne;
+        final String id = creditCard.getId();
+        Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.of(creditCard));
+   
+        var result = service.getById(id);
+
+        Assertions.assertEquals(id, result.getId());
+        Assertions.assertEquals(creditCard.getCardNumber(), result.getCardNumber());
+        Assertions.assertEquals(creditCard.getExpiryYear(), result.getExpiryYear());
+        Mockito.verify(repository, Mockito.times(1)).findById(id);
+    }
 }
