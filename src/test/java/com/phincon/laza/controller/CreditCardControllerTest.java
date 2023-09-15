@@ -22,9 +22,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.config.CreditCardDataConfig;
+import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotFoundException;
+import com.phincon.laza.model.dto.request.CreateUpdateCreditCardRequest;
 import com.phincon.laza.model.entity.CreditCard;
+import com.phincon.laza.model.entity.User;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.CreditCardService;
 
@@ -101,5 +105,65 @@ public class CreditCardControllerTest {
 
         action.andExpectAll(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON),
                 MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Add credit card should return data")
+    public void addCreditCard_data() throws Exception {
+        String userId = "userId1";
+        var mapper = new ObjectMapper();
+        var request = new CreateUpdateCreditCardRequest("4888234202829762", 5, 24);
+        var requestInString = mapper.writeValueAsString(request);
+
+        SysUserDetails ud = new SysUserDetails(userId, "", "",
+                Arrays.asList(new SimpleGrantedAuthority("USER")));
+        var u = new User();
+        u.setId(userId);
+        var cc = new CreditCard("cc09", request.cardNumber(), request.expiryMonth(), request.expiryYear(), u);
+
+        Mockito.when(service.create(Mockito.eq(userId), Mockito.eq(request))).thenReturn(cc);
+
+        var action = mockmvc.perform(
+                MockMvcRequestBuilders
+                        .post("/cc")
+                        .with(user(ud))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestInString))
+                .andDo(System.out::println);
+
+        action.andExpectAll(MockMvcResultMatchers.status().isCreated(),
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON),
+                MockMvcResultMatchers.jsonPath("$.data.card_number").value(request.cardNumber()),
+                MockMvcResultMatchers.jsonPath("$.data.expiry_month").value(request.expiryMonth()),
+                MockMvcResultMatchers.jsonPath("$.data.expiry_year").value(request.expiryYear()));
+
+        Mockito.verify(service, Mockito.times(1)).create(Mockito.eq(userId), Mockito.eq(request));
+    }
+
+    @Test
+    @DisplayName("Add credit card with same number should return conflict")
+    public void addCreditCardSameNumber_conflict() throws Exception {
+        String userId = "userId1";
+        var mapper = new ObjectMapper();
+        var request = new CreateUpdateCreditCardRequest("4888234202829762", 5, 24);
+        var requestInString = mapper.writeValueAsString(request);
+
+        SysUserDetails ud = new SysUserDetails(userId, "", "",
+                Arrays.asList(new SimpleGrantedAuthority("USER")));
+        var u = new User();
+        u.setId(userId);
+
+        Mockito.when(service.create(Mockito.eq(userId), Mockito.eq(request))).thenThrow(ConflictException.class);
+
+        var action = mockmvc.perform(
+                MockMvcRequestBuilders
+                        .post("/cc")
+                        .with(user(ud))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestInString))
+                .andDo(System.out::println);
+
+        action.andExpectAll(MockMvcResultMatchers.status().isConflict(),
+                MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON));
     }
 }
