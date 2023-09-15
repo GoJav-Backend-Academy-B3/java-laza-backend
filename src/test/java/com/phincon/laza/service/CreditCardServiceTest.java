@@ -35,6 +35,10 @@ public class CreditCardServiceTest {
     @Qualifier("cc.all")
     private List<CreditCard> creditCards;
 
+    @Autowired
+    @Qualifier("cc.one")
+    private CreditCard creditCardOne;
+
     @Test
     @DisplayName("get all credit card should list all credit cards")
     public void getAllCreditCards_data() {
