@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import static com.phincon.laza.utils.DateConverter.convertDateTime;
+
 @Service
 public class XenditCallbackServiceImpl implements XenditCallbackService {
 
@@ -35,12 +37,12 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
 
             Transaction transaction = transactionService.getTransactionByReferenceId(callbackData.getId());
             transaction.setTransactionStatus(callbackData.getStatus());
-            transaction.setUpdatedAt(callbackData.getUpdated());
+            transaction.setUpdatedAt(convertDateTime(callbackData.getUpdated()));
 
             if (callbackData.getStatus().equals("SUCCEEDED")) {
                 order.setOrderStatus("paid");
             }
-            order.setPaidAt(callbackData.getUpdated());
+            order.setPaidAt(convertDateTime(callbackData.getUpdated()));
 
             transactionService.updateTransaction(transaction.getId(), transaction);
 
@@ -59,7 +61,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
 
         Transaction transaction = transactionService.getTransactionByReferenceId(fvaCallbackRequest.getId());
         transaction.setTransactionStatus("SUCCEEDED");
-        transaction.setUpdatedAt(fvaCallbackRequest.getUpdated());
+        transaction.setUpdatedAt(convertDateTime(fvaCallbackRequest.getUpdated()));
 
         // todo: implement overpayment
         if (fvaCallbackRequest.getAmount() == order.getAmount()) {
@@ -72,7 +74,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
 
         transactionService.updateTransaction(transaction.getId(), transaction);
 
-        order.setPaidAt((fvaCallbackRequest.getTransactionTimestamp()));
+        order.setPaidAt(convertDateTime(fvaCallbackRequest.getTransactionTimestamp()));
 
         orderService.updateOrder(order.getId(), order);
 
@@ -94,7 +96,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         transaction.setCreatedAt(LocalDateTime.now());
         transaction.setUpdatedAt(LocalDateTime.now());
 
-        order.setExpiryDate(fvaCallbackCreated.getExpirationDate());
+        order.setExpiryDate(convertDateTime(fvaCallbackCreated.getExpirationDate()));
 
         transactionService.createTransaction(transaction);
 
