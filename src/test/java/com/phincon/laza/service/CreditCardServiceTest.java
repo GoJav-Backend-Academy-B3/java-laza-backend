@@ -1,6 +1,7 @@
 package com.phincon.laza.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.phincon.laza.config.CreditCardDataConfig;
+import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.entity.CreditCard;
 import com.phincon.laza.repository.CreditCardRepository;
 import com.phincon.laza.service.impl.CreditCardServiceImpl;
@@ -63,6 +65,18 @@ public class CreditCardServiceTest {
         Assertions.assertEquals(id, result.getId());
         Assertions.assertEquals(creditCard.getCardNumber(), result.getCardNumber());
         Assertions.assertEquals(creditCard.getExpiryYear(), result.getExpiryYear());
+        Mockito.verify(repository, Mockito.times(1)).findById(id);
+    }
+
+    @Test
+    @DisplayName("get one credit card should throw exception if not found")
+    public void getOneCreditCard_exception() {
+        final CreditCard creditCard = null;
+        final String id = "cc82";
+        Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.ofNullable(creditCard));
+
+        Assertions.assertThrows(NotFoundException.class, () -> service.getById(id));
+
         Mockito.verify(repository, Mockito.times(1)).findById(id);
     }
 }
