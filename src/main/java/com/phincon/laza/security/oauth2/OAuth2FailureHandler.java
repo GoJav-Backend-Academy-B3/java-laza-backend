@@ -1,4 +1,4 @@
-package com.phincon.laza.security.jwt;
+package com.phincon.laza.security.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.model.dto.response.ErrorResponse;
@@ -9,23 +9,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Slf4j
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage(), null);
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage(), null);
 
-        log.warn("AuthenticationEntryPoint error: {}", e.getMessage());
+        log.warn("AuthenticationException error: {}", e.getMessage());
 
         response.resetBuffer();
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpServletResponse.SC_CONFLICT);
         response.getOutputStream().print(new ObjectMapper().writeValueAsString(errorResponse));
         response.flushBuffer();
     }

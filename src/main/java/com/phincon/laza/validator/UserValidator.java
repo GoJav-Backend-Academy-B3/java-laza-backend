@@ -1,9 +1,6 @@
 package com.phincon.laza.validator;
 
-import com.phincon.laza.exception.custom.BadRequestException;
-import com.phincon.laza.exception.custom.ConflictException;
-import com.phincon.laza.exception.custom.NotFoundException;
-import com.phincon.laza.exception.custom.NotProcessException;
+import com.phincon.laza.exception.custom.*;
 import com.phincon.laza.model.entity.EProvider;
 import com.phincon.laza.model.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +67,7 @@ public class UserValidator {
                     .collect(Collectors.toList());
 
             String result = String.join(", ", listName).toLowerCase();
-            throw new NotProcessException(String.format("Looks like you're signed up with %s account. Please use your %s account to login.", result, result));
+            throw new OAuth2ProcessingException(String.format("Looks like you're signed up with %s account. Please use your %s account to login.", result, result));
         }
     }
 
