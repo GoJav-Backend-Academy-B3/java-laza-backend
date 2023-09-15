@@ -1,19 +1,22 @@
 package com.phincon.laza.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Entity
 @Table(name = "users")
@@ -40,8 +43,13 @@ public class User {
     @Column(nullable = false)
     private boolean isVerified = false;
 
-    @Enumerated(EnumType.STRING)
-    private EProvider provider;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_providers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "provider_id")
+    )
+    private Set<Provider> providers;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -49,13 +57,14 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @ManyToMany
     @JoinTable(
             name = "wishlist",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @JsonBackReference
     private List<Product> wishlistProducts;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -78,5 +87,18 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Order> orders;
+
+    public void addWishlist(Product product) {
+        this.wishlistProducts.add(product);
+        product.getWishlistBy().add(this);
+    }
+
+    public void removeProductWishlist(long productId) {
+        Product product = this.wishlistProducts.stream().filter(t -> t.getId() == productId).findFirst().orElse(null);
+        if (product != null) {
+            this.wishlistProducts.remove(product);
+            product.getWishlistBy().remove(this);
+        }
+    }
 
 }

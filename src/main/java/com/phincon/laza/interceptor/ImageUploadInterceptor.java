@@ -13,20 +13,23 @@ public class ImageUploadInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        
-        // allow request to passthrough this interceptor if the request is neither POST or PUT 
+
+        // allow request to passthrough this interceptor if the request is neither POST
+        // or PUT
         if (!request.getMethod().equalsIgnoreCase("POST") && !request.getMethod().equalsIgnoreCase("PUT")) {
             return true;
         }
-        var filePart = request.getPart("image_file");
-        String contentType = filePart.getContentType();
-        long size = filePart.getSize();
-        log.info("From {} got a file with Content-Type: {} and size: {}", request.getRemoteAddr(), contentType, size);
+        var parts = request.getPart("imageFile");
+        if (parts == null) return true;
+        String contentType = parts.getContentType();
+        long size = parts.getSize();
+        log.info("From {} got a file with Content-Type: {} and size: {}", request.getRemoteAddr(), contentType,
+                size);
         if (contentType.equalsIgnoreCase("image/png") || contentType.equalsIgnoreCase("image/jpeg")
                 || contentType.equalsIgnoreCase("image/webp")) {
             return true;
         } else {
-            String format = "Supported files are: image/png, image/jpeg, image/webp. But it's %s you dumbass.";
+            String format = "Supported files are: image/png, image/jpeg, image/webp. But provided %s.";
             throw new BadRequestException(String.format(format, contentType));
         }
     }

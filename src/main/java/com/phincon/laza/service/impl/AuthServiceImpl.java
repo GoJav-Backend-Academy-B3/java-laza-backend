@@ -3,10 +3,7 @@ package com.phincon.laza.service.impl;
 import com.phincon.laza.model.dto.request.*;
 import com.phincon.laza.model.dto.response.TokenResponse;
 import com.phincon.laza.model.entity.*;
-import com.phincon.laza.repository.RoleRepository;
-import com.phincon.laza.repository.UserRepository;
-import com.phincon.laza.repository.VerificationCodeRepository;
-import com.phincon.laza.repository.VerificationTokenRepository;
+import com.phincon.laza.repository.*;
 import com.phincon.laza.security.jwt.JwtService;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.AuthService;
@@ -23,9 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -37,6 +32,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserValidator userValidator;
     private final RoleRepository roleRepository;
     private final RoleValidator roleValidator;
+    private final ProviderRepository providerRepository;
+    private final ProviderValidator providerValidator;
     private final VerificationTokenRepository verificationTokenRepository;
     private final VerificationTokenValidator verificationTokenValidator;
     private final VerificationCodeRepository verificationCodeRepository;
@@ -50,8 +47,9 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse login(LoginRequest request) {
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
         userValidator.validateUserNotFound(findByUsername);
+        userValidator.validateUserBadProviderLocal(findByUsername);
         userValidator.validateUserBadCredentials(findByUsername, request.getPassword());
-        userValidator.validateUserNotIsVerfied(findByUsername);
+        userValidator.validateUserNotIsVerified(findByUsername);
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
@@ -69,12 +67,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User register(RegisterRequest request) throws Exception {
         Optional<User> findByUsername = userRepository.findByUsername(request.getUsername());
-        userValidator.validateUsernameIsExists(findByUsername);
+        userValidator.validateUserUsernameIsExists(findByUsername);
 
         Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
-        userValidator.validateEmailIsExists(findByEmail);
+        userValidator.validateUserEmailIsExists(findByEmail);
 
-        List<Role> listRole = new ArrayList<>();
+        Set<Provider> listProvider =  new HashSet<>();
+        Optional<Provider> findProvider = providerRepository.findByName(EProvider.LOCAL);
+        providerValidator.validateProviderNotFound(findProvider);
+        listProvider.add(findProvider.get());
+
+        Set<Role> listRole = new HashSet<>();
         Optional<Role> findRole = roleRepository.findByName(ERole.USER);
         roleValidator.validateRoleNotFound(findRole);
         listRole.add(findRole.get());
@@ -84,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setProvider(EProvider.LOCAL);
+        user.setProviders(listProvider);
         user.setRoles(listRole);
 
         userRepository.save(user);
@@ -132,17 +135,20 @@ public class AuthServiceImpl implements AuthService {
         findToken.get().setConfirmedAt(LocalDateTime.now());
         verificationTokenRepository.save(findToken.get());
 
-        findToken.get().getUser().setVerified(true);
-        userRepository.save(findToken.get().getUser());
+        Optional<User> findUser = userRepository.findById(findToken.get().getUser().getId());
+        userValidator.validateUserNotFound(findUser);
 
-        log.info("User id={} success verification token", findToken.get().getUser().getId());
+        findUser.get().setVerified(true);
+        userRepository.save(findUser.get());
+
+        log.info("User id={} success verification token", findUser.get().getId());
     }
 
     @Override
     public void forgotPassword(RecoveryRequest request) throws Exception {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         String code = GenerateRandom.code();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
@@ -161,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
     public void forgotPasswordConfirm(VerificationCodeRequest request) {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         Optional<VerificationCode> findCode = verificationCodeRepository.findByCodeAndUserId(request.getCode(), findUser.get().getId());
         verificationCodeValidator.validateVerificationCodeNotFound(findCode);
@@ -177,7 +183,7 @@ public class AuthServiceImpl implements AuthService {
     public void resetPassword(ResetPasswordRequest request) {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         Optional<VerificationCode> findCode = verificationCodeRepository.findByCodeAndUserId(request.getCode(), findUser.get().getId());
         verificationCodeValidator.validateVerificationCodeNotFound(findCode);
@@ -197,7 +203,7 @@ public class AuthServiceImpl implements AuthService {
         authValidator.validateAuthHeaderNotFound(authHeader);
         String refreshToken = authHeader.substring(7);
         String username = jwtService.extractUsername(refreshToken);
-        authValidator.validateAuthUsernameNull(username);
+        authValidator.validateAuthUsernameIsNull(username);
 
         Optional<User> findByUsername = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findByUsername);
@@ -217,14 +223,14 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse token(UserDetails request) {
         Optional<User> findUser = userRepository.findByUsername(request.getUsername());
         userValidator.validateUserNotFound(findUser);
-        userValidator.validateUserNotIsVerfied(findUser);
+        userValidator.validateUserNotIsVerified(findUser);
 
         String accessToken = jwtService.generateToken(request);
         String refreshToken = jwtService.generateRefreshToken(request);
 
         TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
 
-        log.info("{} has been login with oauth2 {}", findUser.get().getEmail(), findUser.get().getProvider());
+        log.info("{} has been login with oauth2", findUser.get().getEmail());
         return tokenResponse;
     }
 }

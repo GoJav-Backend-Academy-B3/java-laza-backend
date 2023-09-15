@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +21,7 @@ public class UserResponse {
     private String email;
     private String imageUrl;
     private boolean isVerified;
-    private List<Role> roles;
+    private Set<Role> roles;
 
     public UserResponse (User user) {
         this.id = user.getId();

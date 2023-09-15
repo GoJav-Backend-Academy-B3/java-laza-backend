@@ -11,7 +11,7 @@ public class GenerateRandom {
 
     public static String code() {
         Random random = new Random();
-        int min = 0000;
+        int min = 1000;
         int max = 9999;
         int randomNumber = random.nextInt(max - min + 1) + min;
         return String.valueOf(randomNumber);
@@ -33,4 +33,9 @@ public class GenerateRandom {
         return sb.toString();
     }
 
+    public static String username(String email) {
+        String[] split = email.split("@");
+
+        return split[0].replaceAll("[^a-zA-Z0-9]", "_");
+    }
 }

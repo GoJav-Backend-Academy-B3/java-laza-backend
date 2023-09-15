@@ -2,12 +2,13 @@ package com.phincon.laza.model.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Setter
 @Getter
 @Table(name = "carts")
@@ -17,19 +18,18 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
-    @JsonIgnore
+    @JsonManagedReference
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "size_id")
-    @JsonIgnore
     private Size size;
 
     @Column(nullable = false)

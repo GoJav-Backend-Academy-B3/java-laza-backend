@@ -2,8 +2,7 @@ package com.phincon.laza.validator;
 
 import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.NotFoundException;
-import com.phincon.laza.exception.custom.NotProcessException;
-import com.phincon.laza.model.entity.EProvider;
+import com.phincon.laza.exception.custom.OAuth2ProcessingException;
 import com.phincon.laza.security.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,20 +27,15 @@ public class AuthValidator {
         }
     }
 
-    public void validateAuthUsernameNull(String username) {
+    public void validateAuthUsernameIsNull(String username) {
         if (Objects.isNull(username)) {
             throw new NotFoundException("username is not found");
         }
     }
 
-    public void validateAuthEmailNull(String email) {
+    public void validateAuthEmailIsNull(String email) {
         if (Objects.isNull(email)) {
-            throw new NotProcessException("email not found from OAuth2 provider");
-        }
-    }
-    public void validateAuthProvider(EProvider dbProvider, String reqProvider) {
-        if (!dbProvider.equals(EProvider.valueOf(reqProvider.toUpperCase()))) {
-            throw new NotProcessException(String.format("Looks like you're signed up with %s account. Please use your %s account to login.", dbProvider, reqProvider));
+            throw new OAuth2ProcessingException("email not found from OAuth2 provider");
         }
     }
 }

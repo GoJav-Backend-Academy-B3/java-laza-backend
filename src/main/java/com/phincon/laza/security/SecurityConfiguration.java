@@ -4,7 +4,8 @@ import com.phincon.laza.model.entity.ERole;
 import com.phincon.laza.security.jwt.JwtAccessDeniedHandler;
 import com.phincon.laza.security.jwt.JwtAuthenticationEntryPoint;
 import com.phincon.laza.security.jwt.JwtAuthenticationFilter;
-import com.phincon.laza.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.phincon.laza.security.oauth2.OAuth2FailureHandler;
+import com.phincon.laza.security.oauth2.OAuth2SuccessHandler;
 import com.phincon.laza.security.oauth2.SysOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -27,11 +29,8 @@ public class SecurityConfiguration {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final SysOAuth2UserService sysOAuth2UserService;
-
-    @Bean
-    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
-        return new HttpCookieOAuth2AuthorizationRequestRepository();
-    }
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,13 +47,15 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(endpoint -> endpoint
-                                .baseUri("/oauth2/authorize")
-                                .authorizationRequestRepository(cookieAuthorizationRequestRepository()))
+                                .baseUri("/oauth2/authorize"))
                         .redirectionEndpoint(redirect -> redirect
                                 .baseUri("/oauth2/callback/**"))
                         .userInfoEndpoint(user -> user
                                 .userService(sysOAuth2UserService))
-                        .defaultSuccessUrl("/auth/token", true))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception
@@ -70,11 +71,11 @@ public class SecurityConfiguration {
             "/oauth2/**",
             "/size/**",
             "/category/**",
-            "/product/**",
-            "/review/**",
+            "/products/**",
             "/provinces",
             "/cities",
             "/costs",
+            "/callback/**",
             "/existsProvince/**",
             "/existsCity/**",
             "/brands/**",

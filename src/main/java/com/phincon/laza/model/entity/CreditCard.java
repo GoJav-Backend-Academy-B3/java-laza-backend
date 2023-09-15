@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -17,8 +18,8 @@ import lombok.*;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CreditCard {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @NotBlank(message = "card number is mandatory")
     private String cardNumber;
@@ -26,13 +27,13 @@ public class CreditCard {
     @NotBlank
     @Column(length = 2)
     @Size(max = 2)
-    @NotBlank(message = "expiry month is mandatory")
+    @NotNull(message = "expiry month is mandatory")
     private Integer expiryMonth;
 
     @NotBlank
     @Column(length = 2)
     @Size(max = 2)
-    @NotBlank(message = "expiry year is mandatory")
+    @NotNull(message = "expiry year is mandatory")
     private Integer expiryYear;
 
     @ManyToOne

@@ -40,6 +40,28 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public Transaction updateTransaction(String id, Transaction transaction) {
+        try {
+            Optional<Transaction> transactionResult = transactionRepository.findById(id);
+            transactionValidator.validateTransactionNotFound(transactionResult, id);
+
+            transaction.setId(id);
+            return transactionRepository.save(transaction);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Transaction getTransactionByReferenceId(String id) {
+        Optional<Transaction> transaction = transactionRepository.findByReferenceId(id);
+
+        transactionValidator.validateTransactionNotFound(transaction, id);
+
+        return transaction.get();
+    }
+
+    @Override
     public Transaction createTransaction(Transaction transaction) {
         try {
             return transactionRepository.save(transaction);

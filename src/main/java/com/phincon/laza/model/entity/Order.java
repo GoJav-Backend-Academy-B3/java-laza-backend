@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -23,9 +22,9 @@ public class Order {
 
     private Integer amount;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     private LocalDateTime paidAt;
 
@@ -37,10 +36,16 @@ public class Order {
 
     private String orderStatus;
 
+    private boolean reviewed;
+
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
     @JsonIgnore
     private User user;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "order")
+    private Review review;
 
     @OneToOne(mappedBy = "order")
     private AddressOrderDetail addressOrderDetail;
@@ -48,20 +53,20 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<ProductOrderDetail> productOrderDetails;
 
-    @OneToOne(mappedBy = "order")
-    private Transaction transaction;
+    @OneToMany(mappedBy = "order")
+    private List<Transaction> transaction;
 
     @OneToOne(mappedBy = "order")
     private PaymentDetail paymentDetail;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new Date();
-        updatedAt = createdAt;
+        this.setCreatedAt(LocalDateTime.now());
+        this.setUpdatedAt(this.getCreatedAt());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = new Date();
+        updatedAt = LocalDateTime.now();
     }
 }

@@ -1,15 +1,30 @@
 package com.phincon.laza.model.entity;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import jakarta.persistence.*;
-import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -53,6 +68,7 @@ public class Product {
     private Category category;
 
     @ManyToMany(mappedBy = "wishlistProducts", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<User> wishlistBy;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
@@ -60,6 +76,20 @@ public class Product {
     private List<Review> reviewList;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Cart> carts;
 
+    public Product(Long id, String name, String description, String imageUrl, Integer price,
+            Brand brand, List<Size> sizes, Category category) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.price = price;
+        this.brand = brand;
+        this.sizes = sizes;
+        this.category = category;
+    }
+
 }
+

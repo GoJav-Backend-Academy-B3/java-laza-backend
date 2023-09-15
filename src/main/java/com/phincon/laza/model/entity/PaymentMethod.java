@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
-@ToString
+@Data
 @Table(name = "payment_methods")
 @Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -32,8 +32,9 @@ public class PaymentMethod {
     @NotBlank
     private String provider;
 
-    private boolean isActive;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Boolean isActive;
 
-    @NotBlank
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String logoUrl;
 }

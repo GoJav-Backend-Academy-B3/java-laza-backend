@@ -1,7 +1,6 @@
 package com.phincon.laza.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +10,7 @@ import org.springframework.http.MediaType;
 @Configuration
 public class RajaongkirConfig {
 
-    @Value("${rajaongkir.key}")
+    @Value("${com.phincon.laza.rajaongkir.key}")
     private String RAJAONGKIR_KEY;
 
     public HttpEntity<String> headerConfig(String... params){
