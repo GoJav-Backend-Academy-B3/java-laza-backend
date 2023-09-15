@@ -34,6 +34,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Slf4j
@@ -96,6 +97,7 @@ public class AuthControllerTest {
         request.setPassword("password");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -114,6 +116,7 @@ public class AuthControllerTest {
         LoginRequest request = new LoginRequest();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -136,6 +139,7 @@ public class AuthControllerTest {
         request.setPassword("pass");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -160,6 +164,7 @@ public class AuthControllerTest {
         when(authService.login(request)).thenThrow(NotFoundException.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -180,6 +185,7 @@ public class AuthControllerTest {
         when(authService.login(request)).thenThrow(BadRequestException.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -200,6 +206,7 @@ public class AuthControllerTest {
         when(authService.login(request)).thenThrow(NotProcessException.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isUnprocessableEntity())
@@ -220,6 +227,7 @@ public class AuthControllerTest {
         request.setPassword("password");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -238,6 +246,7 @@ public class AuthControllerTest {
         RegisterRequest request = new RegisterRequest();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -264,6 +273,7 @@ public class AuthControllerTest {
         request.setPassword("pass");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -292,6 +302,7 @@ public class AuthControllerTest {
         when(authService.register(request)).thenThrow(NotFoundException.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -314,6 +325,7 @@ public class AuthControllerTest {
         when(authService.register(request)).thenThrow(ConflictException.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isConflict())
@@ -331,6 +343,7 @@ public class AuthControllerTest {
         request.setEmail("johndoe@mail.com");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register/resend")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -348,6 +361,7 @@ public class AuthControllerTest {
         RecoveryRequest request = new RecoveryRequest();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register/resend")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -368,6 +382,7 @@ public class AuthControllerTest {
         request.setEmail("johndoemail.com");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register/resend")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -390,6 +405,7 @@ public class AuthControllerTest {
         doThrow(NotFoundException.class).when(authService).registerResend(request);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/register/resend")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -403,7 +419,8 @@ public class AuthControllerTest {
 
     @Test
     public void testRegisterConfirmRequestToAuth_thenCorrect() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/register/confirm?token={token}", anyString()))
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth/register/confirm?token={token}", anyString())
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
@@ -420,7 +437,8 @@ public class AuthControllerTest {
 
         doThrow(NotFoundException.class).when(authService).registerConfirm(token);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/register/confirm?token={token}", token))
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth/register/confirm?token={token}", token)
+                        .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()));
@@ -436,7 +454,8 @@ public class AuthControllerTest {
 
         doThrow(NotProcessException.class).when(authService).registerConfirm(token);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/register/confirm?token={token}", token))
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth/register/confirm?token={token}", token)
+                        .with(csrf()))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.UNPROCESSABLE_ENTITY.value()));
@@ -452,6 +471,7 @@ public class AuthControllerTest {
         request.setEmail("johndoe@mail.com");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -469,6 +489,7 @@ public class AuthControllerTest {
         RecoveryRequest request = new RecoveryRequest();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -489,6 +510,7 @@ public class AuthControllerTest {
         request.setEmail("johndoemail.com");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -511,6 +533,7 @@ public class AuthControllerTest {
         doThrow(NotFoundException.class).when(authService).forgotPassword(request);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -530,6 +553,7 @@ public class AuthControllerTest {
         doThrow(NotProcessException.class).when(authService).forgotPassword(request);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isUnprocessableEntity())
@@ -548,6 +572,7 @@ public class AuthControllerTest {
         request.setEmail("johndoe@mail.com");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password/confirm")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -565,6 +590,7 @@ public class AuthControllerTest {
         VerificationCodeRequest request = new VerificationCodeRequest();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password/confirm")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -587,6 +613,7 @@ public class AuthControllerTest {
         request.setEmail("johndoemail.com");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password/confirm")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -611,6 +638,7 @@ public class AuthControllerTest {
         doThrow(NotFoundException.class).when(authService).forgotPasswordConfirm(request);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password/confirm")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -631,6 +659,7 @@ public class AuthControllerTest {
         doThrow(NotProcessException.class).when(authService).forgotPasswordConfirm(request);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/forgot-password/confirm")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isUnprocessableEntity())
@@ -651,6 +680,7 @@ public class AuthControllerTest {
         request.setConfirmPassword("password");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/reset-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -668,6 +698,7 @@ public class AuthControllerTest {
         ResetPasswordRequest request = new ResetPasswordRequest();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/reset-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -694,6 +725,7 @@ public class AuthControllerTest {
         request.setConfirmPassword("pass");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/reset-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -722,6 +754,7 @@ public class AuthControllerTest {
         doThrow(NotFoundException.class).when(authService).resetPassword(request);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/reset-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -744,6 +777,7 @@ public class AuthControllerTest {
         doThrow(NotProcessException.class).when(authService).resetPassword(request);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/reset-password")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isUnprocessableEntity())
@@ -760,6 +794,7 @@ public class AuthControllerTest {
         String authHeader = "Bearer valid_refresh_token";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/refresh-token")
+                        .with(csrf())
                         .header("X-AUTH-REFRESH", authHeader))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -779,6 +814,7 @@ public class AuthControllerTest {
         doThrow(NotFoundException.class).when(authService).refreshToken(authHeader);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/refresh-token")
+                        .with(csrf())
                         .header("X-AUTH-REFRESH", authHeader))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -796,6 +832,7 @@ public class AuthControllerTest {
         doThrow(NotProcessException.class).when(authService).refreshToken(authHeader);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/refresh-token")
+                        .with(csrf())
                         .header("X-AUTH-REFRESH", authHeader))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
