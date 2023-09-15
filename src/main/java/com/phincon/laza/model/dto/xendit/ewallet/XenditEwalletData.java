@@ -1,6 +1,5 @@
 package com.phincon.laza.model.dto.xendit.ewallet;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
@@ -15,18 +14,11 @@ public class XenditEwalletData {
     private Object basket;
     private String status;
     private Actions actions;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
-    private LocalDateTime created;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
-    private LocalDateTime updated;
-
+    private String created;
+    private String updated;
+    private LocalDateTime voidedAt;
     private String currency;
     private Map<String, String> metadata;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
-    private LocalDateTime voidedAt;
-
     private boolean captureNow;
     private Object customerId;
     private String callbackUrl;
