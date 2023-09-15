@@ -67,5 +67,7 @@ public class CreditCardControllerTest {
                 MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON),
                 MockMvcResultMatchers.jsonPath("$.data").isArray(),
                 MockMvcResultMatchers.jsonPath("$.data", Matchers.hasSize(creditCards.size())));
+
+        Mockito.verify(service, Mockito.times(1)).getAll(Mockito.eq(userId));
     }
 }
