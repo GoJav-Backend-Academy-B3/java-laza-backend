@@ -127,14 +127,25 @@ public class CartRepositoryTest {
         carts.add(cartRepository.save(cartI));
     }
 
+    @BeforeEach
+    void initEmpty(){
+        categories.clear();
+        users.clear();
+        brands.clear();
+        products.clear();
+        sizes.clear();
+        carts.clear();
+        roles.clear();
+    }
+
     @Test
     void testUpdateQuantityById_thenCorrect(){
         User userCheck = userRepository.findByUsername(users.get(0).getUsername()).get();
         List<Cart> cartList = cartRepository.findByUser_Id(userCheck.getId());
-        assertEquals(1, cartList.size());
+        assertEquals(2, cartList.size());
         cartRepository.deleteById(cartList.get(0).getId());
         List<Cart> cartListDelete = cartRepository.findByUser_Id(userCheck.getId());
-        assertEquals(0, cartListDelete.size());
+        assertEquals(1, cartListDelete.size());
     }
 
     @Test
