@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
@@ -15,9 +16,9 @@ public class XenditEwalletData {
     private Actions actions;
     private String created;
     private String updated;
+    private LocalDateTime voidedAt;
     private String currency;
     private Map<String, String> metadata;
-    private Object voidedAt;
     private boolean captureNow;
     private Object customerId;
     private String callbackUrl;

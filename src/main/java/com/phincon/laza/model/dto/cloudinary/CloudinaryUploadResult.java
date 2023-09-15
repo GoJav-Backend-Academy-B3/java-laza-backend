@@ -1,4 +1,4 @@
-package com.phincon.laza.model.dto.other;
+package com.phincon.laza.model.dto.cloudinary;
 
 import java.util.Map;
 

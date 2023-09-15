@@ -2,6 +2,7 @@ package com.phincon.laza.controller;
 
 import com.phincon.laza.config.RabbitMqConfig;
 import com.phincon.laza.model.entity.CustomMessage;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,4 +26,11 @@ public class MessageController {
 
         return "Message Published";
     }
+
+    @RabbitListener(queues = RabbitMqConfig.QUEUE)
+    @GetMapping("/consume")
+    public void listener(CustomMessage message) {
+        System.out.println(message);
+    }
+
 }

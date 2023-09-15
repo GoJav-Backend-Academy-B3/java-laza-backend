@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -106,7 +107,7 @@ public class FileValidatorTest {
                 new byte[3 * 1024 * 1024]
         );
 
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(MaxUploadSizeExceededException.class, () -> {
             fileValidator.validateMultipartFile(file);
         });
 

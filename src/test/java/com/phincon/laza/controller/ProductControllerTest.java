@@ -2,9 +2,10 @@ package com.phincon.laza.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import com.phincon.laza.config.ProductDataConfig;
 import com.phincon.laza.exception.CustomExceptionHandler;
 import com.phincon.laza.exception.custom.NotFoundException;
@@ -50,7 +52,7 @@ public class ProductControllerTest {
     @Qualifier("product.update")
     private Product productUpdated;
 
-    @BeforeAll
+    @BeforeEach
     public void setup() {
         service = Mockito.mock(ProductsService.class);
         controller = new ProductsController(service);
@@ -69,7 +71,7 @@ public class ProductControllerTest {
         assert (products != null);
         var page = new PageImpl<>(products, PageRequest.of(0, 10), products.size());
         Mockito.when(service.getAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(page);
-        var action = mockmvc.perform(MockMvcRequestBuilders.get("/product"));
+        var action = mockmvc.perform(MockMvcRequestBuilders.get("/products"));
         action.andExpectAll(MockMvcResultMatchers.status().isOk(),
                 MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON),
                 MockMvcResultMatchers.jsonPath("$.metadata.page", Matchers.equalTo(0)),
@@ -86,7 +88,7 @@ public class ProductControllerTest {
         var product = productOne;
         Long requestId = product.getId();
         Mockito.when(service.getProductById(Mockito.anyLong())).thenReturn(product);
-        var action = mockmvc.perform(MockMvcRequestBuilders.get("/product/{id}", requestId));
+        var action = mockmvc.perform(MockMvcRequestBuilders.get("/products/{id}", requestId));
         action.andExpectAll(MockMvcResultMatchers.status().isOk(),
                 MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON),
                 MockMvcResultMatchers.jsonPath("$.data.id").value(requestId),
@@ -108,7 +110,8 @@ public class ProductControllerTest {
                 product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), product.getBrand().getId());
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenReturn(product);
-        var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/product").param("name", requestData.name())
+        var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/management/products")
+                .param("name", requestData.name())
                 .param("description", requestData.description()).param("price", requestData.price().toString())
                 .param("categoryId", requestData.categoryId().toString())
                 .param("brandId", requestData.brandId().toString());
@@ -136,7 +139,7 @@ public class ProductControllerTest {
                 product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), 120l);
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenThrow(NotFoundException.class);
-        var request = MockMvcRequestBuilders.multipart("/product").param("name", requestData.name())
+        var request = MockMvcRequestBuilders.multipart("/management/products").param("name", requestData.name())
                 .param("description", requestData.description()).param("price", requestData.price().toString())
                 .param("categoryId", requestData.categoryId().toString())
                 .param("brandId", requestData.brandId().toString());
@@ -156,7 +159,7 @@ public class ProductControllerTest {
                 product.getCategory().getId(), product.getBrand().getId());
         Mockito.when(service.update(Mockito.anyLong(), Mockito.any(CreateUpdateProductRequest.class)))
                 .thenReturn(product);
-        var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/product/{id}", updateId)
+        var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/management/products/{id}", updateId)
                 .param("name", requestData.name()).param("description", requestData.description())
                 .param("price", requestData.price().toString()).param("categoryId", requestData.categoryId().toString())
                 .param("brandId", requestData.brandId().toString());
@@ -180,19 +183,26 @@ public class ProductControllerTest {
     public void updateProductInvalidId_notFound() throws Exception {
         Long updateId = 92l;
         var product = productUpdated;
-        var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
-                product.getCategory().getId(), product.getBrand().getId());
+        var requestData = new CreateUpdateProductRequest(
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                null,
+                product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getCategory().getId(),
+                product.getBrand().getId());
         Mockito.when(service.update(Mockito.anyLong(), Mockito.any(CreateUpdateProductRequest.class)))
                 .thenThrow(NotFoundException.class);
-        var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/product/{id}", updateId)
-                .param("name", requestData.name()).param("description", requestData.description())
-                .param("price", requestData.price().toString()).param("categoryId", requestData.categoryId().toString())
+        var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/management/products/{id}", updateId)
+                .param("name", requestData.name())
+                .param("description", requestData.description())
+                .param("price", requestData.price().toString())
+                .param("categoryId", requestData.categoryId().toString())
                 .param("brandId", requestData.brandId().toString());
         requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
         var action = mockmvc.perform(request);
         action.andExpectAll(MockMvcResultMatchers.status().isNotFound());
-        Mockito.verify(service, Mockito.times(1)).update(updateId, requestData);
+        Mockito.verify(service, Mockito.times(1)).update(Mockito.eq(updateId), Mockito.eq(requestData));
     }
 
     @Test
@@ -200,7 +210,7 @@ public class ProductControllerTest {
     public void deleteProduct_ok() throws Exception {
         Long deleteId = 1l;
 
-        var request = MockMvcRequestBuilders.delete("/product/{id}", deleteId);
+        var request = MockMvcRequestBuilders.delete("/management/products/{id}", deleteId);
 
         var action = mockmvc.perform(request);
 
@@ -216,7 +226,7 @@ public class ProductControllerTest {
         Long deleteId = 2l;
         Mockito.doThrow(NotFoundException.class).when(service).delete(Mockito.eq(deleteId));
 
-        var request = MockMvcRequestBuilders.delete("/product/{id}", deleteId);
+        var request = MockMvcRequestBuilders.delete("/management/products/{id}", deleteId);
 
         var action = mockmvc.perform(request);
 

@@ -8,6 +8,7 @@ import com.phincon.laza.model.entity.City;
 import com.phincon.laza.repository.CityRepository;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.service.RajaongkirService;
+import com.phincon.laza.validator.RajaongkirValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,15 +28,15 @@ public class RajaongkirServiceImpl implements RajaongkirService {
 
     @Override
     public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception{
-        Optional<City> origin = cityRepository.findById(roCostRequest.getOrigin());
-        if (origin.isEmpty()){
+
+        if (cityRepository.findById(roCostRequest.getOrigin()).isEmpty()){
             throw new NotFoundException("Origin city not found");
         }
 
-        Optional<City> destination = cityRepository.findById(roCostRequest.getDestination());
-        if (destination.isEmpty()){
+        if (cityRepository.findById(roCostRequest.getDestination()).isEmpty()){
             throw new NotFoundException("Destination city not found");
         }
+
         return rajaongkirRepository.findCostCourierService(roCostRequest).getResults();
     }
 }

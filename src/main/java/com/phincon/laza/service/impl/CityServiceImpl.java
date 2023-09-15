@@ -18,7 +18,10 @@ public class CityServiceImpl implements CityService {
     private CityRepository cityRepository;
 
     @Override
-    public List<City> findAllCity()  {
-        return cityRepository.findAll();
+    public List<City> findAllCity(String provinceId)  {
+        if (provinceId == null){
+            return  cityRepository.findAll();
+        }
+        return cityRepository.findByProvincesProvinceId(provinceId);
     }
 }
