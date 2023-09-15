@@ -2,6 +2,7 @@ package com.phincon.laza.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phincon.laza.exception.CustomExceptionHandler;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.rajaongkir.*;
 import com.phincon.laza.model.dto.request.ROCostRequest;
@@ -12,17 +13,23 @@ import jakarta.validation.Valid;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -31,9 +38,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-@SpringBootTest
 @AutoConfigureMockMvc
+@ContextConfiguration(classes = {RajaongkirController.class})
+@ExtendWith(MockitoExtension.class)
+@WebMvcTest
+@WithMockUser
 public class RajaongkirControllerTest {
     @MockBean
     private RajaongkirService rajaongkirService;
@@ -44,6 +55,8 @@ public class RajaongkirControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private MockMvc mM;
     private List<CourierResponse> courierResponses = new ArrayList<>();
     private List<CostsResponse> costs = new ArrayList<>();
     private List<CostResponse> costI = new ArrayList<>();
@@ -71,6 +84,7 @@ public class RajaongkirControllerTest {
         when(rajaongkirService.findCostCourierService(requestBody)).thenReturn(courierResponses);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/costs")
+                        .with(csrf())
                 .content(new ObjectMapper().writeValueAsString(requestBody))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -81,6 +95,7 @@ public class RajaongkirControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].code").value(courierResponses.get(0).getCode()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].costs[0].cost[0].value").value(courierResponses.get(0).getCosts().get(0).getCost().get(0).getValue()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].costs[1].cost[0].value").value(courierResponses.get(0).getCosts().get(1).getCost().get(0).getValue()));
+
     }
 
     @Test
@@ -88,14 +103,18 @@ public class RajaongkirControllerTest {
     void whenFindCostCourierServiceOrigin_thenThrowException() throws Exception{
         ROCostRequest requestBody = new ROCostRequest("501", "200", 1000, "jne");
         when(rajaongkirService.findCostCourierService(requestBody)).thenThrow(new NotFoundException("Origin city not found"));
+        this.mockMvc = MockMvcBuilders.standaloneSetup(rajaongkirController).setControllerAdvice(CustomExceptionHandler.class)
+                .build();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/costs")
+                        .with(csrf())
                         .content(new ObjectMapper().writeValueAsString(requestBody))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Origin city not found"));
+        mockMvc = mM;
     }
 
 
@@ -105,6 +124,9 @@ public class RajaongkirControllerTest {
         ROCostRequest requestBody = new ROCostRequest("501", "200", 1000, "jne");
         when(rajaongkirService.findCostCourierService(requestBody)).thenThrow(new NotFoundException("Destination city not found"));
 
+        this.mockMvc = MockMvcBuilders.standaloneSetup(rajaongkirController).setControllerAdvice(CustomExceptionHandler.class)
+                .build();
+
         mockMvc.perform(MockMvcRequestBuilders.post("/costs")
                         .content(new ObjectMapper().writeValueAsString(requestBody))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -112,13 +134,15 @@ public class RajaongkirControllerTest {
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Destination city not found"));
+        mockMvc = mM;
     }
 
     @Test
     @DisplayName("[RajaongkirController] findCostCourierService bad payload")
     void whenFindCostCourierServiceBadPayload_thenThrowException() throws Exception{
         ROCostRequest requestBody = new ROCostRequest();
-
+        this.mockMvc = MockMvcBuilders.standaloneSetup(rajaongkirController).setControllerAdvice(CustomExceptionHandler.class)
+                .build();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/costs")
                         .content(new ObjectMapper().writeValueAsString(requestBody))
@@ -130,9 +154,8 @@ public class RajaongkirControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.sub_error.destination").value("destination is required"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.sub_error.weight").value("weight is required"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.sub_error.courier").value("courier is required"));
-        ;
-        ;
-        ;
+
+        mockMvc = mM;
     }
 
 }

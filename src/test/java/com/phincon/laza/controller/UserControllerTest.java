@@ -118,8 +118,7 @@ public class UserControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.FORBIDDEN.value()))
-                .andExpect(jsonPath("$.message").value("Access Denied"))
-                .andExpect(jsonPath("$.sub_error").value("Forbidden"));
+                .andExpect(jsonPath("$.message").value("Access Denied"));
 
         verify(userService, times(0)).getAll(any());
 
@@ -353,8 +352,7 @@ public class UserControllerTest {
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.FORBIDDEN.value()))
-                .andExpect(jsonPath("$.message").value("Access Denied"))
-                .andExpect(jsonPath("$.sub_error").value("Forbidden"));
+                .andExpect(jsonPath("$.message").value("Access Denied"));
 
         verify(userService, times(0)).updateRole(any());
 

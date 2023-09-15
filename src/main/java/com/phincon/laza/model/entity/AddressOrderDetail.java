@@ -17,16 +17,12 @@ import lombok.*;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AddressOrderDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(nullable = false)
     @NotNull
-    private String country;
-
-    @Column(nullable = false)
-    @NotNull
-    private String city;
+    private String fullAddress;
 
     @Column(nullable = false)
     @NotNull
@@ -35,6 +31,22 @@ public class AddressOrderDetail {
     @Column(nullable = false)
     @NotNull
     private String phoneNumber;
+
+    @Column(nullable = false)
+    @NotNull
+    private String province;
+
+    @Column(nullable = false)
+    @NotNull
+    private String cityType;
+
+    @Column(nullable = false)
+    @NotNull
+    private String cityName;
+
+    @Column(nullable = false)
+    @NotNull
+    private String postalCode;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JsonIgnore

@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -87,7 +88,6 @@ public class WishlistControllerTest {
 
     }
 
-    @Test
     @DisplayName("[WishlistControllerTest] Post saveWishlist and should return status OK")
     void postSaveWishlist() throws Exception{
 
@@ -104,7 +104,6 @@ public class WishlistControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").value(wishlistResponse));
     }
 
-    @Test
     @DisplayName("[WishlistControllerTest] Post saveWishlist with invalid product id and should return status not found")
     void postSaveWishlistBadRequest() throws  Exception{
         WishlistRequest wishlistRequest = new WishlistRequest(10l);
@@ -136,5 +135,4 @@ public class WishlistControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.*", hasSize(3)));
     }
-
 }

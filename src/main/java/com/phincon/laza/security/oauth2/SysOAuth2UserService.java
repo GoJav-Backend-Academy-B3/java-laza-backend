@@ -7,6 +7,7 @@ import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.security.oauth2.user.OAuth2UserInfo;
 import com.phincon.laza.security.oauth2.user.OAuth2UserInfoFactory;
 import com.phincon.laza.security.userdetails.SysUserDetails;
+import com.phincon.laza.utils.GenerateRandom;
 import com.phincon.laza.validator.AuthValidator;
 import com.phincon.laza.validator.ProviderValidator;
 import com.phincon.laza.validator.RoleValidator;
@@ -44,7 +45,7 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
-        authValidator.validateAuthEmailNull(oAuth2UserInfo.getEmail());
+        authValidator.validateAuthEmailIsNull(oAuth2UserInfo.getEmail());
 
         Optional<User> findUser = userRepository.findByEmail(oAuth2UserInfo.getEmail());
 
@@ -70,7 +71,7 @@ public class SysOAuth2UserService extends DefaultOAuth2UserService {
         listRole.add(findRole.get());
 
         User user = new User();
-        user.setUsername(oAuth2UserInfo.getId());
+        user.setUsername(GenerateRandom.username(oAuth2UserInfo.getEmail()));
         user.setName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());

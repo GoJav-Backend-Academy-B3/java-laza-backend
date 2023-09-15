@@ -81,7 +81,7 @@ public class ProductsServiceImpl implements ProductsService {
             throw (NotFoundException) e.getCause();
         }
 
-        var result = cloudinaryImageService.upload(createProductRequest.file().getBytes(), "products",
+        var result = cloudinaryImageService.upload(createProductRequest.imageFile().getBytes(), "products",
                 GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
         product.setCloudinaryPublicId(result.publicId());
@@ -109,7 +109,7 @@ public class ProductsServiceImpl implements ProductsService {
         CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
 
         cloudinaryImageService.delete(product.getCloudinaryPublicId());
-        var result = cloudinaryImageService.upload(updateProductRequest.file().getBytes(), "products",
+        var result = cloudinaryImageService.upload(updateProductRequest.imageFile().getBytes(), "products",
                 GenerateRandom.token());
         product.setImageUrl(result.secureUrl());
 

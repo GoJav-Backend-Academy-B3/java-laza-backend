@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,21 +59,28 @@ public class MidtransServiceImpl implements MidtransService {
         // Convert JSON object to Class
         GoPayTransaction goPayTransaction = objectMapper.readValue(object.toString(), GoPayTransaction.class);
 
-        order.setOrderStatus(goPayTransaction.getTransaction_status());
+        order.setOrderStatus(goPayTransaction.getTransactionStatus());
 
         Transaction transaction = new Transaction();
         transaction.setOrder(order);
-        transaction.setReferenceId(goPayTransaction.getTransaction_id());
+        transaction.setReferenceId(goPayTransaction.getTransactionId());
 
-        double amount = Double.parseDouble(goPayTransaction.getGross_amount());
+        double amount = Double.parseDouble(goPayTransaction.getGrossAmount());
         transaction.setAmount((int) amount);
         transaction.setProvider("midtrans");
         transaction.setCurrency(goPayTransaction.getCurrency());
-        transaction.setTransactionStatus(goPayTransaction.getTransaction_status());
+        transaction.setTransactionStatus(goPayTransaction.getTransactionStatus());
+        transaction.setType("gopay");
         transaction.setCreatedAt(LocalDateTime.now());
         transaction.setUpdatedAt(LocalDateTime.now());
 
-        order.setTransaction(transactionService.createTransaction(transaction));
+        if (order.getTransaction() == null) {
+            List<Transaction> transactions = new ArrayList<>();
+            order.setTransaction(transactions);
+        }
+
+//        order.setTransaction(transactionService.createTransaction(transaction));
+        order.getTransaction().add(transactionService.createTransaction(transaction));
 
         PaymentDetail paymentDetail = new PaymentDetail();
         paymentDetail.setPaymentMethod(paymentMethod.getName());

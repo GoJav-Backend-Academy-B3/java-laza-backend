@@ -9,9 +9,7 @@ import com.phincon.laza.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class OrderController {
@@ -23,6 +21,12 @@ public class OrderController {
     public ResponseEntity<DataResponse<Order>> checkout(@CurrentUser SysUserDetails ctx, @Valid @RequestBody CheckoutRequest checkoutRequest) {
         Order order = orderService.requestCreateOrder(ctx.getId(), checkoutRequest);
 
+        return DataResponse.ok(order);
+    }
+
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<DataResponse<Order>> getPaymentMethodById(@PathVariable String id) {
+        Order order = orderService.getOrderById(id);
         return DataResponse.ok(order);
     }
 }

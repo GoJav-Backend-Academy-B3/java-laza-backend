@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.thymeleaf.exceptions.TemplateInputException;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         Map<String, Object> mapError = new HashMap<>();
         e.getFieldErrors().forEach(error -> mapError.put(error.getField(), error.getDefaultMessage()));
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Error validation", mapError);
@@ -38,7 +39,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(IllegalArgumentException e) {
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
         log.warn("IllegalArgumentException: {}", e.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
@@ -52,7 +53,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(value = NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage(), null);
         log.warn("NotFoundException: {}", e.getMessage());
         return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse);
@@ -65,8 +66,15 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse);
     }
 
+    @ExceptionHandler(value = MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE.value(), e.getMessage(), null);
+        log.warn("MaxUploadSizeExceededException: {}", e.getMessage());
+        return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse);
+    }
+
     @ExceptionHandler(value = NotProcessException.class)
-    public ResponseEntity<ErrorResponse> handleNotProcess(NotProcessException e) {
+    public ResponseEntity<ErrorResponse> handleNotProcessException(NotProcessException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage(), null);
         log.warn("NotProcessException: {}", e.getMessage());
         return ResponseEntity.status(errorResponse.getStatusCode()).body(errorResponse);

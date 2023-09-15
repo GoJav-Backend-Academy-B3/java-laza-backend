@@ -6,10 +6,10 @@ import java.time.format.DateTimeFormatter;
 public class DateConverter {
     public static LocalDateTime convertDateTime(String datetime){
 
-        // Define a DateTimeFormatter to parse the string
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        // Replace 'Z' with '' and parse the string
-        return LocalDateTime.parse(datetime.replace("Z", ""), formatter);
+        // Parse the string into a LocalDateTime object
+       return LocalDateTime.parse(datetime, formatter);
+
     }
 }

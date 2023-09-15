@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
     private SecurityScheme createAPIKeyScheme() {
         return new SecurityScheme().type(SecurityScheme.Type.HTTP)
+                .name("X-AUTH-TOKEN")
                 .bearerFormat("JWT")
                 .scheme("bearer");
     }

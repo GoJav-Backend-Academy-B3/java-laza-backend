@@ -2,7 +2,6 @@ package com.phincon.laza.model.dto.midtrans.gopay;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,17 +11,17 @@ import java.util.List;
 @Setter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GoPayTransaction {
-    private String status_code;
-    private String status_message;
-    private String transaction_id;
-    private String order_id;
-    private String merchant_id;
-    private String gross_amount;
+    private String statusCode;
+    private String statusMessage;
+    private String transactionId;
+    private String orderId;
+    private String merchantId;
+    private String grossAmount;
     private String currency;
-    private String payment_type;
-    private String transaction_time;
-    private String transaction_status;
-    private String fraud_status;
+    private String paymentType;
+    private String transactionTime;
+    private String transactionStatus;
+    private String fraudStatus;
     private List<TransactionAction> actions;
-    private String expiry_time;
+    private String expiryTime;
 }
