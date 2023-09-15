@@ -8,6 +8,7 @@ import com.phincon.laza.model.entity.City;
 import com.phincon.laza.repository.CityRepository;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.service.RajaongkirService;
+import com.phincon.laza.validator.RajaongkirValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class RajaongkirServiceImpl implements RajaongkirService {
         if (cityRepository.findById(roCostRequest.getDestination()).isEmpty()){
             throw new NotFoundException("Destination city not found");
         }
+
         return rajaongkirRepository.findCostCourierService(roCostRequest).getResults();
     }
 }

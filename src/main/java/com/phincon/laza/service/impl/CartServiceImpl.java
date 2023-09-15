@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,5 +94,16 @@ public class CartServiceImpl implements CartService {
     public List<Cart> findCartByUser(String userId) {
         List<Cart> carts = cartRepository.findByUser_Id(userId);
         return carts;
+    }
+
+    @Override
+    public List<Product> findAllProductInCartByUser(String userId) {
+        List<Cart> carts = cartRepository.findByUser_Id(userId);
+        List<Product> products = new ArrayList<>();
+        for (Cart cart : carts ) {
+            products.add(cart.getProduct());
+        }
+
+        return products;
     }
 }

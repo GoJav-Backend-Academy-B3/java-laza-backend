@@ -1,9 +1,13 @@
 package com.phincon.laza.repository.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.config.RajaongkirConfig;
+import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.model.dto.rajaongkir.AllCityResponse;
 import com.phincon.laza.model.dto.rajaongkir.AllProvinceResponse;
 import com.phincon.laza.model.dto.rajaongkir.AllCostResponse;
+import com.phincon.laza.model.dto.rajaongkir.StatusResponse;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.repository.RajaongkirRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -26,13 +31,13 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
     @Autowired
     private RajaongkirConfig rajaongkirConfig;
 
-    @Value("${rajaongkir.province.url}")
+    @Value("${com.phincon.laza.rajaongkir.province.url}")
     private String RAJAONGKIR_PROVINCE_URL;
 
-    @Value("${rajaongkir.city.url}")
+    @Value("${com.phincon.laza.rajaongkir.city.url}")
     private String RAJAONGKIR_CITY_URL;
 
-    @Value("${rajaongkir.cost.url}")
+    @Value("${com.phincon.laza.rajaongkir.cost.url}")
     private String RAJAONGKIR_COST_URL;
 
 
@@ -86,9 +91,12 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
                     new ParameterizedTypeReference<>() {
                     }
             );
+
             return result.getBody().get("rajaongkir");
         }catch (IOException e){
             throw e;
+        }catch (HttpClientErrorException e){
+            throw new BadRequestException(e.getMessage());
         }
     }
 }

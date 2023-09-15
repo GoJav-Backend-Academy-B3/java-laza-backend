@@ -24,4 +24,13 @@ public class GenerateRandomTest {
 
         log.info("[COMPLETE] testing generate random code then correct");
     }
+
+    @Test
+    public void testUsername() {
+        String username = GenerateRandom.username("john.doe@mail.com");
+        assertNotNull(username);
+        assertEquals("john_doe", username);
+
+        log.info("[COMPLETE] testing generate random username then correct");
+    }
 }

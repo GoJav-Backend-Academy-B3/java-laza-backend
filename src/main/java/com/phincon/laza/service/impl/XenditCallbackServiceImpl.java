@@ -33,24 +33,16 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
 
             Order order = orderService.getOrderById(callbackData.getReferenceId());
 
-            Transaction transaction = new Transaction();
-            transaction.setOrder(order);
-            transaction.setReferenceId(callbackData.getId());
-            transaction.setAmount(Math.toIntExact(callbackData.getCaptureAmount()));
-            transaction.setProvider("xendit");
-            transaction.setType("payment");
+            Transaction transaction = transactionService.getTransactionByReferenceId(callbackData.getId());
             transaction.setTransactionStatus(callbackData.getStatus());
-            transaction.setCurrency(callbackData.getCurrency());
-            transaction.setCreatedAt(LocalDateTime.now());
-            transaction.setUpdatedAt(LocalDateTime.now());
+            transaction.setUpdatedAt(callbackData.getUpdated());
 
             if (callbackData.getStatus().equals("SUCCEEDED")) {
                 order.setOrderStatus("paid");
             }
             order.setPaidAt(callbackData.getUpdated());
 
-//            order.getTransaction().add(transactionService.createTransaction(transaction));
-            transactionService.createTransaction(transaction);
+            transactionService.updateTransaction(transaction.getId(), transaction);
 
             orderService.updateOrder(order.getId(), order);
 
@@ -65,16 +57,9 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
     public void callbackFVAPaid(FVACallbackRequest fvaCallbackRequest) {
         Order order = orderService.getOrderById(fvaCallbackRequest.getExternalId());
 
-        Transaction transaction = new Transaction();
-        transaction.setOrder(order);
-        transaction.setReferenceId(fvaCallbackRequest.getId());
-        transaction.setAmount(Math.toIntExact(fvaCallbackRequest.getAmount()));
-        transaction.setProvider("xendit");
-        transaction.setType("payment");
+        Transaction transaction = transactionService.getTransactionByReferenceId(fvaCallbackRequest.getId());
         transaction.setTransactionStatus("SUCCEEDED");
-        transaction.setCurrency(fvaCallbackRequest.getCurrency());
-        transaction.setCreatedAt(LocalDateTime.now());
-        transaction.setUpdatedAt(LocalDateTime.now());
+        transaction.setUpdatedAt(fvaCallbackRequest.getUpdated());
 
         // todo: implement overpayment
         if (fvaCallbackRequest.getAmount() == order.getAmount()) {
@@ -85,8 +70,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
             order.setOrderStatus("insufficient payment");
         }
 
-//        order = (orderService.addOrderTransaction(order, transaction));
-        transactionService.createTransaction(transaction);
+        transactionService.updateTransaction(transaction.getId(), transaction);
 
         order.setPaidAt((fvaCallbackRequest.getTransactionTimestamp()));
 
@@ -104,7 +88,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         transaction.setReferenceId(fvaCallbackCreated.getId());
         transaction.setAmount(Math.toIntExact(fvaCallbackCreated.getExpectedAmount()));
         transaction.setProvider("xendit");
-        transaction.setType("invoice");
+        transaction.setType("virtual_account");
         transaction.setTransactionStatus(fvaCallbackCreated.getStatus());
         transaction.setCurrency("IDR");
         transaction.setCreatedAt(LocalDateTime.now());

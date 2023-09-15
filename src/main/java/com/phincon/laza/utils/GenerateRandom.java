@@ -33,4 +33,9 @@ public class GenerateRandom {
         return sb.toString();
     }
 
+    public static String username(String email) {
+        String[] split = email.split("@");
+
+        return split[0].replaceAll("[^a-zA-Z0-9]", "_");
+    }
 }

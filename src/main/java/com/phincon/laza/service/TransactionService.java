@@ -10,5 +10,9 @@ public interface TransactionService {
 
     Transaction getTransactionById(String id);
 
+    Transaction updateTransaction(String id, Transaction transaction);
+
+    Transaction getTransactionByReferenceId(String id);
+
     Transaction createTransaction(Transaction transaction);
 }
