@@ -48,13 +48,14 @@ public class SizeController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     public ResponseEntity<DataResponse<SizeResponse>> updateSize(@PathVariable Long id, @Valid @RequestBody SizeRequest request) throws Exception {
         Size size = sizeService.update(id, request);
         SizeResponse result = new SizeResponse(size);
         DataResponse<SizeResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Size updated successfully", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<DataResponse<Void>> deleteSize(@PathVariable Long id) throws Exception {
