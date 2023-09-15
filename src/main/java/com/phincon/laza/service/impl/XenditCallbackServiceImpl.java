@@ -6,7 +6,9 @@ import com.phincon.laza.model.dto.xendit.fva.FVACallbackCreated;
 import com.phincon.laza.model.dto.xendit.fva.FVACallbackRequest;
 import com.phincon.laza.model.entity.Order;
 import com.phincon.laza.model.entity.Transaction;
+import com.phincon.laza.model.entity.User;
 import com.phincon.laza.service.OrderService;
+import com.phincon.laza.service.PushNotificationService;
 import com.phincon.laza.service.TransactionService;
 import com.phincon.laza.service.XenditCallbackService;
 import com.xendit.exception.XenditException;
@@ -26,6 +28,8 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
     @Autowired
     private TransactionService transactionService;
 
+    @Autowired
+    private PushNotificationService pushNotificationService;
     @Override
     public void callbackEwallet(EwalletCallbackRequest ewalletCallbackRequest) throws XenditException {
 
@@ -39,8 +43,19 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
             transaction.setTransactionStatus(callbackData.getStatus());
             transaction.setUpdatedAt(convertDateTime(callbackData.getUpdated()));
 
+//            if (callbackData.getStatus().equals("SUCCEEDED")) {
+//                order.setOrderStatus("paid");
+//
+//                pushNotificationService.sendPushNotification("Order " + order.getId() + " telah berhasil dibayar");
+//            }
+
             if (callbackData.getStatus().equals("SUCCEEDED")) {
                 order.setOrderStatus("paid");
+                String userId = order.getUser().getId();
+
+                if (userId != null) {
+                    pushNotificationService.sendPushNotification(userId, "Order " + order.getId() + order.getUser().getUsername() +" telah berhasil dibayar");
+                }
             }
             order.setPaidAt(convertDateTime(callbackData.getUpdated()));
 
@@ -63,12 +78,11 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         transaction.setTransactionStatus("SUCCEEDED");
         transaction.setUpdatedAt(convertDateTime(fvaCallbackRequest.getUpdated()));
 
-        // todo: implement overpayment
         if (fvaCallbackRequest.getAmount() == order.getAmount()) {
             order.setOrderStatus("paid");
-        } else if (fvaCallbackRequest.getAmount() > order.getAmount()) { // todo: implement overpayment
+        } else if (fvaCallbackRequest.getAmount() > order.getAmount()) {
             order.setOrderStatus("overpayment");
-        } else if (fvaCallbackRequest.getAmount() < order.getAmount()) { // todo: implement insufficient payment
+        } else if (fvaCallbackRequest.getAmount() < order.getAmount()) {
             order.setOrderStatus("insufficient payment");
         }
 
@@ -77,6 +91,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         order.setPaidAt(convertDateTime(fvaCallbackRequest.getTransactionTimestamp()));
 
         orderService.updateOrder(order.getId(), order);
+//        pushNotificationService.sendPushNotification("Order " + order.getId() + " telah berhasil dibayar");
 
         // todo: implement push payment notification
     }
@@ -101,6 +116,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         transactionService.createTransaction(transaction);
 
         orderService.updateOrder(order.getId(), order);
+//        pushNotificationService.sendPushNotification("Order " + order.getId() + " telah berhasil dibayar");
 
         // todo: implement push invoice created notification
     }
