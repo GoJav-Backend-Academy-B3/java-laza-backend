@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,13 @@ public class CreditCardController {
     public ResponseEntity<DataResponse<List<CreditCardResponse>>> getAllCreditCards(@CurrentUser SysUserDetails currentUser) {
         var lists = service.getAll(currentUser.getId());
         var response = lists.stream().map(CreditCardResponse::fromEntity).collect(Collectors.toList());
+        return DataResponse.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DataResponse<CreditCardResponse>> getCreditCard(@PathVariable("id") String id) {
+        var cc = service.getById(id);
+        var response = CreditCardResponse.fromEntity(cc);
         return DataResponse.ok(response);
     }
 }
