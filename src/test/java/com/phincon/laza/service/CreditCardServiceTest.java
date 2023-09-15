@@ -14,18 +14,21 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.phincon.laza.config.CreditCardDataConfig;
+import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotFoundException;
+import com.phincon.laza.model.dto.request.CreateUpdateCreditCardRequest;
 import com.phincon.laza.model.entity.CreditCard;
 import com.phincon.laza.repository.CreditCardRepository;
 import com.phincon.laza.service.impl.CreditCardServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-@SpringJUnitConfig({CreditCardDataConfig.class})
+@SpringJUnitConfig({ CreditCardDataConfig.class })
 public class CreditCardServiceTest {
     @Mock
     private CreditCardRepository repository;
@@ -48,7 +51,7 @@ public class CreditCardServiceTest {
         Mockito.when(repository.findAllByUserId(Mockito.eq(userId))).thenReturn(creditCards);
 
         var lists = service.getAll("userid1");
-        
+
         Assertions.assertTrue(CollectionUtils.isEqualCollection(creditCards, lists));
         Mockito.verify(repository, Mockito.times(1)).findAllByUserId(userId);
     }
@@ -59,7 +62,7 @@ public class CreditCardServiceTest {
         final CreditCard creditCard = creditCardOne;
         final String id = creditCard.getId();
         Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.of(creditCard));
-   
+
         var result = service.getById(id);
 
         Assertions.assertEquals(id, result.getId());
@@ -78,5 +81,40 @@ public class CreditCardServiceTest {
         Assertions.assertThrows(NotFoundException.class, () -> service.getById(id));
 
         Mockito.verify(repository, Mockito.times(1)).findById(id);
+    }
+
+    @Test
+    @DisplayName("create one credit card for user should return data")
+    public void createCreditCard_data() {
+        var request = new CreateUpdateCreditCardRequest("4888234202829762", 5, 24);
+        var cc = new CreditCard("cc09", request.cardNumber(), request.expiryMonth(), request.expiryYear(), null);
+        Mockito.when(repository.save(Mockito.any(CreditCard.class))).thenReturn(cc);
+
+        service.create("user1", request);
+
+        Mockito.verify(repository, Mockito.times(1))
+                .save(Mockito.argThat((CreditCard m) -> {
+                    return m.getCardNumber().equals(request.cardNumber()) &&
+                            m.getExpiryMonth().equals(request.expiryMonth()) &&
+                            m.getExpiryYear().equals(request.expiryYear());
+                }));
+    }
+
+    @Test
+    @DisplayName("Create one credit card with the same card number should throw exception")
+    public void createSameCreditCard_exception() {
+        var request = new CreateUpdateCreditCardRequest("4888234202829762", 5, 24);
+        Mockito.when(repository.save(Mockito.any(CreditCard.class))).thenThrow(DataIntegrityViolationException.class);
+
+        Assertions.assertThrows(ConflictException.class, () -> {
+            service.create("user1", request);
+        });
+
+        Mockito.verify(repository, Mockito.times(1))
+                .save(Mockito.argThat((CreditCard m) -> {
+                    return m.getCardNumber().equals(request.cardNumber()) &&
+                            m.getExpiryMonth().equals(request.expiryMonth()) &&
+                            m.getExpiryYear().equals(request.expiryYear());
+                }));
     }
 }
