@@ -7,4 +7,6 @@ import com.phincon.laza.model.entity.CreditCard;
 public interface CreditCardService {
 
     public List<CreditCard> getAll(String userId);
+
+    public CreditCard getById(String id);
 }
