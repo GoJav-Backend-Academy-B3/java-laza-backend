@@ -43,7 +43,7 @@ public class CreditCardControllerTest {
     @MockBean
     private CreditCardService service;
 
-    @Autowired 
+    @InjectMocks 
     private CreditCardController controller;
 
     @Autowired
