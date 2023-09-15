@@ -4,12 +4,10 @@ import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.rajaongkir.*;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.model.entity.City;
-import com.phincon.laza.model.entity.Product;
 import com.phincon.laza.repository.CityRepository;
 import com.phincon.laza.repository.RajaongkirRepository;
 import com.phincon.laza.repository.impl.RajaongkirRepositoryImpl;
 import com.phincon.laza.service.impl.RajaongkirServiceImpl;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 

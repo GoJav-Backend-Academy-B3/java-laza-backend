@@ -110,20 +110,6 @@ public class XenditServiceImpl implements XenditService {
 
         order.setOrderStatus(closedVirtualAccount.getStatus().toLowerCase());
 
-//        // add transaction to database
-//        Transaction transaction = new Transaction();
-//        transaction.setOrder(order);
-//        transaction.setReferenceId(closedVirtualAccount.getId());
-//        transaction.setAmount(Math.toIntExact(closedVirtualAccount.getExpectedAmount()));
-//        transaction.setType("invoice");
-//        transaction.setProvider("xendit");
-//        transaction.setCurrency(closedVirtualAccount.getCurrency());
-//        transaction.setTransactionStatus(closedVirtualAccount.getStatus());
-//        transaction.setCreatedAt(LocalDateTime.now());
-//        transaction.setUpdatedAt(LocalDateTime.now());
-//
-//        order.setTransaction(transactionService.createTransaction(transaction));
-
         // add payment detail to database
         PaymentDetail paymentDetail = new PaymentDetail();
         paymentDetail.setPaymentMethod(paymentMethod.getName());
