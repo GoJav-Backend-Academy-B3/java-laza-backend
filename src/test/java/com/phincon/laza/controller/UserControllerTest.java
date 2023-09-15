@@ -112,9 +112,10 @@ public class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "USER")
     public void testGetAllToUser_thenForbidden() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/management/users?page={page}&size={size}", 0, 5))
+        mockMvc.perform(MockMvcRequestBuilders.get("/management/users?page={page}&size={size}", 0, 5)
+                    .with(user(userDetails))
+                    .with(csrf()))
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.FORBIDDEN.value()))
@@ -123,6 +124,20 @@ public class UserControllerTest {
         verify(userService, times(0)).getAll(any());
 
         log.info("[COMPLETE] testing controller user getAll then forbidden");
+    }
+
+    @Test
+    public void testGetAllToUser_thenUnauthorized() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/management/users?page={page}&size={size}", 0, 5)
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.UNAUTHORIZED.value()))
+                .andExpect(jsonPath("$.message").isNotEmpty());
+
+        verify(userService, times(0)).getAll(any());
+
+        log.info("[COMPLETE] testing controller user getAll then unauthorized");
     }
 
     @Test
@@ -139,6 +154,20 @@ public class UserControllerTest {
         verify(userService, times(1)).getById(anyString());
 
         log.info("[COMPLETE] testing controller user profile then correct");
+    }
+
+    @Test
+    public void testProfileToUser_thenUnauthorized() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/me")
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.UNAUTHORIZED.value()))
+                .andExpect(jsonPath("$.message").isNotEmpty());
+
+        verify(userService, times(0)).getById(anyString());
+
+        log.info("[COMPLETE] testing controller user profile then unauthorized");
     }
 
     @Test
@@ -162,6 +191,27 @@ public class UserControllerTest {
         verify(userService, times(1)).update(anyString(), any());
 
         log.info("[COMPLETE] testing controller user update then correct");
+    }
+
+    @Test
+    public void testUpdateToUser_thenUnauthorized() throws Exception {
+        UserRequest request = new UserRequest();
+        request.setName("John Doe");
+        request.setUsername("johndoe");
+        request.setEmail("johndoe@mail.com");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/users/update")
+                        .with(csrf())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .flashAttr("request", request))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.UNAUTHORIZED.value()))
+                .andExpect(jsonPath("$.message").isNotEmpty());
+
+        verify(userService, times(0)).update(anyString(), any());
+
+        log.info("[COMPLETE] testing controller user update then unauthorized");
     }
 
 
@@ -237,6 +287,27 @@ public class UserControllerTest {
     }
 
     @Test
+    public void testChangePasswordToUser_thenUnauthorized() throws Exception {
+        ChangePasswordRequest request = new ChangePasswordRequest();
+        request.setOldPassword("password");
+        request.setNewPassword("password");
+        request.setConfirmPassword("password");
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/change-password")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.UNAUTHORIZED.value()))
+                .andExpect(jsonPath("$.message").isNotEmpty());
+
+        verify(userService, times(0)).changePassword(anyString(), any());
+
+        log.info("[COMPLETE] testing controller user changePassword then unauthorized");
+    }
+
+    @Test
     public void testChangePasswordToUser_thenMethodInvalidArgsBlank() throws Exception {
         ChangePasswordRequest request = new ChangePasswordRequest();
 
@@ -300,6 +371,25 @@ public class UserControllerTest {
         verify(userService, times(1)).updateRole(any());
 
         log.info("[COMPLETE] testing controller user updateRole then correct");
+    }
+
+    @Test
+    public void testUpdateRoleToUser_thenUnauthorized() throws Exception {
+        RoleRequest request = new RoleRequest();
+        request.setUsername("johndoe");
+        request.setRoles(Arrays.asList("USER", "ADMIN"));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/management/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.UNAUTHORIZED.value()))
+                .andExpect(jsonPath("$.message").isNotEmpty());
+
+        verify(userService, times(0)).updateRole(any());
+
+        log.info("[COMPLETE] testing controller user updateRole then unauthorized");
     }
 
     @Test
