@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
@@ -84,6 +85,18 @@ public class UserValidatorTest {
     }
 
     @Test
+    public void testValidateUser_thenVerified() {
+        Optional<User> findUser = Optional.of(new User());
+        lenient().when(userRepository.findById(anyString())).thenReturn(findUser);
+
+        assertThrows(NotProcessException.class, () -> {
+            userValidator.validateUserIsVerified(findUser);
+        });
+
+        log.info("[COMPLETE] testing validate user then not verified");
+    }
+
+    @Test
     public void testValidateUser_thenNotVerified() {
         Optional<User> findUser = Optional.of(new User());
         lenient().when(userRepository.findById(anyString())).thenReturn(findUser);
@@ -141,7 +154,7 @@ public class UserValidatorTest {
         Optional<User> findUser = Optional.of(user);
         lenient().when(userRepository.findById(anyString())).thenReturn(findUser);
 
-        assertThrows(NotProcessException.class, () -> {
+        assertThrows(AuthenticationException.class, () -> {
             userValidator.validateUserNotEqualProvider(findUser, "local");
         });
 

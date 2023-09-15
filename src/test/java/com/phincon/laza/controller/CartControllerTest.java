@@ -5,28 +5,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.exception.CustomExceptionHandler;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CartRequest;
-import com.phincon.laza.model.dto.response.CartResponse;
-import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.entity.*;
-import com.phincon.laza.security.userdetails.CurrentUser;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.CartService;
-import jakarta.validation.Valid;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.event.annotation.AfterTestMethod;
@@ -34,11 +26,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 
 import java.time.LocalDateTime;
@@ -227,26 +214,6 @@ public class CartControllerTest {
         mockMvc = mvc;
     }
 
-//    @GetMapping("/carts")
-//    public ResponseEntity<DataResponse<List<CartResponse>>> findCartByUser(@CurrentUser SysUserDetails ctx){
-//        List<Cart> carts = cartService.findCartByUser(ctx.getId());
-//
-//        List<CartResponse> cartResponses = new ArrayList<>();
-//        for (Cart cart: carts){
-//            CartResponse cartResponse = new CartResponse(
-//                    cart
-//            );
-//            cartResponses.add(cartResponse);
-//        }
-//
-//        DataResponse<List<CartResponse>> response = new DataResponse<>(
-//                HttpStatus.OK.value(),
-//                HttpStatus.OK.name(),
-//                cartResponses,
-//                null
-//        );
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
 @Test
 @DisplayName("[CartControllerTest] get findCartByUser and should return 200")
 void findCartByUser() throws Exception {

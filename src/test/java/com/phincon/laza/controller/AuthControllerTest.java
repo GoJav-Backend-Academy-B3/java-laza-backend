@@ -25,7 +25,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -805,20 +804,5 @@ public class AuthControllerTest {
         verify(authService, times(1)).refreshToken(anyString());
 
         log.info("[COMPLETE] testing controller auth refreshToken then not process");
-    }
-
-    @Test
-    @WithMockUser(username = "johndoe", password = "pwd", authorities = "USER")
-    public void testTokenRequestToAuth_thenCorrect() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/auth/token"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
-                .andExpect(jsonPath("$.message").value(HttpStatus.OK.name()))
-                .andExpect(jsonPath("$.data").isNotEmpty());
-
-        verify(authService, times(1)).token(any());
-
-        log.info("[COMPLETE] testing controller auth token oauth2 then correct");
     }
 }

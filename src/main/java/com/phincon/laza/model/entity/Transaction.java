@@ -22,6 +22,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(unique = true)
     private String referenceId;
 
     private Integer amount;
@@ -40,7 +41,7 @@ public class Transaction {
 
     private LocalDateTime updatedAt;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="order_id", nullable=false)
     @JsonIgnore
     private Order order;

@@ -111,6 +111,7 @@ public class AuthServiceImpl implements AuthService {
     public void registerResend(RecoveryRequest request) throws Exception {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
+        userValidator.validateUserIsVerified(findUser);
 
         String token = GenerateRandom.token();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
@@ -203,7 +204,7 @@ public class AuthServiceImpl implements AuthService {
         authValidator.validateAuthHeaderNotFound(authHeader);
         String refreshToken = authHeader.substring(7);
         String username = jwtService.extractUsername(refreshToken);
-        authValidator.validateAuthUsernameNull(username);
+        authValidator.validateAuthUsernameIsNull(username);
 
         Optional<User> findByUsername = userRepository.findByUsername(username);
         userValidator.validateUserNotFound(findByUsername);

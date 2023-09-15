@@ -65,12 +65,12 @@ public class AddressControllerTest {
 
         lenient().when(addressService.add("1", request)).thenReturn(address);
         lenient().when(addressService.findAllByUserId("1")).thenReturn(addresses);
-        lenient().when(addressService.findById(1L)).thenReturn(address);
+        lenient().when(addressService.findByIdAndByUserId("1", 1L)).thenReturn(address);
         lenient().when(addressService.update("1", 1L, request)).thenReturn(address);
-        lenient().doNothing().when(addressService).delete(1L);
+        lenient().doNothing().when(addressService).delete("1", 1L);
 
-        lenient().when(addressService.findById(2L)).thenThrow(new NotFoundException("Address not found"));
-        lenient().doThrow(new NotFoundException("Address not found")).when(addressService).delete(2L);
+        lenient().when(addressService.findByIdAndByUserId("1", 2L)).thenThrow(new NotFoundException("Address not found"));
+        lenient().doThrow(new NotFoundException("Address not found")).when(addressService).delete("1", 2L);
 
 
         userDetail = new SysUserDetails("1", "ari", "password",
@@ -177,7 +177,7 @@ public class AddressControllerTest {
                 .andExpect(jsonPath("$.data").exists());
 
         // Verifikasi bahwa metode addressService.add dipanggil dengan argumen yang benar
-        verify(addressService, times(1)).findById(1L);
+        verify(addressService, times(1)).findByIdAndByUserId("1", 1L);
     }
 
     @Test
@@ -192,7 +192,7 @@ public class AddressControllerTest {
                 .andExpect(jsonPath("$.message").value("Address not found"));
 
 
-        verify(addressService, times(1)).findById(2L);
+        verify(addressService, times(1)).findByIdAndByUserId("1", 2L);
     }
 
 
@@ -306,7 +306,7 @@ public class AddressControllerTest {
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
                 .andExpect(jsonPath("$.message").value("Success"));
 
-        verify(addressService, times(1)).delete(1L);
+        verify(addressService, times(1)).delete("1", 1L);
     }
 
     @Test
@@ -321,7 +321,7 @@ public class AddressControllerTest {
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value("Address not found"));
 
-        verify(addressService, times(1)).delete(2L);
+        verify(addressService, times(1)).delete("1", 2L);
     }
 
 

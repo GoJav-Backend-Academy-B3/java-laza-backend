@@ -11,7 +11,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter @Getter @ToString
+@Setter @Getter
 @Table(name = "orders")
 @Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -53,8 +53,8 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<ProductOrderDetail> productOrderDetails;
 
-    @OneToOne(mappedBy = "order")
-    private Transaction transaction;
+    @OneToMany(mappedBy = "order")
+    private List<Transaction> transaction;
 
     @OneToOne(mappedBy = "order")
     private PaymentDetail paymentDetail;

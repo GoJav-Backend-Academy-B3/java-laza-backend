@@ -1,6 +1,6 @@
 package com.phincon.laza.security.oauth2.user;
 
-import com.phincon.laza.exception.custom.NotProcessException;
+import com.phincon.laza.exception.custom.OAuth2ProcessingException;
 import com.phincon.laza.model.entity.EProvider;
 
 import java.util.Map;
@@ -12,8 +12,10 @@ public class OAuth2UserInfoFactory {
                 return new GoogleOAuth2UserInfo(attributes);
             case FACEBOOK:
                 return new FacebookOAuth2UserInfo(attributes);
+            case TWITTER:
+                return new TwitterOAuth2UserInfo(attributes);
             default:
-                throw new NotProcessException(String.format("Sorry! Login with %s is not supported yet.", registrationId));
+                throw new OAuth2ProcessingException(String.format("Sorry! Login with %s is not supported yet.", registrationId));
         }
     }
 }

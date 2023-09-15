@@ -11,5 +11,6 @@ public interface SizeService {
     Size getSizeById(Long id) throws Exception;
     Size save( SizeRequest size) throws Exception;
     Size update(Long id, SizeRequest size) throws  Exception;
+
     void delete(Long id) throws Exception;
 }

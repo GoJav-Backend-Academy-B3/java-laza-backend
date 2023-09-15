@@ -4,4 +4,5 @@ public enum EProvider {
     LOCAL,
     GOOGLE,
     FACEBOOK,
+    TWITTER,
 }
