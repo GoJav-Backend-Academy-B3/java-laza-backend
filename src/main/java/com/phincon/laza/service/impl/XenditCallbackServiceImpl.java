@@ -6,7 +6,6 @@ import com.phincon.laza.model.dto.xendit.fva.FVACallbackCreated;
 import com.phincon.laza.model.dto.xendit.fva.FVACallbackRequest;
 import com.phincon.laza.model.entity.Order;
 import com.phincon.laza.model.entity.Transaction;
-import com.phincon.laza.model.entity.User;
 import com.phincon.laza.service.OrderService;
 import com.phincon.laza.service.PushNotificationService;
 import com.phincon.laza.service.TransactionService;
@@ -43,27 +42,21 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
             transaction.setTransactionStatus(callbackData.getStatus());
             transaction.setUpdatedAt(convertDateTime(callbackData.getUpdated()));
 
-//            if (callbackData.getStatus().equals("SUCCEEDED")) {
-//                order.setOrderStatus("paid");
-//
-//                pushNotificationService.sendPushNotification("Order " + order.getId() + " telah berhasil dibayar");
-//            }
-
             if (callbackData.getStatus().equals("SUCCEEDED")) {
                 order.setOrderStatus("paid");
+                order.setPaidAt(convertDateTime(callbackData.getUpdated()));
+
+                // push notification
                 String userId = order.getUser().getId();
 
                 if (userId != null) {
-                    pushNotificationService.sendPushNotification(userId, "Order " + order.getId() + order.getUser().getUsername() +" telah berhasil dibayar");
+                    pushNotificationService.sendPushNotification("laza_notif", userId, String.format("Order %s has been successfully paid, thank you", order.getId()));
                 }
             }
-            order.setPaidAt(convertDateTime(callbackData.getUpdated()));
 
             transactionService.updateTransaction(transaction.getId(), transaction);
 
             orderService.updateOrder(order.getId(), order);
-
-            // todo: implement push notification
 
         } else {
             throw new XenditException("unknown callback");
@@ -92,9 +85,9 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         order.setPaidAt(convertDateTime(fvaCallbackRequest.getTransactionTimestamp()));
 
         orderService.updateOrder(order.getId(), order);
-//        pushNotificationService.sendPushNotification("Order " + order.getId() + " telah berhasil dibayar");
 
-        // todo: implement push payment notification
+        // push payment notification
+        pushNotificationService.sendPushNotification("laza_notif", order.getUser().getId(), String.format("Order %s has been successfully paid, thank you", order.getId()));
     }
 
     @Override
@@ -117,8 +110,8 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         transactionService.createTransaction(transaction);
 
         orderService.updateOrder(order.getId(), order);
-//        pushNotificationService.sendPushNotification("Order " + order.getId() + " telah berhasil dibayar");
 
-        // todo: implement push invoice created notification
+        // push invoice notification
+        pushNotificationService.sendPushNotification("laza_notif", order.getUser().getId(), String.format("Order %s has been successfully created", order.getId()));
     }
 }
