@@ -111,6 +111,7 @@ public class AuthServiceImpl implements AuthService {
     public void registerResend(RecoveryRequest request) throws Exception {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
+        userValidator.validateUserIsVerified(findUser);
 
         String token = GenerateRandom.token();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
