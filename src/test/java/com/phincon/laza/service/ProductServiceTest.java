@@ -4,11 +4,15 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,9 +24,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.phincon.laza.config.ProductDataConfig;
@@ -39,6 +45,7 @@ import com.phincon.laza.service.impl.ProductsServiceImpl;
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
 @SpringJUnitConfig(ProductDataConfig.class)
+@TestInstance(Lifecycle.PER_CLASS)
 public class ProductServiceTest {
     @Mock
     private ProductsRepository repository;
@@ -69,6 +76,15 @@ public class ProductServiceTest {
     @Autowired
     @Qualifier("product.update")
     private Product productUpdated;
+
+    @Autowired
+    @Qualifier("testAsyncExecutor")
+    private Executor testAsyncExecutor;
+
+    @BeforeAll
+    void setup() {
+        ReflectionTestUtils.setField(service, "asyncExecutor", testAsyncExecutor);
+    }
 
     @Test
     @DisplayName("get all products with page 1 size 4 should return data")
