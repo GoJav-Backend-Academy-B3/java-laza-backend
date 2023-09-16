@@ -27,6 +27,9 @@ import com.phincon.laza.service.ProductsService;
 import com.phincon.laza.service.SizeService;
 import com.phincon.laza.utils.GenerateRandom;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class ProductsServiceImpl implements ProductsService {
     @Autowired
