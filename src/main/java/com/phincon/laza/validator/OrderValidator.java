@@ -10,7 +10,7 @@ import java.util.Optional;
 public class OrderValidator {
     public void validateOrderNotFound(Optional<Order> order, String id) {
         if (order.isEmpty()) {
-            throw new NotFoundException(String.format("payment detail with id %s not found", id));
+            throw new NotFoundException(String.format("order with id %s not found", id));
         }
     }
 }
