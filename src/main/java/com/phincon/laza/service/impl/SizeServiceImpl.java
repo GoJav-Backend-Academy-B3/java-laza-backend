@@ -48,9 +48,12 @@ public class SizeServiceImpl implements SizeService {
 
     @Override
     public Size update(Long id, SizeRequest request) throws Exception {
-        Size size = sizeRepository.findById(id).orElseThrow(() -> new NotFoundException("Size not found"));
-        size.setSize(request.getSize());
-        return sizeRepository.save(size);
+        Optional<Size> sizes = sizeRepository.findById(id);
+
+        if (sizes.isEmpty()) {
+            throw new NotFoundException("Size not found");
+        }
+        return sizes.get();
     }
 
     @Override

@@ -58,5 +58,6 @@ public class CategoryController {
         dataResponse.setStatusCode(HttpStatus.OK.value());
         dataResponse.setMessage("Category deleted successfully");
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
+
     }
 }

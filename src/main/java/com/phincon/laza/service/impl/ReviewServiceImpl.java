@@ -1,5 +1,7 @@
 package com.phincon.laza.service.impl;
 
+    import com.phincon.laza.exception.custom.BadRequestException;
+    import com.phincon.laza.exception.custom.ConflictException;
     import com.phincon.laza.model.dto.request.ReviewRequest;
     import com.phincon.laza.model.dto.response.ReviewsResponse;
     import com.phincon.laza.model.entity.Order;
@@ -35,10 +37,10 @@ public class ReviewServiceImpl implements ReviewService {
         Order order = orderService.getOrderById(orderId);
         String orderUserId = order.getUser().getId();
         if (!userId.equals(orderUserId)) {
-            throw new Exception("User is not authorized to add a review for this order.");
+            throw new ConflictException("User is not authorized to add a review for this order.");
         }
         if (!"completed".equalsIgnoreCase(order.getOrderStatus())) {
-            throw new Exception("Order is not completed, cannot add a review.");
+            throw new ConflictException("Order is not completed, cannot add a review.");
         }
         Product product = productsService.getProductById(productId);
         User user = userService.getById(userId);
@@ -53,15 +55,16 @@ public class ReviewServiceImpl implements ReviewService {
         return review;
     }
     @Override
-    public float calculateAverageRating(List<ReviewsResponse.ReviewItem> reviewItems) {
-        if (reviewItems.isEmpty()) {
-            return 0.0f;
+        public float calculateAverageRating(List<ReviewsResponse.ReviewItem> reviewItems) {
+            if (reviewItems.isEmpty()) {
+                return 0.0f;
+            }
+            float totalRating = 0.0f;
+            for (ReviewsResponse.ReviewItem reviewItem : reviewItems) {
+                totalRating += reviewItem.getRating();
+            }
+            float averageRating = totalRating / reviewItems.size();
+            return averageRating;
         }
-        float totalRating = 0.0f;
-        for (ReviewsResponse.ReviewItem reviewItem : reviewItems) {
-            totalRating += reviewItem.getRating();
-        }
-        return totalRating / reviewItems.size();
-    }
 
 }

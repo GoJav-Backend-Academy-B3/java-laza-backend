@@ -69,10 +69,8 @@ public class CategoryControllerTest {
 
         lenient().when(categoryService.getCategoryById(2L)).thenThrow(new NotFoundException("Category not found"));
         lenient().doThrow(new NotFoundException("Category not found")).when(categoryService).delete(2L);
-
-        userDetail = new SysUserDetails("1", "mawitra", "password",
-                Arrays.asList(new SimpleGrantedAuthority("USER"), new SimpleGrantedAuthority("ADMIN")));
     }
+
 
     @Test
     @DisplayName("Add Category Success")
@@ -80,7 +78,7 @@ public class CategoryControllerTest {
         CategoryRequest request = new CategoryRequest();
         request.setCategory("TestCategory");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/category").with(user(userDetail))
+        mockMvc.perform(MockMvcRequestBuilders.post("/category")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -93,11 +91,12 @@ public class CategoryControllerTest {
         verify(categoryService, times(1)).save(request);
     }
 
+
     @Test
     @DisplayName("Get all Categories Success")
     public void whenGetAllCategories_thenCorrectResponse() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/category").with(user(userDetail)))
+        mockMvc.perform(MockMvcRequestBuilders.get("/category"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
@@ -112,7 +111,7 @@ public class CategoryControllerTest {
     public void whenGetCategoryById_thenCorrectResponse() throws Exception {
         Long id = 1L;
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/category/{id}", id).with(user(userDetail)))
+        mockMvc.perform(MockMvcRequestBuilders.get("/category/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
@@ -128,7 +127,7 @@ public class CategoryControllerTest {
     public void whenGetCategoryByIdNotFound_thenCorrectResponse() throws Exception {
         Long id = 2L;
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/category/{id}", id).with(user(userDetail)))
+        mockMvc.perform(MockMvcRequestBuilders.get("/category/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
@@ -142,7 +141,7 @@ public class CategoryControllerTest {
     public void whenDeleteCategory_thenCorrectResponse() throws Exception {
         Long id = 1L;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/category/{id}", id).with(user(userDetail)))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/category/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
@@ -156,7 +155,7 @@ public class CategoryControllerTest {
     public void whenDeleteCategoryAndIdNotFound_thenFailedResponse() throws Exception {
         Long id = 2L;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/category/{id}", id).with(user(userDetail)))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/category/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
