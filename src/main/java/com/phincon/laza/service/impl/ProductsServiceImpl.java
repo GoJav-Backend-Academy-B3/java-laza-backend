@@ -38,6 +38,9 @@ public class ProductsServiceImpl implements ProductsService {
     @Autowired
     private CloudinaryImageService cloudinaryImageService;
 
+    @Autowired
+    private Executor asyncExecutor;
+
     @Override
     public Page<Product> getAll(int page, int size) {
         return productsRepository.findAll(PageRequest.of(page, size));
