@@ -3,29 +3,31 @@ package com.phincon.laza.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.exception.CustomExceptionHandler;
+import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CartRequest;
+
 import com.phincon.laza.model.entity.*;
+
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.CartService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.junit.jupiter.api.*;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.event.annotation.AfterTestMethod;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 
 
 import java.time.LocalDateTime;
@@ -34,22 +36,24 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
-@AutoConfigureMockMvc
 @ContextConfiguration(classes = {CartController.class})
-@ExtendWith(MockitoExtension.class)
-@WebMvcTest
+@WebMvcTest()
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test")
 public class CartControllerTest {
     @MockBean
     private CartService cartService;
-    @Autowired CartController cartController;
+
+    @Autowired
+    private CartController cartController;
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private MockMvc mvc;
+    private ObjectMapper objectMapper;
+
 
     private SysUserDetails userDetail;
     private List<User> users = new ArrayList<>();
@@ -59,8 +63,10 @@ public class CartControllerTest {
     private Cart cartOne;
 
 
-    @BeforeEach
+    @BeforeAll
     void setDataMock() throws Exception{
+        MockitoAnnotations.initMocks(this);
+        mockMvc  = MockMvcBuilders.standaloneSetup(cartController).setControllerAdvice(new CustomExceptionHandler()).build();
         this.users.add(new User("23", "user1", "user1", "password", "email", "image", true, null, null, null, null, null, null, null, null, null));
         this.users.add(new User("24", "user2", "user2", "password", "email", "image", true, null, null, null, null, null, null, null, null, null));
 
@@ -79,100 +85,129 @@ public class CartControllerTest {
         userDetail = new SysUserDetails(users.get(0).getId(), "smith", "password",
                 Arrays.asList(new SimpleGrantedAuthority("USER"), new SimpleGrantedAuthority("ADMIN")));
 
-
     }
-
-    @AfterTestMethod
 
     @Test
     @DisplayName("[CartControllerTest] Post saveCart and should return status 200")
-    void postSaveCart() throws Exception {
-        String userId = users.get(0).getId();
-        CartRequest requestBody = new CartRequest( products.get(0).getId(), sizes.get(0).getId());
+    void whenPostSaveCart_thenCorrectResponse() throws Exception {
+        CartRequest requestBody = new CartRequest(products.get(0).getId(), sizes.get(0).getId(), 1);
 
-        lenient().when(cartService.saveCart(userId, requestBody)).thenReturn(cartDataTest.get(0));
+        when(cartService.saveCart(any(), any())).thenReturn(cartDataTest.get(0));
 
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/carts").with(user(userDetail))
-                        .with(csrf())
-                        .content(new ObjectMapper().writeValueAsString(requestBody))
+        mockMvc.perform(MockMvcRequestBuilders.post("/carts/add").with(user(userDetail))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(requestBody))
+                      )
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(HttpStatus.OK.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data").isNotEmpty());
-        verify(cartService, times(1)).saveCart(userId, requestBody);
-
-
+        verify(cartService, times(1)).saveCart(any(), any());
     }
+
     @Test
     @DisplayName("[CartControllerTest] Patch updateCart and should return status 200")
-    void patchCart() throws Exception {
-        Long cartId = 2l;
-        Cart newCart = new Cart(2l, users.get(0), products.get(1), sizes.get(1), 1);
+    void whenPatchCart_thenReturnCorrectResponse() throws Exception {
+        Long productId = products.get(1).getId();
+        Long sizeId = sizes.get(1).getId();
 
-        lenient().when(cartService.updateCart(cartId)).thenReturn(newCart);
+        CartRequest requestBody = new CartRequest(productId, sizeId, 2);
 
-        mockMvc.perform(MockMvcRequestBuilders.patch("/carts/{id}", cartId).with(user(userDetail))
-                        .with(csrf()))
+        Cart updateCart = new Cart(2l, users.get(0), products.get(1), sizes.get(1), 4);
+
+        when(cartService.updateCart(any(), any())).thenReturn(updateCart);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/carts/update").with(user(userDetail))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBody)))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(200))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(HttpStatus.OK.name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isNotEmpty());
-        verify(cartService, times(1)).updateCart(cartId);
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.quantity").value(4))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.productId").value(91));
+        verify(cartService, times(1)).updateCart(any(), any());
+    }
+
+    @Test
+    @DisplayName("[CartControllerTest] Patch updateCart with bad payload and should return status 400")
+    void whenPatchCartBadPayload_thenReturnCorrectResponse() throws Exception {
+
+        CartRequest requestBody = new CartRequest(null, null, 2);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/carts/update").with(user(userDetail))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBody)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sub_error").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("[CartControllerTest] Patch updateCart should return status 404")
+    void whenPatchCartNotFoundCart_thenReturnCorrectResponse() throws Exception {
+
+        Long productId = products.get(1).getId();
+        Long sizeId = sizes.get(1).getId();
+
+        CartRequest requestBody = new CartRequest(productId, sizeId, 2);
+
+        when(cartService.updateCart(any(), any())).thenThrow(new NotFoundException("Cart not found"));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/carts/update").with(user(userDetail))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBody)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(404))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Cart not found"));
+    }
+
+    @Test
+    @DisplayName("[CartControllerTest] Patch updateCart should return status 404")
+    void whenPatchCartBadQuantity_thenReturnCorrectResponse() throws Exception {
+
+        Long productId = products.get(1).getId();
+        Long sizeId = sizes.get(1).getId();
+
+        CartRequest requestBody = new CartRequest(productId, sizeId, 2);
+
+        when(cartService.updateCart(any(), any())).thenThrow(new BadRequestException("The quantity cannot be smaller than the product quantity"));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/carts/update").with(user(userDetail))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBody)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(400))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("The quantity cannot be smaller than the product quantity"));
     }
 
     @Test
     @DisplayName("[CartControllerTest] Post saveCart with bad request and should return status 400")
-    void postSaveCartBadRequest() throws Exception {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(cartController).setControllerAdvice(CustomExceptionHandler.class)
-                .build();
+    void whenPostSaveCartBadRequest_thenReturnCorrectResponse() throws Exception {
 
-        CartRequest requestBody = new CartRequest( products.get(0).getId(), null);
+        CartRequest requestBody = new CartRequest( products.get(0).getId(), null, null);
 
-
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/carts").with(user(userDetail))
-                        .with(csrf())
+        mockMvc.perform(MockMvcRequestBuilders.post("/carts/add").with(user(userDetail))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(requestBody)))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.BAD_REQUEST.value()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sub_error").isNotEmpty());
 
-        mockMvc = mvc ;
     }
 
-
-    @Test
-    @DisplayName("[CartControllerTest] Patch updateCart with invalid id and should return 404")
-    void patchCartInvalidId() throws Exception {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(cartController).setControllerAdvice(CustomExceptionHandler.class)
-                .build();
-        Long cartId = 2l;
-
-        lenient().when(cartService.updateCart(2l)).thenThrow(new NotFoundException("Cart not found"));
-
-        mockMvc.perform(MockMvcRequestBuilders.patch("/carts/{id}", cartId).with(user(userDetail))
-                        .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Cart not found"));
-
-        verify(cartService, times(1)).updateCart(cartId);
-        mockMvc = mvc ;
-    }
 
     @Test
     @DisplayName("[CartControllerTest] delete deleteCartById and should return 200")
-    void deleteCart() throws Exception {
+    void whenDeleteCart_thenReturnCorrectResponse() throws Exception {
 
         Long cartId = cartDataTest.get(0).getId();
         doNothing().when(cartService).deleteCart(cartId);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/carts/{id}", cartId).with(user(userDetail))
-                        .with(csrf()))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/carts/{id}", cartId).with(user(userDetail)))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.OK.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("OK"));
@@ -182,46 +217,37 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("[CartControllerTest] delete deleteCartById with invalid Id and should return 404")
-    void deleteCartInvalidId() throws Exception {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(cartController).setControllerAdvice(CustomExceptionHandler.class)
-                .build();
+    void whenDeleteCartInvalidId_thenCorrectResponse() throws Exception {
         Long cartId = cartDataTest.get(0).getId();
         doThrow(new NotFoundException("Cart not found")).when(cartService).deleteCart(cartId);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/carts/{id}", cartId).with(user(userDetail))
-                        .with(csrf()))
+                )
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Cart not found"));
 
         verify(cartService, times(1)).deleteCart(cartId);
-        mockMvc = mvc;
     }
 
     @Test
     @DisplayName("[CartControllerTest] delete deleteCartByUser and should return 200")
-    void deleteCartByUser() throws Exception {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(cartController).setControllerAdvice(CustomExceptionHandler.class)
-                .build();
+    void whenDeleteCartByUser_thenReturnCorrectResponse() throws Exception {
         String userId  = users.get(0).getId();
         doNothing().when(cartService).deleteCartByUser(userId);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/carts/all").with(user(userDetail))
-                        .with(csrf()))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/carts/all").with(user(userDetail)))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.OK.value()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(HttpStatus.OK.name()));
-        mockMvc = mvc;
     }
 
 @Test
 @DisplayName("[CartControllerTest] get findCartByUser and should return 200")
-void findCartByUser() throws Exception {
-
+void whenFindCartByUser_thenReturnCorrectResponse() throws Exception {
     String userId  = users.get(0).getId();
     when(cartService.findCartByUser(userId)).thenReturn(cartDataTest);
-    mockMvc.perform(MockMvcRequestBuilders.get("/carts").with(user(userDetail))
-                    .with(csrf()))
+    mockMvc.perform(MockMvcRequestBuilders.get("/carts").with(user(userDetail)))
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
             .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.OK.value()))
             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(HttpStatus.OK.name()))

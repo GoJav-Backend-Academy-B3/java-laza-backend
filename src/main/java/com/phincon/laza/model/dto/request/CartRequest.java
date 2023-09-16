@@ -19,4 +19,8 @@ public class CartRequest {
     @NotNull(message = "size_id id is required")
     @JsonProperty("size_id")
     private Long sizeId;
+
+    @NotNull(message = "quantity is required")
+    @JsonProperty("quantity")
+    private Integer quantity;
 }
