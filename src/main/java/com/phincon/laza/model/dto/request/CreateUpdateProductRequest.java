@@ -4,14 +4,16 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record CreateUpdateProductRequest(
-        String name,
-        String description,
-        Integer price,
-        MultipartFile imageFile,
-        @JsonProperty("size_ids") List<Long> sizeIds,
-        @JsonProperty("category_id") Long categoryId,
-        @JsonProperty("brand_id") Long brandId) {
+        @NotBlank String name,
+        @NotBlank String description,
+        @Min(1) Integer price,
+        @NotNull MultipartFile imageFile,
+        @NotNull List<Long> sizeIds,
+        @NotNull Long categoryId,
+        @NotNull Long brandId) {
 }
