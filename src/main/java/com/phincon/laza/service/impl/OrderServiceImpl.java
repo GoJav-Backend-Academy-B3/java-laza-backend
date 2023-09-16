@@ -42,6 +42,9 @@ public class OrderServiceImpl implements OrderService {
     private XenditService xenditService;
 
     @Autowired
+    private MidtransService midtransService;
+
+    @Autowired
     private CartService cartService;
 
     @Autowired
@@ -123,12 +126,9 @@ public class OrderServiceImpl implements OrderService {
             }
 
             // implement add address order detail
-            Address address = addressService.findById(checkoutRequest.getAddressId());
+            Address address = addressService.findByIdAndByUserId(userId, checkoutRequest.getAddressId());
             AddressOrderDetail addressOrderDetail = getAddressOrderDetail(order, address);
 
-            // flat admin fee
-            amount += 1000;
-            order.setAdminFee(1000);
 
             // get shipping fee
             ROCostRequest roCostRequest =  new ROCostRequest();
@@ -142,6 +142,11 @@ public class OrderServiceImpl implements OrderService {
             int shippingFee = courierResponseList.get(0).getCosts().get(0).getCost().get(0).getValue();
             order.setShippingFee(shippingFee);
             amount += shippingFee;
+
+            // add admin fee
+            int adminFee = paymentMethod.getAdminFee();
+            amount += adminFee;
+            order.setAdminFee(adminFee);
 
             // set amount from user cart
             order.setAmount(amount);
@@ -171,6 +176,10 @@ public class OrderServiceImpl implements OrderService {
                     } else if (paymentMethod.getType().equalsIgnoreCase("virtual_account")) {
                         paymentDetail = xenditService.chargeVirtualAccount(paymentMethod, order);
                     }
+                } else if (paymentMethod.getProvider().equalsIgnoreCase("midtrans")) {
+                    if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
+                        paymentDetail = midtransService.chargeGopay(paymentMethod, order, checkoutRequest.getCallbackUrl());
+                    }
                 }
             }
 
@@ -185,6 +194,7 @@ public class OrderServiceImpl implements OrderService {
             return getOrderById(order.getId());
         } catch (XenditException e) {
             throw new NotProcessException(e.getMessage());
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
