@@ -24,6 +24,7 @@ import com.phincon.laza.model.dto.response.ProductsResponse;
 import com.phincon.laza.model.entity.Product;
 import com.phincon.laza.service.ProductsService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
