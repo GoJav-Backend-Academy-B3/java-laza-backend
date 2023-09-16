@@ -11,10 +11,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoggingInterceptor());
-        registry.addInterceptor(new ImageUploadInterceptor())
-            .addPathPatterns(
-                "/management/brands/**", 
-                "/users/update", 
-                "/management/products/**");  
+        // registry.addInterceptor(new ImageUploadInterceptor())
+        //     .addPathPatterns(
+        //         "/management/brands/**", 
+        //         "/users/update", 
+        //         "/management/products/**");  
     }
 }
