@@ -132,7 +132,7 @@ public class ProductsServiceImpl implements ProductsService {
     private CompletableFuture<Brand> findBrandById(Long id) throws Exception {
         return CompletableFuture.supplyAsync(() -> {
             return brandService.findById(id);
-        });
+        }, asyncExecutor);
     }
 
     private CompletableFuture<Category> findCategoryById(Long id) throws NotFoundException {
@@ -143,7 +143,7 @@ public class ProductsServiceImpl implements ProductsService {
                 e.printStackTrace();
                 throw new NotFoundException("Category not found");
             }
-        });
+        }, asyncExecutor);
     }
 
     private CompletableFuture<List<Size>> findSizesByIds(List<Long> ids) throws NotFoundException {
@@ -156,7 +156,7 @@ public class ProductsServiceImpl implements ProductsService {
                     throw new NotFoundException("size not found");
                 }
             }).collect(Collectors.toList());
-        });
+        }, asyncExecutor);
     }
 
 }
