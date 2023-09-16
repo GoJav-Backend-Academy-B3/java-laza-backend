@@ -2,10 +2,12 @@ package com.phincon.laza.config;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.phincon.laza.model.entity.Brand;
 import com.phincon.laza.model.entity.Category;
@@ -69,5 +71,16 @@ public class ProductDataConfig {
         return new Product(99l, "Figure Kobo Kanaeru", "figure kobo kanaeru", "image+url", 1000000000,
                 brandInit().get(0),
                 Arrays.asList(sizeInit().get(0), sizeInit().get(2)), categoryInit().get(1));
+    }
+    
+    @Bean(name = "testAsyncExecutor")
+    public Executor asyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(2);
+        executor.setQueueCapacity(10);
+        executor.setThreadNamePrefix("TestAsyncThread-");
+        executor.initialize();
+        return executor;
     }
 }
