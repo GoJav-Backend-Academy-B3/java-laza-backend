@@ -80,7 +80,7 @@ public class ProductsController {
     @PutMapping("/management/products/{id}")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> updateProduct(
             @PathVariable Long id,
-            @ModelAttribute CreateUpdateProductRequest request) throws Exception {
+            @Valid @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.update(id, request);
         CreateUpdateProductResponse result = CreateUpdateProductResponse.fromProductEntity(product);
         DataResponse<CreateUpdateProductResponse> dataResponse = new DataResponse<CreateUpdateProductResponse>(
