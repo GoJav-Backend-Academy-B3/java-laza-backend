@@ -151,10 +151,10 @@ public class ProductsServiceImpl implements ProductsService {
     private CompletableFuture<List<Size>> findSizesByIds(List<Long> ids) throws NotFoundException {
         log.info("findSizeByIds({})", ids);
         return CompletableFuture.supplyAsync(() -> {
-            return ids.stream().map(t -> {
+            return ids.parallelStream().map((Long id) -> {
                 try {
-                    return sizeService.getSizeById(t);
                     log.info("inside findSizeByIds, getSizeById({})", id);
+                    return sizeService.getSizeById(id);
                 } catch (Exception e) {
                     e.printStackTrace();
                     throw new NotFoundException("size not found");
