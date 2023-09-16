@@ -1,9 +1,9 @@
 package com.phincon.laza.service;
 
-import com.phincon.laza.model.dto.request.CartRequest;
-import com.phincon.laza.model.entity.Cart;
+import com.phincon.laza.model.entity.Order;
 
 public interface PushNotificationService {
-    void sendPushNotification(String userId, String message);
+    void sendPushNotification(String exchange, String routingKey, Object message);
 
+    void sendPushPaidOrderNotification(String exchange, String routingKey, Order order);
 }
