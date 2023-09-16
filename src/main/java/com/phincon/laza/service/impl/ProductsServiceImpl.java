@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
 import com.phincon.laza.model.entity.Brand;
@@ -22,7 +25,6 @@ import com.phincon.laza.service.CategoryService;
 import com.phincon.laza.service.CloudinaryImageService;
 import com.phincon.laza.service.ProductsService;
 import com.phincon.laza.service.SizeService;
-
 import com.phincon.laza.utils.GenerateRandom;
 
 @Service
