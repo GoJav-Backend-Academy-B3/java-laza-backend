@@ -131,12 +131,14 @@ public class ProductsServiceImpl implements ProductsService {
 
     private CompletableFuture<Brand> findBrandById(Long id) throws Exception {
         return CompletableFuture.supplyAsync(() -> {
+            log.info("findBrandById({})", id);
             return brandService.findById(id);
         }, asyncExecutor);
     }
 
     private CompletableFuture<Category> findCategoryById(Long id) throws NotFoundException {
         return CompletableFuture.supplyAsync(() -> {
+            log.info("findCategoryById({})", id);
             try {
                 return categoryService.getCategoryById(id);
             } catch (Exception e) {
@@ -147,10 +149,12 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     private CompletableFuture<List<Size>> findSizesByIds(List<Long> ids) throws NotFoundException {
+        log.info("findSizeByIds({})", ids);
         return CompletableFuture.supplyAsync(() -> {
             return ids.stream().map(t -> {
                 try {
                     return sizeService.getSizeById(t);
+                    log.info("inside findSizeByIds, getSizeById({})", id);
                 } catch (Exception e) {
                     e.printStackTrace();
                     throw new NotFoundException("size not found");
