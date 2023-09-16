@@ -69,7 +69,7 @@ public class ProductsController {
 
     @PostMapping("/management/products")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> createProduct(
-            @ModelAttribute CreateUpdateProductRequest request) throws Exception {
+            @Valid @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.create(request);
         CreateUpdateProductResponse result = CreateUpdateProductResponse.fromProductEntity(product);
         DataResponse<CreateUpdateProductResponse> dataResponse = new DataResponse<>(HttpStatus.CREATED.value(),
