@@ -19,8 +19,6 @@ public interface PaymentMethodService {
 
     PaymentMethod updatePaymentMethodLogo(Long id, MultipartFile logo);
 
-    void deletePaymentMethod(Long id);
-
     PaymentMethod deactivatePaymentMethod(Long id);
 
     PaymentMethod activatePaymentMethod(Long id);
