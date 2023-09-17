@@ -102,6 +102,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod activatePaymentMethod(Long id) {
         PaymentMethod paymentMethod = getPaymentMethodById(id);
+        if (paymentMethodRepository.findByNameAndIsActiveIsTrue(paymentMethod.getName()).isEmpty()) {
+            throw new ConflictException(String.format("Payment method with name %s already active", paymentMethod.getName()));
+        }
         paymentMethod.setIsActive(true);
         return updatePaymentMethod(paymentMethod.getId(), paymentMethod);
     }
