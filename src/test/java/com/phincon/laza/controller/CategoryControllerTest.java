@@ -2,6 +2,7 @@ package com.phincon.laza.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CategoryRequest;
 import com.phincon.laza.model.dto.request.SizeRequest;
@@ -69,26 +70,9 @@ public class CategoryControllerTest {
 
         lenient().when(categoryService.getCategoryById(2L)).thenThrow(new NotFoundException("Category not found"));
         lenient().doThrow(new NotFoundException("Category not found")).when(categoryService).delete(2L);
-    }
 
-
-    @Test
-    @DisplayName("Add Category Success")
-    public void whenAddRequestToCategory_thenCorrectResponse() throws Exception {
-        CategoryRequest request = new CategoryRequest();
-        request.setCategory("TestCategory");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/category")
-                        .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status_code").value(HttpStatus.CREATED.value()))
-                .andExpect(jsonPath("$.message").value("Category created successfully"))
-                .andExpect(jsonPath("$.data.id").value(1));
-
-        // Verifikasi bahwa metode categoryService.save dipanggil dengan argumen yang benar
-        verify(categoryService, times(1)).save(request);
+        userDetail = new SysUserDetails("1", "mawitra", "password",
+                Arrays.asList( new SimpleGrantedAuthority("ADMIN")));
     }
 
 
@@ -118,7 +102,6 @@ public class CategoryControllerTest {
                 .andExpect(jsonPath("$.message").value("Success"))
                 .andExpect(jsonPath("$.data").exists());
 
-        // Verifikasi bahwa metode categoryService.getCategoryById dipanggil dengan argumen yang benar
         verify(categoryService, times(1)).getCategoryById(1L);
     }
 
@@ -137,15 +120,108 @@ public class CategoryControllerTest {
     }
 
     @Test
+    @DisplayName("Add Category Success")
+    public void whenAddRequestToCategory_thenCorrectResponse() throws Exception {
+        CategoryRequest request = new CategoryRequest();
+        request.setCategory("TestCategory");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/management/category").with(user(userDetail))
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.CREATED.value()))
+                .andExpect(jsonPath("$.message").value("Category created successfully"))
+                .andExpect(jsonPath("$.data.id").value(1));
+
+        verify(categoryService, times(1)).save(request);
+    }
+
+    @Test
+    @DisplayName("Add Category when request is required")
+    public void whenAddRequestToCategoryAndRequestIsRequired_thenFailedResponse() throws Exception {
+        CategoryRequest request = new CategoryRequest();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/management/category").with(user(userDetail))
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.message").value("Error validation"))
+                .andExpect(jsonPath("$.sub_error").isMap())
+                .andExpect(jsonPath("$.sub_error.category").value("category is required"));
+    }
+
+    @Test
+    @DisplayName("Add Category Already Exists")
+    public void whenAddCategoryAlreadyExists_thenCorrectResponse() throws Exception {
+        CategoryRequest request = new CategoryRequest();
+        request.setCategory("TestCategory");
+
+        when(categoryService.save(request)).thenThrow(new ConflictException("Category already exists"));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/management/category").with(user(userDetail))
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.CONFLICT.value()))
+                .andExpect(jsonPath("$.message").value("Category already exists"));
+
+        verify(categoryService, times(1)).save(request);
+    }
+
+
+    @Test
+    @DisplayName("Update Category Success")
+    public void whenUpdateCategory_thenCorrectResponse() throws Exception {
+        CategoryRequest request = new CategoryRequest();
+        Long id = 1L;
+        request.setCategory("TestCategory");
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/management/category/{id}", id).with(user(userDetail))
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value("Category updated successfully"))
+                .andExpect(jsonPath("$.data.id").exists());
+
+        verify(categoryService, times(1)).update(id, request);
+    }
+
+    @Test
+    @DisplayName("Update Category Not Found")
+    public void whenUpdateCategoryNotFound_thenCorrectResponse() throws Exception {
+        CategoryRequest request = new CategoryRequest();
+        Long id = 2L;
+        request.setCategory("Updated Category");
+
+        when(categoryService.update(id, request)).thenThrow(new NotFoundException("Category not found"));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/management/category/{id}", id).with(user(userDetail))
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("Category not found"));
+
+        verify(categoryService, times(1)).update(id, request);
+    }
+
+    @Test
     @DisplayName("Delete Category Success")
     public void whenDeleteCategory_thenCorrectResponse() throws Exception {
         Long id = 1L;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/category/{id}", id))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/management/category/{id}", id).with(user(userDetail)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
-                .andExpect(jsonPath("$.message").value("Category deleted successfully"));
+                .andExpect(jsonPath("$.message").value("Success"));
 
         verify(categoryService, times(1)).delete(1L);
     }
@@ -155,7 +231,7 @@ public class CategoryControllerTest {
     public void whenDeleteCategoryAndIdNotFound_thenFailedResponse() throws Exception {
         Long id = 2L;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/category/{id}", id))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/management/category/{id}", id).with(user(userDetail)))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))
@@ -164,4 +240,3 @@ public class CategoryControllerTest {
         verify(categoryService, times(1)).delete(2L);
     }
 }
-

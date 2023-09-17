@@ -36,7 +36,6 @@ public class Category {
 
     @JsonIgnore
     private Boolean isDeleted = false;
-
     public Category(long id, String category) {
         this.id = id;
         this.category = category;

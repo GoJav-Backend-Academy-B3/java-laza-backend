@@ -8,9 +8,9 @@ import java.util.List;
 public interface SizeService {
 
     List<Size> getAllSize();
-    Size getSizeById(Long id) throws Exception;
-    Size save( SizeRequest size) throws Exception;
-    Size update(Long id, SizeRequest size) throws  Exception;
+    Size getSizeById(Long id);
+    Size save( SizeRequest size);
+    Size update(Long id, SizeRequest size);
 
-    void delete(Long id) throws Exception;
+    void delete(Long id);
 }

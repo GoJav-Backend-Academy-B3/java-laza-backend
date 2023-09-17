@@ -56,15 +56,17 @@ public class ReviewServiceImpl implements ReviewService {
     }
     @Override
         public float calculateAverageRating(List<ReviewsResponse.ReviewItem> reviewItems) {
-            if (reviewItems.isEmpty()) {
-                return 0.0f;
-            }
-            float totalRating = 0.0f;
-            for (ReviewsResponse.ReviewItem reviewItem : reviewItems) {
-                totalRating += reviewItem.getRating();
-            }
-            float averageRating = totalRating / reviewItems.size();
-            return averageRating;
+        if (reviewItems.isEmpty()) {
+            return 0.0f;
+        }
+
+        double totalRating = reviewItems.stream()
+                .mapToDouble(ReviewsResponse.ReviewItem::getRating)
+                .sum();
+
+
+        float averageRating = (float) (totalRating / reviewItems.size());
+        return averageRating;
         }
 
 }

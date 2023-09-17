@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,10 +46,10 @@ public class CategoryServiceTest {
         categoryDataTest.add(new Category(3L, "Category 3"));
 
         lenient().when(categoryRepository.findAll()).thenReturn(categoryDataTest);
-
         lenient().when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryDataTest.get(0)));
         lenient().when(categoryRepository.findById(4L)).thenReturn(Optional.empty());
     }
+
 
     @Test
     @DisplayName("getAllCategory should return a list of categories")
@@ -63,12 +64,17 @@ public class CategoryServiceTest {
 
     @Test
     @DisplayName("getCategoryById should return a category by ID")
-    void getCategoryById() throws Exception {
+    void getCategoryById() {
         Long categoryId = 1L;
+        Category expectedCategory = new Category(categoryId, "Category 1");
+
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(expectedCategory));
+
         Category result = categoryService.getCategoryById(categoryId);
+
         assertNotNull(result);
-        assertEquals(categoryId, result.getId());
-        assertEquals("Category 1", result.getCategory());
+        assertEquals(expectedCategory.getId(), result.getId());
+        assertEquals(expectedCategory.getCategory(), result.getCategory());
     }
 
     @Test
@@ -79,12 +85,12 @@ public class CategoryServiceTest {
             categoryService.getCategoryById(categoryId);
         });
 
-//        assertEquals("Category not found with id: " + categoryId, exception.getMessage());
+        assertEquals("Category not found", exception.getMessage());
     }
 
     @Test
     @DisplayName("save should create and return a new category")
-    void save() throws Exception {
+    void save() {
         CategoryRequest newCategory = new CategoryRequest("New Category");
 
         CategoryRequest categoryRequest = new CategoryRequest();
@@ -120,7 +126,7 @@ public class CategoryServiceTest {
 
     @Test
     @DisplayName("update should update and return an existing category")
-    void update() throws Exception {
+    void update(){
         Long categoryId = 1L;
         CategoryRequest categoryRequest = new CategoryRequest("Updated Category");
 
@@ -138,10 +144,22 @@ public class CategoryServiceTest {
         assertEquals(categoryId, result.getId());
         assertEquals("Updated Category", result.getCategory());
     }
+    @Test
+    @DisplayName("update should throw NotFoundException for non-existing category")
+    void updateNonExistingCategory() {
+        Long categoryId = 4L;
+        CategoryRequest categoryRequest = new CategoryRequest("Updated Category");
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            categoryService.update(categoryId, categoryRequest);
+        });
+
+        assertEquals("Category not found", exception.getMessage());
+    }
 
     @Test
     @DisplayName("delete should delete a category")
-    void delete() throws Exception {
+    void delete() {
         Long categoryId = 1L;
 
         assertDoesNotThrow(() -> {
@@ -154,8 +172,10 @@ public class CategoryServiceTest {
     void deleteNonExisting() {
         Long categoryId = 5L;
 
-        assertThrows(NotFoundException.class, () -> {
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             categoryService.delete(categoryId);
         });
+
+        assertEquals("Category Not Found", exception.getMessage());
     }
 }

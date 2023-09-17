@@ -20,12 +20,12 @@ public class CategoryValidator {
             throw new NotFoundException("Category not found");
         }
     }
-
-    public void validateCategoryAlreadyExists(String categoryName) throws Exception {
-        Optional<Category> existingCategory = categoryRepository.findByCategory(categoryName);
-        if (existingCategory.isPresent()) {
-            throw new BadRequestException("Category already exists");
-        }
-    }
+//
+//    public void validateCategoryAlreadyExists(String categoryName) throws Exception {
+//        Optional<Category> existingCategory = categoryRepository.findByCategory(categoryName);
+//        if (existingCategory.isPresent()) {
+//            throw new BadRequestException("Category already exists");
+//        }
+//    }
 
 }

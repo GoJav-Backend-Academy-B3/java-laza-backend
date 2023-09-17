@@ -87,6 +87,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
 
         // push payment notification
         pushNotificationService.sendPushNotification("laza_notif", order.getUser().getId(), String.format("Order %s has been successfully paid, thank you", order.getId()));
+
     }
 
     @Override

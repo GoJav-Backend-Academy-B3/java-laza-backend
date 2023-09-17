@@ -3,6 +3,7 @@ package com.phincon.laza.service.impl;
 
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotFoundException;
+import com.phincon.laza.model.dto.request.CategoryRequest;
 import com.phincon.laza.model.dto.request.SizeRequest;
 import com.phincon.laza.model.entity.*;
 import com.phincon.laza.repository.SizeRepository;
@@ -27,7 +28,7 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
-    public Size getSizeById(Long id) throws Exception {
+    public Size getSizeById(Long id) {
         Optional<Size> sizeOptional = sizeRepository.findById(id);
         if (!sizeOptional.isPresent()) {
             throw new NotFoundException("Size not found with id: " + id);
@@ -35,7 +36,7 @@ public class SizeServiceImpl implements SizeService {
         return sizeOptional.get();
     }
     @Override
-    public Size save(SizeRequest sizeRequest) throws Exception {
+    public Size save(SizeRequest sizeRequest) {
         String sizeName = sizeRequest.getSize();
         Optional<Size> existingSize = sizeRepository.findBySize(sizeName);
         if (existingSize.isPresent()) {
@@ -47,17 +48,22 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
-    public Size update(Long id, SizeRequest request) throws Exception {
-        Optional<Size> sizes = sizeRepository.findById(id);
+    public Size update(Long id, SizeRequest request){
 
-        if (sizes.isEmpty()) {
-            throw new NotFoundException("Size not found");
+        Optional<Size> existingSizeOptional = sizeRepository.findById(id);
+        if (!existingSizeOptional.isPresent()) {
+            throw new NotFoundException("Size not found with id: " + id);
+
         }
-        return sizes.get();
+        Size existingSize = existingSizeOptional.get();
+        String updatedSizeName = request.getSize();
+        existingSize.setSize(updatedSizeName);
+        return sizeRepository.save(existingSize);
     }
 
+
     @Override
-    public void delete(Long id) throws Exception {
+    public void delete(Long id) {
         Optional<Size> existingSizeOptional = sizeRepository.findById(id);
 
         if (existingSizeOptional.isPresent()) {

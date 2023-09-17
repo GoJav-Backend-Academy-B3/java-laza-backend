@@ -33,7 +33,7 @@ public class SizeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DataResponse<SizeResponse>> getSizeById(@PathVariable Long id) throws Exception {
+    public ResponseEntity<DataResponse<SizeResponse>> getSizeById(@PathVariable Long id) {
         Size size = sizeService.getSizeById(id);
         SizeResponse result = new SizeResponse(size);
         DataResponse<SizeResponse> dataResponse = new DataResponse<>(HttpStatus.OK.value(), "Success", result, null);
@@ -41,14 +41,14 @@ public class SizeController {
     }
 
     @PostMapping
-    public ResponseEntity<DataResponse<SizeResponse>> createSize(@Valid @RequestBody SizeRequest request) throws Exception {
+    public ResponseEntity<DataResponse<SizeResponse>> createSize(@Valid @RequestBody SizeRequest request) {
         Size size = sizeService.save(request);
         SizeResponse result = new SizeResponse(size);
         DataResponse<SizeResponse> dataResponse = new DataResponse<>(HttpStatus.CREATED.value(), "Size created successfully", result, null);
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/{id}/update")
+    @PutMapping("/{id}")
     public ResponseEntity<DataResponse<SizeResponse>> updateSize(@PathVariable Long id, @Valid @RequestBody SizeRequest request) throws Exception {
         Size size = sizeService.update(id, request);
         SizeResponse result = new SizeResponse(size);
@@ -58,7 +58,7 @@ public class SizeController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DataResponse<Void>> deleteSize(@PathVariable Long id) throws Exception {
+    public ResponseEntity<DataResponse<Void>> deleteSize(@PathVariable Long id){
         sizeService.delete(id);
         DataResponse<Void> dataResponse = new DataResponse<>();
         dataResponse.setStatusCode(HttpStatus.OK.value());

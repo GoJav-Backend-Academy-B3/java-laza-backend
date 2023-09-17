@@ -3,7 +3,9 @@ package com.phincon.laza.service;
 import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotFoundException;
+import com.phincon.laza.model.dto.request.CategoryRequest;
 import com.phincon.laza.model.dto.request.SizeRequest;
+import com.phincon.laza.model.entity.Category;
 import com.phincon.laza.model.entity.Size;
 import com.phincon.laza.repository.SizeRepository;
 
@@ -88,7 +90,7 @@ public class SizeServiceTest {
 
     @Test
     @DisplayName("save should create and return a new size")
-    void save() throws Exception {
+    void save() {
         SizeRequest newSize = new SizeRequest("Extra Large");
 
         SizeRequest size = new SizeRequest();
@@ -116,19 +118,20 @@ public class SizeServiceTest {
         when(sizeRepository.findBySize(anyString())).thenReturn(Optional.of(new Size()));
         SizeRequest sizeRequest = new SizeRequest("Extra Large");
 
-         assertThrows(ConflictException.class, () -> {
+        ConflictException exception = assertThrows(ConflictException.class, () -> {
             sizeService.save(sizeRequest);
         });
+
+        assertEquals("Size already exists", exception.getMessage());
     }
 
     @Test
-    @DisplayName("update should update and return an existing size")
-    void update() throws Exception {
+    @DisplayName("update should update and return an existing Size")
+    void update(){
         Long sizeId = 1L;
-        SizeRequest sizeRequest = new SizeRequest();
-        sizeRequest.setSize("Updated Small");
+        SizeRequest sizeRequest = new SizeRequest("Updated Small");
 
-        Size existingSize = new Size(sizeId, "Small");
+        Size existingSize= new Size(sizeId, "Small");
 
         when(sizeRepository.findById(sizeId)).thenReturn(Optional.of(existingSize));
         when(sizeRepository.save(existingSize)).thenAnswer(invocation -> {
@@ -142,23 +145,33 @@ public class SizeServiceTest {
         assertEquals(sizeId, result.getId());
         assertEquals("Updated Small", result.getSize());
     }
-        @Test
-        @DisplayName("delete should delete a size")
-        void delete() throws Exception {
-            Long sizeId = 1L;
+    @Test
+    @DisplayName("update should throw NotFoundException for non-existing Size")
+    void updateNonExistingSize() {
+        Long sizeId = 4L;
+        SizeRequest sizeRequest = new SizeRequest("Updated Category");
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            sizeService.update(sizeId, sizeRequest);
+        });
+        assertEquals("Size not found with id: " + sizeId, exception.getMessage());
+    }
+    @Test
+    @DisplayName("delete should delete a size")
+    void delete() {
+        Long sizeId = 1L;
 
-            assertDoesNotThrow(() -> {
-                sizeService.delete(sizeId);
-            });
+        assertDoesNotThrow(() -> {
+            sizeService.delete(sizeId);
+        });
         }
     @Test
     @DisplayName("delete should throw NotFoundException for non-existing size")
     void deleteNonExisting() {
-        Long sizeId = 5L;
-
-        assertThrows(NotFoundException.class, () -> {
-            sizeService.delete(sizeId);
+        Long categoryId = 5L;
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            sizeService.delete(categoryId);
         });
+        assertEquals("Sizes Not Found", exception.getMessage());
     }
 }
 

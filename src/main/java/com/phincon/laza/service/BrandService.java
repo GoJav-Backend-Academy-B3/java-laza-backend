@@ -18,5 +18,6 @@ public interface BrandService {
 
     Brand update(Long id, BrandRequest request) throws Exception;
 
+
     void delete(Long id);
 }
