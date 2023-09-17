@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface RajaongkirService {
 
-    public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception;
+     List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception;
+     List<ProvinceResponse> findAllProvince();
+     List<CityResponse> findCityByProvinceId(String provinceId);
 
-}
+    }
