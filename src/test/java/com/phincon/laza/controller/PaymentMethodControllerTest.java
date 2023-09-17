@@ -8,13 +8,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -24,11 +23,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PaymentMethodController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class PaymentMethodControllerTest {
 
     @MockBean
@@ -54,7 +53,7 @@ public class PaymentMethodControllerTest {
         MockitoAnnotations.openMocks(this);
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
+//                .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
 
         // Mock data
@@ -78,12 +77,23 @@ public class PaymentMethodControllerTest {
         paymentMethod2.setIsActive(false);
         paymentMethod2.setLogoUrl("https://example.com/logo2.png");
 
+        PaymentMethod paymentMethodUpdate = new PaymentMethod();
+        paymentMethodUpdate.setId(99L);
+        paymentMethodUpdate.setName("update");
+        paymentMethodUpdate.setCode("update");
+        paymentMethodUpdate.setType("update");
+        paymentMethodUpdate.setProvider("update");
+        paymentMethodUpdate.setAdminFee(99);
+        paymentMethodUpdate.setIsActive(true);
+        paymentMethodUpdate.setLogoUrl("update");
 
         List<PaymentMethod> paymentMethods = Arrays.asList(paymentMethod1, paymentMethod2);
 
         // Mock Service
         lenient().when(paymentMethodService.getAllPaymentMethods()).thenReturn(paymentMethods);
         lenient().when(paymentMethodService.getPaymentMethodById(1L)).thenReturn(paymentMethod1);
+        lenient().when(paymentMethodService.createPaymentMethod(any(PaymentMethod.class))).thenReturn(paymentMethod1);
+        lenient().when(paymentMethodService.updatePaymentMethod(anyLong(), any(PaymentMethod.class))).thenReturn(paymentMethodUpdate);
     }
 
     @Test
@@ -92,10 +102,10 @@ public class PaymentMethodControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser
     void testGetAllPaymentMethods() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/payment-methods")
+        mockMvc.perform(MockMvcRequestBuilders.get("/management/payment-methods")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -113,56 +123,86 @@ public class PaymentMethodControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "USER")
+    @WithMockUser
     void testGetPaymentMethodById() throws Exception {
-
-
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/payment-methods/{id}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.get("/payment-methods/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.length()").value(1))
-                .andExpect(jsonPath("$.data[0].id").value(1L))
-                .andExpect(jsonPath("$.data[0].name").value("Sample Payment Method"))
-                .andExpect(jsonPath("$.data[0].code").value("SAMPLE_CODE"))
+                .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.name").value("Sample Payment Method"))
+                .andExpect(jsonPath("$.data.code").value("SAMPLE_CODE"))
+                .andExpect(jsonPath("$.data.type").value("Sample Type"))
+                .andExpect(jsonPath("$.data.provider").value("Sample Provider"))
+                .andExpect(jsonPath("$.data.admin_fee").value(10))
+                .andExpect(jsonPath("$.data.is_active").value(true))
+                .andExpect(jsonPath("$.data.logo_url").value("https://example.com/logo.png"))
                 .andReturn();
 
-        PaymentMethod response = objectMapper.readValue(result.getResponse().getContentAsString(), PaymentMethod.class);
-        // Add assertions for the response data as needed
+        verify(paymentMethodService, times(1)).getPaymentMethodById(1L);
     }
 
     @Test
+    @WithMockUser(authorities = "ROLE_ADMIN")
     void testCreatePaymentMethod() throws Exception {
-        PaymentMethod paymentMethod = new PaymentMethod();
-        when(paymentMethodService.createPaymentMethod(any())).thenReturn(paymentMethod);
+        String request = """
+                {
+                    "name": "Sample Payment Method",
+                    "code": "SAMPLE_CODE",
+                    "type": "Sample Type",
+                    "provider": "Sample Provider",
+                    "admin_fee": 10
+                }
+                """;
 
-        String jsonBody = objectMapper.writeValueAsString(paymentMethod);
-
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/management/payment-methods")
+        mockMvc.perform(MockMvcRequestBuilders.post("/management/payment-methods")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonBody))
+                        .content(request)
+                        )
                 .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.id").value(1L))
+                .andExpect(jsonPath("$.data.name").value("Sample Payment Method"))
+                .andExpect(jsonPath("$.data.code").value("SAMPLE_CODE"))
+                .andExpect(jsonPath("$.data.type").value("Sample Type"))
+                .andExpect(jsonPath("$.data.provider").value("Sample Provider"))
+                .andExpect(jsonPath("$.data.admin_fee").value(10))
+                .andExpect(jsonPath("$.data.is_active").value(true))
+                .andExpect(jsonPath("$.data.logo_url").value("https://example.com/logo.png"))
                 .andReturn();
 
-        PaymentMethod response = objectMapper.readValue(result.getResponse().getContentAsString(), PaymentMethod.class);
-        // Add assertions for the response data as needed
+        verify(paymentMethodService, times(1)).createPaymentMethod(any(PaymentMethod.class));
     }
 
     @Test
-    void testUpdatePaymentMethod() throws Exception {
-        Long id = 1L;
-        PaymentMethod updatedPaymentMethod = new PaymentMethod();
-        when(paymentMethodService.updatePaymentMethod(eq(id), any())).thenReturn(updatedPaymentMethod);
+    @WithMockUser
+    void testUpdatePaymentMethod_thenCorrectResponse() throws Exception {
+        String request = """
+                {
+                    "name": "update",
+                    "code": "update",
+                    "type": "update",
+                    "provider": "update",
+                    "admin_fee": 99
+                }
+                """;
 
-        String jsonBody = objectMapper.writeValueAsString(updatedPaymentMethod);
-
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/management/payment-methods/{id}", id)
+        mockMvc.perform(MockMvcRequestBuilders.put("/management/payment-methods/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonBody))
+                        .content(request)
+                )
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.id").value(99L))
+                .andExpect(jsonPath("$.data.name").value("update"))
+                .andExpect(jsonPath("$.data.code").value("update"))
+                .andExpect(jsonPath("$.data.type").value("update"))
+                .andExpect(jsonPath("$.data.provider").value("update"))
+                .andExpect(jsonPath("$.data.admin_fee").value(99))
+                .andExpect(jsonPath("$.data.is_active").value(true))
+                .andExpect(jsonPath("$.data.logo_url").value("update"))
                 .andReturn();
 
-        PaymentMethod response = objectMapper.readValue(result.getResponse().getContentAsString(), PaymentMethod.class);
-        // Add assertions for the response data as needed
+        verify(paymentMethodService, times(1)).updatePaymentMethod(anyLong(), any(PaymentMethod.class));
     }
 
     // Add more test methods for other controller endpoints
