@@ -2,6 +2,7 @@ package com.phincon.laza.service;
 
 import com.phincon.laza.model.dto.request.CheckoutRequest;
 import com.phincon.laza.model.entity.Order;
+import com.xendit.exception.XenditException;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface OrderService {
     Order getOrderById(String id);
     Order createOrder(Order order);
 
-    Order requestCreateOrder(String username, CheckoutRequest checkoutRequest);
+    Order requestCreateOrder(String username, CheckoutRequest checkoutRequest) throws Exception;
 
     Order updateOrder(String id, Order updatedOrder);
 

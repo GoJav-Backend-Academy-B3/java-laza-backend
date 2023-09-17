@@ -1,6 +1,7 @@
 package com.phincon.laza.service.impl;
 
 import com.phincon.laza.exception.custom.ConflictException;
+import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.exception.custom.NotProcessException;
 import com.phincon.laza.model.dto.rajaongkir.CourierResponse;
 import com.phincon.laza.model.dto.request.CheckoutRequest;
@@ -10,7 +11,6 @@ import com.phincon.laza.repository.OrderRepository;
 import com.phincon.laza.service.*;
 import com.phincon.laza.utils.GenerateRandom;
 import com.phincon.laza.validator.OrderValidator;
-import com.xendit.exception.XenditException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -91,113 +91,104 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order requestCreateOrder(String userId, CheckoutRequest checkoutRequest) {
-        try {
-            User user = userService.getById(userId);
+    public Order requestCreateOrder(String userId, CheckoutRequest checkoutRequest) throws Exception {
 
-            PaymentMethod paymentMethod = paymentMethodService.getPaymentMethodById(checkoutRequest.getPaymentMethodId());
+        User user = userService.getById(userId);
 
-            if (!paymentMethod.getIsActive()) {
-                throw new NotProcessException("payment method inactive");
-            }
+        PaymentMethod paymentMethod = paymentMethodService.getPaymentMethodById(checkoutRequest.getPaymentMethodId());
 
-            Order order = new Order();
+        if (!paymentMethod.getIsActive()) {
+            throw new NotProcessException("payment method inactive");
+        }
 
-            order.setOrderStatus("requested");
-            
-            int amount = 0;
-            int itemQuantity = 0;
+        Order order = new Order();
 
-            // count total amount from product
-            List<Cart> carts = cartService.findCartByUser(userId);
-            List<ProductOrderDetail> productOrderDetailList = new ArrayList<>();
+        order.setOrderStatus("requested");
 
-            if (carts.isEmpty()) {
-                throw new NotProcessException("The user cart is currently empty; there are no products in it.");
-            }
+        int amount = 0;
+        int itemQuantity = 0;
 
-            for (Cart cart : carts){
-                ProductOrderDetail tmp = getProductOrderDetail(cart, order);
+        // count total amount from product
+        List<Cart> carts = cartService.findCartByUser(userId);
+        List<ProductOrderDetail> productOrderDetailList = new ArrayList<>();
 
-                amount += tmp.getTotalPrice();
-                itemQuantity += tmp.getQuantity();
+        if (carts.isEmpty()) {
+            throw new NotFoundException("The user cart is currently empty; there are no products in it.");
+        }
 
-                productOrderDetailList.add(tmp);
-            }
+        for (Cart cart : carts){
+            ProductOrderDetail tmp = getProductOrderDetail(cart, order);
+          
+            amount += tmp.getTotalPrice();
+            itemQuantity += tmp.getQuantity();
 
-            // implement add address order detail
-            Address address = addressService.findByIdAndByUserId(userId, checkoutRequest.getAddressId());
-            AddressOrderDetail addressOrderDetail = getAddressOrderDetail(order, address);
+            productOrderDetailList.add(tmp);
+        }
 
+        // implement add address order detail
+        Address address = addressService.findByIdAndByUserId(userId, checkoutRequest.getAddressId());
+        AddressOrderDetail addressOrderDetail = getAddressOrderDetail(order, address);
 
-            // get shipping fee
-            ROCostRequest roCostRequest =  new ROCostRequest();
-            roCostRequest.setOrigin("153");
-            roCostRequest.setDestination(address.getCity().getCityId());
-            roCostRequest.setCourier(checkoutRequest.getCourier());
-            roCostRequest.setWeight(500 * itemQuantity);
+        // get shipping fee
+        ROCostRequest roCostRequest =  new ROCostRequest();
+        roCostRequest.setOrigin("153");
+        roCostRequest.setDestination(address.getCity().getCityId());
+        roCostRequest.setCourier(checkoutRequest.getCourier());
+        roCostRequest.setWeight(500 * itemQuantity);
 
-            List<CourierResponse> courierResponseList = rajaongkirService.findCostCourierService(roCostRequest);
+        List<CourierResponse> courierResponseList = rajaongkirService.findCostCourierService(roCostRequest);
 
-            int shippingFee = courierResponseList.get(0).getCosts().get(0).getCost().get(0).getValue();
-            order.setShippingFee(shippingFee);
-            amount += shippingFee;
+        int shippingFee = courierResponseList.get(0).getCosts().get(0).getCost().get(0).getValue();
+        order.setShippingFee(shippingFee);
+        amount += shippingFee;
 
-            // add admin fee
-            int adminFee = paymentMethod.getAdminFee();
-            amount += adminFee;
-            order.setAdminFee(adminFee);
+        // add admin fee
+        int adminFee = paymentMethod.getAdminFee();
+        amount += adminFee;
+        order.setAdminFee(adminFee);
 
-            // set amount from user cart
-            order.setAmount(amount);
+        // set amount from user cart
+        order.setAmount(amount);
 
-            order.setUser(user);
-            order.setExpiryDate(LocalDateTime.now().plusDays(1));
-            order = createOrder(order);
+        order.setUser(user);
+        order.setExpiryDate(LocalDateTime.now().plusDays(1));
+        order = createOrder(order);
 
-            // Add product order detail to database
-            order.setProductOrderDetails(productOrderDetailService.createProductOrderDetails(productOrderDetailList));
+        // Add product order detail to database
+        order.setProductOrderDetails(productOrderDetailService.createProductOrderDetails(productOrderDetailList));
 
-            // Add address order detail to database
-            order.setAddressOrderDetail(addressOrderDetailService.createAddressOrderDetail(addressOrderDetail));
+        // Add address order detail to database
+        order.setAddressOrderDetail(addressOrderDetailService.createAddressOrderDetail(addressOrderDetail));
 
-            PaymentDetail paymentDetail = new PaymentDetail();
+        PaymentDetail paymentDetail = new PaymentDetail();
 
-            // check if using CC
-            if (checkoutRequest.getPaymentMethod().equalsIgnoreCase("credit_card")) {
+        // check if using CC
+        if (checkoutRequest.getPaymentMethod().equalsIgnoreCase("credit_card")) {
 
-            } else {
-
-
-                // xendit payment gateway
-                if (paymentMethod.getProvider().equalsIgnoreCase("xendit")) {
-                    if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
-                        paymentDetail = xenditService.chargeEwallet(paymentMethod, order, checkoutRequest.getCallbackUrl());
-                    } else if (paymentMethod.getType().equalsIgnoreCase("virtual_account")) {
-                        paymentDetail = xenditService.chargeVirtualAccount(paymentMethod, order);
-                    }
-                } else if (paymentMethod.getProvider().equalsIgnoreCase("midtrans")) {
-                    if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
-                        paymentDetail = midtransService.chargeGopay(paymentMethod, order, checkoutRequest.getCallbackUrl());
-                    }
+        } else {
+            // xendit payment gateway
+            if (paymentMethod.getProvider().equalsIgnoreCase("xendit")) {
+                if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
+                    paymentDetail = xenditService.chargeEwallet(paymentMethod, order, checkoutRequest.getCallbackUrl());
+                } else if (paymentMethod.getType().equalsIgnoreCase("virtual_account")) {
+                    paymentDetail = xenditService.chargeVirtualAccount(paymentMethod, order);
+                }
+            } else if (paymentMethod.getProvider().equalsIgnoreCase("midtrans")) {
+                if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
+                    paymentDetail = midtransService.chargeGopay(paymentMethod, order, checkoutRequest.getCallbackUrl());
                 }
             }
-
-            order.setPaymentDetail(paymentDetail);
-
-            // update order
-            order = updateOrder(order.getId(), order);
-
-            // Delete all product in user cart
-            cartService.deleteCartByUser(userId);
-
-            return getOrderById(order.getId());
-        } catch (XenditException e) {
-            throw new NotProcessException(e.getMessage());
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+
+        order.setPaymentDetail(paymentDetail);
+
+        // update order
+        order = updateOrder(order.getId(), order);
+
+        // Delete all product in user cart
+        cartService.deleteCartByUser(userId);
+
+        return getOrderById(order.getId());
     }
 
     private AddressOrderDetail getAddressOrderDetail(Order order, Address address) {
@@ -263,6 +254,4 @@ public class OrderServiceImpl implements OrderService {
 
         return result;
     }
-
-
 }
