@@ -1,30 +1,28 @@
 package com.phincon.laza.service;
 
 
-import com.phincon.laza.controller.CartController;
 import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.model.dto.rajaongkir.*;
 import com.phincon.laza.model.dto.request.ROCostRequest;
+import com.phincon.laza.repository.CityRepository;
 import com.phincon.laza.service.impl.RajaongkirServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 
-
-@AutoConfigureMockMvc
-@ContextConfiguration(classes = {RajaongkirServiceImpl.class})
-@ExtendWith(MockitoExtension.class)
-class RajaongkirServiceTest {
+@SpringBootTest
+public class RajaongkirServiceTest {
 
     @Autowired
     private RajaongkirService rajaongkirService = new RajaongkirServiceImpl();
@@ -82,14 +80,24 @@ class RajaongkirServiceTest {
     }
 
     @Test
-    @DisplayName("[RajaongkirServiceTest] get cost with invalid request")
-    void whenGetCostWithInvalidRequest_thenThrowError() throws Exception{
+    @DisplayName("[RajaongkirServiceTest] get cost with invalid request (courier)")
+    void whenGetCostWithInvalidRequestCourier_thenThrowException() throws Exception{
         ROCostRequest request = new ROCostRequest(
                 "501",
                 "200",
                 1700,
                 "unKnow"
         );
+
+        assertThrows(BadRequestException.class, ()->{
+            rajaongkirService.findCostCourierService(request);
+        });
+    }
+
+
+    @Test
+    @DisplayName("[RajaongkirServiceTest] get cost with invalid request (weight)")
+    void whenGetCostWithInvalidRequestWeight_thenThrowException() throws Exception{
         ROCostRequest requestI = new ROCostRequest(
                 "501",
                 "200",
@@ -98,8 +106,39 @@ class RajaongkirServiceTest {
         );
 
         assertThrows(BadRequestException.class, ()->{
-            rajaongkirService.findCostCourierService(request);
+            rajaongkirService.findCostCourierService(requestI);
         });
+    }
+
+    @Test
+    @DisplayName("[RajaongkirServiceTest] get cost with invalid request (origin ID)")
+    void whenGetCostWithInvalidRequestOrigin_thenThrowException() throws Exception{
+        String invalidOriginId= "502";
+
+        ROCostRequest requestI = new ROCostRequest(
+                invalidOriginId,
+                "200",
+                1700,
+                "jne"
+        );
+
+        assertThrows(BadRequestException.class, ()->{
+            rajaongkirService.findCostCourierService(requestI);
+        });
+    }
+
+    @Test
+    @DisplayName("[RajaongkirServiceTest] get cost with invalid request (destination ID)")
+    void whenGetCostWithInvalidRequestDestination_thenThrowException() throws Exception{
+        String invalidDestination= "502";
+
+        ROCostRequest requestI = new ROCostRequest(
+                "501",
+                invalidDestination,
+                1700,
+                "jne"
+        );
+
         assertThrows(BadRequestException.class, ()->{
             rajaongkirService.findCostCourierService(requestI);
         });

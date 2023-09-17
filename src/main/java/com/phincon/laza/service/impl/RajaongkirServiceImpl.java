@@ -46,9 +46,16 @@ public class RajaongkirServiceImpl implements RajaongkirService {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
 
     @Override
     public List<CourierResponse> findCostCourierService(ROCostRequest roCostRequest) throws Exception{
+        if (cityRepository.findById(roCostRequest.getOrigin()).isEmpty() || cityRepository.findById(roCostRequest.getDestination()).isEmpty()){
+            throw new BadRequestException("Origin ID or destination ID not found.");
+        }
+
         try{
             String data = URLEncoder.encode("origin","UTF-8")
                     +"="+URLEncoder.encode(roCostRequest.getOrigin(), "UTF-8")
@@ -66,13 +73,11 @@ public class RajaongkirServiceImpl implements RajaongkirService {
                     new ParameterizedTypeReference<>() {
                     }
             );
-
             return result.getBody().get("rajaongkir").getResults();
         }catch (IOException e){
             throw e;
         }catch (HttpClientErrorException e){
-            ObjectMapper newMap = new ObjectMapper();
-            AllErrorResponse error = newMap.readValue(e.getResponseBodyAsString(), AllErrorResponse.class);
+            AllErrorResponse error = objectMapper.readValue(e.getResponseBodyAsString(), AllErrorResponse.class);
             if (error.getRajaongkir().getStatus().getCode().equals(400)){
                 throw new BadRequestException(error.getRajaongkir().getStatus().getDescription());
             }else{
