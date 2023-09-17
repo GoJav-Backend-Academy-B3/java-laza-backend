@@ -1,5 +1,6 @@
 package com.phincon.laza.service;
 
+import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.ChangePasswordRequest;
 import com.phincon.laza.model.dto.request.RoleRequest;
 import com.phincon.laza.model.dto.request.UserRequest;
@@ -26,8 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -58,6 +58,9 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserServiceImpl userService;
+
+    private final String uuid = UUID.randomUUID().toString();
+    private final String usernameNotFound = "username";
 
     @BeforeEach
     public void init() {
@@ -92,7 +95,9 @@ public class UserServiceTest {
 
         lenient().when(userRepository.findAll(pageable)).thenReturn(new PageImpl<>(listUser, pageable, listUser.size()));
         lenient().when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
+        lenient().when(userRepository.findById(uuid)).thenThrow(NotFoundException.class);
         lenient().when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
+        lenient().when(userRepository.findByUsername(usernameNotFound)).thenThrow(NotFoundException.class);
         lenient().when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         lenient().when(userRepository.save(any())).thenReturn(user);
 
@@ -131,6 +136,17 @@ public class UserServiceTest {
     }
 
     @Test
+    public void testGetByIdToUser_ThenNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            userService.getById(uuid);
+        });
+
+        verify(userRepository, times(1)).findById(anyString());
+
+        log.info("[COMPLETE] testing service user getById then not found");
+    }
+
+    @Test
     public void testGetByUsernameToUser_ThenCorrect() {
         User user = userService.getByUsername(anyString());
 
@@ -145,7 +161,18 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testUpdateToUser_thenCorrrect() throws Exception {
+    public void testGetByUsernameToUser_ThenNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            userService.getByUsername(usernameNotFound);
+        });
+
+        verify(userRepository, times(1)).findByUsername(anyString());
+
+        log.info("[COMPLETE] testing service user getByUsername then not found");
+    }
+
+    @Test
+    public void testUpdateToUser_thenCorrect() throws Exception {
         UserRequest request = new UserRequest();
         request.setName("John Doe Update");
         request.setUsername("johndoeupdate");
@@ -170,6 +197,22 @@ public class UserServiceTest {
     }
 
     @Test
+    public void testUpdateToUser_thenNotFound() {
+        UserRequest request = new UserRequest();
+
+        assertThrows(NotFoundException.class, () -> {
+            userService.update(uuid, request);
+        });
+
+        verify(userRepository, times(1)).findById(anyString());
+        verify(userRepository, times(0)).findByUsername(anyString());
+        verify(userRepository, times(0)).findByEmail(anyString());
+        verify(userRepository, times(0)).save(any());
+
+        log.info("[COMPLETE] testing service user update then not found");
+    }
+
+    @Test
     public void testChangePasswordToUser_thenCorrect() {
         ChangePasswordRequest request = new ChangePasswordRequest();
         request.setOldPassword(anyString());
@@ -180,6 +223,22 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).findById(anyString());
         verify(userRepository, times(1)).save(any());
+
+        log.info("[COMPLETE] testing service user change password then correct");
+    }
+
+    @Test
+    public void testChangePasswordToUser_thenNotFound() {
+        ChangePasswordRequest request = new ChangePasswordRequest();
+
+        assertThrows(NotFoundException.class, () -> {
+            userService.changePassword(uuid, request);
+        });
+
+        verify(userRepository, times(1)).findById(anyString());
+        verify(userRepository, times(0)).save(any());
+
+        log.info("[COMPLETE] testing service user change password then not found");
     }
 
     @Test
@@ -197,6 +256,22 @@ public class UserServiceTest {
         verify(roleRepository, times(2)).findByName(any());
         verify(userRepository, times(1)).findByUsername(anyString());
         verify(userRepository, times(1)).save(any());
+
+        log.info("[COMPLETE] testing service user updateRole then correct");
+    }
+
+    @Test
+    public void testUpdateRoleToUser_thenNotFound() {
+        RoleRequest request = new RoleRequest();
+        request.setUsername(usernameNotFound);
+
+        assertThrows(NotFoundException.class, () -> {
+            userService.updateRole(request);
+        });
+
+        verify(roleRepository, times(0)).findByName(any());
+        verify(userRepository, times(1)).findByUsername(anyString());
+        verify(userRepository, times(0)).save(any());
 
         log.info("[COMPLETE] testing service user updateRole then correct");
     }

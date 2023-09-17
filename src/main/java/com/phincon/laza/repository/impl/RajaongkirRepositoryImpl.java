@@ -1,15 +1,12 @@
 package com.phincon.laza.repository.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.config.RajaongkirConfig;
 import com.phincon.laza.exception.custom.BadRequestException;
-import com.phincon.laza.model.dto.rajaongkir.AllCityResponse;
-import com.phincon.laza.model.dto.rajaongkir.AllProvinceResponse;
-import com.phincon.laza.model.dto.rajaongkir.AllCostResponse;
-import com.phincon.laza.model.dto.rajaongkir.StatusResponse;
+import com.phincon.laza.model.dto.rajaongkir.*;
 import com.phincon.laza.model.dto.request.ROCostRequest;
 import com.phincon.laza.repository.RajaongkirRepository;
+import jdk.jshell.spi.ExecutionControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -96,7 +93,13 @@ public class RajaongkirRepositoryImpl implements RajaongkirRepository {
         }catch (IOException e){
             throw e;
         }catch (HttpClientErrorException e){
-            throw new BadRequestException(e.getMessage());
+            ObjectMapper newMap = new ObjectMapper();
+            AllErrorResponse error = newMap.readValue(e.getResponseBodyAsString(), AllErrorResponse.class);
+            if (error.getRajaongkir().getStatus().getCode().equals(400)){
+                throw new BadRequestException(error.getRajaongkir().getStatus().getDescription());
+            }else{
+                throw new ExecutionControl.InternalException(error.getRajaongkir().getStatus().getDescription());
+            }
         }
     }
 }
