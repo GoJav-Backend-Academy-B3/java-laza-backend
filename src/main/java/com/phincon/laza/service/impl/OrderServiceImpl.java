@@ -14,6 +14,8 @@ import com.xendit.exception.XenditException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,6 +42,9 @@ public class OrderServiceImpl implements OrderService {
     private XenditService xenditService;
 
     @Autowired
+    private MidtransService midtransService;
+
+    @Autowired
     private CartService cartService;
 
     @Autowired
@@ -57,6 +62,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    @Override
+    public Page<Order> getAllOrdersByUserIdPage(int page, int size, String userId) {
+        return orderRepository.findAll(PageRequest.of(page, size));
     }
 
     @Override
@@ -98,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
             int amount = 0;
             int itemQuantity = 0;
 
-            // Todo: count total amount from product
+            // count total amount from product
             List<Cart> carts = cartService.findCartByUser(userId);
             List<ProductOrderDetail> productOrderDetailList = new ArrayList<>();
 
@@ -115,21 +125,10 @@ public class OrderServiceImpl implements OrderService {
                 productOrderDetailList.add(tmp);
             }
 
-            // Todo: implement add address order detail
-            Address address = addressService.findById(checkoutRequest.getAddressId());
-            AddressOrderDetail addressOrderDetail = new AddressOrderDetail();
-            addressOrderDetail.setOrder(order);
-            addressOrderDetail.setFullAddress(address.getFullAddress());
-            addressOrderDetail.setPhoneNumber(address.getPhoneNumber());
-            addressOrderDetail.setReceiverName(address.getReceiverName());
-            addressOrderDetail.setProvince(address.getCity().getProvinces().getProvince());
-            addressOrderDetail.setCityName(address.getCity().getCityName());
-            addressOrderDetail.setCityType(address.getCity().getType());
-            addressOrderDetail.setPostalCode(address.getCity().getPostalCode());
+            // implement add address order detail
+            Address address = addressService.findByIdAndByUserId(userId, checkoutRequest.getAddressId());
+            AddressOrderDetail addressOrderDetail = getAddressOrderDetail(order, address);
 
-            // flat admin fee
-            amount += 1000;
-            order.setAdminFee(1000);
 
             // get shipping fee
             ROCostRequest roCostRequest =  new ROCostRequest();
@@ -144,18 +143,23 @@ public class OrderServiceImpl implements OrderService {
             order.setShippingFee(shippingFee);
             amount += shippingFee;
 
+            // add admin fee
+            int adminFee = paymentMethod.getAdminFee();
+            amount += adminFee;
+            order.setAdminFee(adminFee);
+
             // set amount from user cart
             order.setAmount(amount);
 
             order.setUser(user);
             order.setExpiryDate(LocalDateTime.now().plusDays(1));
-            Order createdOrder = createOrder(order);
+            order = createOrder(order);
 
             // Add product order detail to database
-            productOrderDetailService.createProductOrderDetails(productOrderDetailList);
+            order.setProductOrderDetails(productOrderDetailService.createProductOrderDetails(productOrderDetailList));
 
             // Add address order detail to database
-            addressOrderDetailService.createAddressOrderDetail(addressOrderDetail);
+            order.setAddressOrderDetail(addressOrderDetailService.createAddressOrderDetail(addressOrderDetail));
 
             PaymentDetail paymentDetail = new PaymentDetail();
 
@@ -172,22 +176,41 @@ public class OrderServiceImpl implements OrderService {
                     } else if (paymentMethod.getType().equalsIgnoreCase("virtual_account")) {
                         paymentDetail = xenditService.chargeVirtualAccount(paymentMethod, order);
                     }
+                } else if (paymentMethod.getProvider().equalsIgnoreCase("midtrans")) {
+                    if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
+                        paymentDetail = midtransService.chargeGopay(paymentMethod, order, checkoutRequest.getCallbackUrl());
+                    }
                 }
             }
 
-            Order updatedOrder = updateOrder(order.getId(), order);
+            order.setPaymentDetail(paymentDetail);
 
-            createdOrder.setPaymentDetail(paymentDetail);
+            // update order
+            order = updateOrder(order.getId(), order);
 
             // Delete all product in user cart
             cartService.deleteCartByUser(userId);
 
-            return updatedOrder;
+            return getOrderById(order.getId());
         } catch (XenditException e) {
             throw new NotProcessException(e.getMessage());
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private AddressOrderDetail getAddressOrderDetail(Order order, Address address) {
+        AddressOrderDetail addressOrderDetail = new AddressOrderDetail();
+        addressOrderDetail.setOrder(order);
+        addressOrderDetail.setFullAddress(address.getFullAddress());
+        addressOrderDetail.setPhoneNumber(address.getPhoneNumber());
+        addressOrderDetail.setReceiverName(address.getReceiverName());
+        addressOrderDetail.setProvince(address.getCity().getProvinces().getProvince());
+        addressOrderDetail.setCityName(address.getCity().getCityName());
+        addressOrderDetail.setCityType(address.getCity().getType());
+        addressOrderDetail.setPostalCode(address.getCity().getPostalCode());
+        return addressOrderDetail;
     }
 
     private ProductOrderDetail getProductOrderDetail(Cart cart, Order order) {
@@ -217,17 +240,6 @@ public class OrderServiceImpl implements OrderService {
 
         updatedOrder.setId(id);
         return orderRepository.save(updatedOrder);
-    }
-
-    @Override
-    public Order addOrderTransaction(Order order, Transaction transaction) {
-        if (order.getTransaction() == null) {
-            List<Transaction> transactions = new ArrayList<>();
-            order.setTransaction(transactions);
-        }
-
-        order.getTransaction().add(transaction);
-        return order;
     }
 
     @Override

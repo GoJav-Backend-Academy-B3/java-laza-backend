@@ -1,6 +1,5 @@
 package com.phincon.laza.validator;
 
-import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.exception.custom.NotProcessException;
 import com.phincon.laza.model.entity.VerificationCode;
@@ -67,7 +66,7 @@ public class VerificationCodeValidatorTest {
         Optional<VerificationCode> findCode = Optional.of(new VerificationCode());
         lenient().when(verificationCodeRepository.findById(any())).thenReturn(findCode);
 
-        assertThrows(BadRequestException.class, () -> {
+        assertThrows(NotProcessException.class, () -> {
             verificationCodeValidator.validateVerificationCodeNotAlreadyConfirm(findCode);
         });
 

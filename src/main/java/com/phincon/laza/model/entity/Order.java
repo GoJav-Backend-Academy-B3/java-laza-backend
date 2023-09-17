@@ -11,7 +11,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter @Getter @ToString
+@Setter @Getter
 @Table(name = "orders")
 @Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)

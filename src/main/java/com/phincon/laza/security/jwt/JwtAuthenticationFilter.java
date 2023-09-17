@@ -66,12 +66,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (RuntimeException e) {
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage(), null);
-            log.warn("Authentication Error: {}",e.getMessage());
-            final ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(response.getOutputStream(), errorResponse);
+            log.warn("AuthenticationFilter Error: {}",e.getMessage());
+
+            response.resetBuffer();
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getOutputStream().print(new ObjectMapper().writeValueAsString(errorResponse));
+            response.flushBuffer();
         }
     }
 }

@@ -72,6 +72,7 @@ public class SecurityConfiguration {
             "/error",
             "/auth/**",
             "/oauth2/**",
+            "/rmq/**",
             "/size/**",
             "/category/**",
             "/products/**",
@@ -91,7 +92,8 @@ public class SecurityConfiguration {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/midtrans/gopay-callback"
     };
 
     private final String[] adminListedRoutes = new String[]{
