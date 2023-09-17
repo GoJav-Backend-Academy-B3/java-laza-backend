@@ -12,7 +12,6 @@ import com.phincon.laza.repository.CityRepository;
 import com.phincon.laza.repository.ProvinceRepository;
 import com.phincon.laza.repository.UserRepository;
 import com.phincon.laza.service.impl.AddressServiceImpl;
-import com.phincon.laza.service.impl.RajaongkirServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 
-@ActiveProfiles("test")
+
 @ExtendWith(MockitoExtension.class)
 public class AddressServiceTest {
 
@@ -85,12 +82,14 @@ public class AddressServiceTest {
         addresses.add(address1);
 
         lenient().when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        lenient().when(userRepository.existsById("1")).thenReturn(true);
         lenient().when(provinceRepository.findByProvinceIgnoreCase("DKI Jakarta")).thenReturn(Optional.of(province));
         lenient().when(cityRepository.findByCityNameIgnoreCaseAndProvincesProvinceId("Jakarta Selatan", "1")).thenReturn(Optional.of(city));
 
         lenient().when(addressRepository.save(any(Address.class))).thenReturn(address);
         lenient().when(addressRepository.findAllByUserId("1")).thenReturn(addresses);
         lenient().when(addressRepository.findById(1L)).thenReturn(Optional.of(address));
+        lenient().when(addressRepository.findByIdAndUserId(1L, "1")).thenReturn(Optional.of(address));
         lenient().when(addressRepository.countByUserId("1")).thenReturn(2);
 
         lenient().when(cityRepository.findByCityNameIgnoreCaseAndProvincesProvinceId("Jakarta", "1")).thenReturn(Optional.empty());
@@ -202,18 +201,18 @@ public class AddressServiceTest {
     @Test
     @DisplayName("find by id")
     public void whenFindId_thenCorrectResponse() throws Exception {
-       Address address = addressService.findById(1L);
+       Address address = addressService.findByIdAndByUserId("1",1L);
         assertEquals(1L, address.getId());
 
-        verify(addressRepository, times(1)).findById(anyLong());
+        verify(addressRepository, times(1)).findByIdAndUserId(anyLong(), anyString());
     }
 
     @Test
     @DisplayName("find by id when id not found")
     public void whenFindByIdAndIdNotFound_thenThrowException() {
-        when(addressRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(addressRepository.findByIdAndUserId(anyLong(), anyString())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> addressService.findById(4L));
+        assertThrows(NotFoundException.class, () -> addressService.findByIdAndByUserId("1",4L));
     }
 
     @Test
@@ -311,11 +310,11 @@ public class AddressServiceTest {
     @DisplayName("delete address")
     public void whenDeleteAddress_thenCorrectResponse() throws Exception {
         Address address = new Address();
-        address.setId(2L);
+        address.setId(1L);
         address.setPrimary(false);
-        when(addressRepository.findById(2L)).thenReturn(Optional.of(address));
+        when(addressRepository.findByIdAndUserId(1L, "1")).thenReturn(Optional.of(address));
 
-        addressService.delete(2L);
+        addressService.delete("1",1L);
 
         verify(addressRepository, times(1)).delete(any(Address.class));
     }
@@ -324,14 +323,14 @@ public class AddressServiceTest {
     @DisplayName("delete address when address not found")
     public void whenDeleteAddressAndAddressNotFound_thenThrowException() throws Exception {
 
-        assertThrows(NotFoundException.class, () -> addressService.delete(2L));
+        assertThrows(NotFoundException.class, () -> addressService.delete("1",2L));
     }
 
     @Test
     @DisplayName("delete address when delete primary")
     public void whenDeleteAddressAndDeletePrimary_thenThrowException() throws Exception {
 
-        assertThrows(BadRequestException.class, () -> addressService.delete(1L));
+        assertThrows(BadRequestException.class, () -> addressService.delete("1",1L));
     }
 
 

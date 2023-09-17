@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -49,18 +48,18 @@ public class AddressServiceImpl implements AddressService {
 
         City city = cityRepository.findByCityNameIgnoreCaseAndProvincesProvinceId(request.getCityName(), province.getProvinceId()).orElseThrow(() -> new NotFoundException("City not found"));
 
-            address.setPrimary(isPrimary);
-            address.setCity(city);
-            address.setReceiverName(request.getReceiverName());
-            address.setPhoneNumber(request.getPhone());
-            address.setFullAddress(request.getFullAddress());
-            address.setUser(user);
+        address.setPrimary(isPrimary);
+        address.setCity(city);
+        address.setReceiverName(request.getReceiverName());
+        address.setPhoneNumber(request.getPhone());
+        address.setFullAddress(request.getFullAddress());
+        address.setUser(user);
 
-            if (isPrimary) {
-                addressRepository.setAllAddressesNonPrimary(userId);
-            }
+        if (isPrimary) {
+            addressRepository.setAllAddressesNonPrimary(userId);
+        }
 
-            return addressRepository.save(address);
+        return addressRepository.save(address);
 
     }
 
@@ -71,20 +70,18 @@ public class AddressServiceImpl implements AddressService {
 
         return addressRepository.findAllByUserId(user.getId());
 
-
     }
 
-
     @Override
-    public Address findById(Long id) throws Exception {
-        return addressRepository.findById(id).orElseThrow(() -> new NotFoundException("Address not found"));
+    public Address findByIdAndByUserId(String userId, Long id) throws Exception {
+        return addressRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new NotFoundException("Address not founc"));
     }
 
     @Override
     public Address update(String userId, Long id, AddressRequest request) throws Exception {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User Not Found"));
 
-        Address address = addressRepository.findById(id).orElseThrow(() -> new NotFoundException("Address not founc"));
+        Address address = addressRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new NotFoundException("Address not founc"));
 
         Province province = provinceRepository.findByProvinceIgnoreCase(request.getProvinceName()).orElseThrow(() -> new NotFoundException("Province not found"));
 
@@ -111,21 +108,23 @@ public class AddressServiceImpl implements AddressService {
 
     }
 
-
     @Override
-    public void delete(Long id) throws Exception {
-        Optional<Address> optionalAddress = addressRepository.findById(id);
+    public void delete(String userId, Long id) throws Exception {
+        boolean exists = userRepository.existsById(userId);
 
-        if (optionalAddress.isPresent()) {
-            if (optionalAddress.get().isPrimary()) {
+        if (exists) {
+            Address address = addressRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new NotFoundException("Address Not Found"));
+
+            if (address.isPrimary()) {
                 throw new BadRequestException("Cannot delete address primary");
 
             } else {
-                addressRepository.delete(optionalAddress.get());
+                addressRepository.delete(address);
                 return;
             }
+
         }
 
-        throw new NotFoundException("Address Not Found");
+        throw new NotFoundException("Id doesn't exists");
     }
 }

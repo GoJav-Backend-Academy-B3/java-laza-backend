@@ -42,6 +42,9 @@ public class OrderServiceImpl implements OrderService {
     private XenditService xenditService;
 
     @Autowired
+    private MidtransService midtransService;
+
+    @Autowired
     private CartService cartService;
 
     @Autowired
@@ -115,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
 
         for (Cart cart : carts){
             ProductOrderDetail tmp = getProductOrderDetail(cart, order);
-
+          
             amount += tmp.getTotalPrice();
             itemQuantity += tmp.getQuantity();
 
@@ -123,7 +126,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // implement add address order detail
-        Address address = addressService.findById(checkoutRequest.getAddressId());
+        Address address = addressService.findByIdAndByUserId(userId, checkoutRequest.getAddressId());
         AddressOrderDetail addressOrderDetail = getAddressOrderDetail(order, address);
 
         // get shipping fee
@@ -163,14 +166,16 @@ public class OrderServiceImpl implements OrderService {
         if (checkoutRequest.getPaymentMethod().equalsIgnoreCase("credit_card")) {
 
         } else {
-
-
             // xendit payment gateway
             if (paymentMethod.getProvider().equalsIgnoreCase("xendit")) {
                 if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
                     paymentDetail = xenditService.chargeEwallet(paymentMethod, order, checkoutRequest.getCallbackUrl());
                 } else if (paymentMethod.getType().equalsIgnoreCase("virtual_account")) {
                     paymentDetail = xenditService.chargeVirtualAccount(paymentMethod, order);
+                }
+            } else if (paymentMethod.getProvider().equalsIgnoreCase("midtrans")) {
+                if (paymentMethod.getType().equalsIgnoreCase("e-wallet")) {
+                    paymentDetail = midtransService.chargeGopay(paymentMethod, order, checkoutRequest.getCallbackUrl());
                 }
             }
         }
@@ -249,6 +254,4 @@ public class OrderServiceImpl implements OrderService {
 
         return result;
     }
-
-
 }

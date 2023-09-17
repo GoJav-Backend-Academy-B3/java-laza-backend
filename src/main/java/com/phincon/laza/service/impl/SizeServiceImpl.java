@@ -1,16 +1,14 @@
 package com.phincon.laza.service.impl;
 
 
-import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.SizeRequest;
-import com.phincon.laza.model.entity.Size;
+import com.phincon.laza.model.entity.*;
 import com.phincon.laza.repository.SizeRepository;
 import com.phincon.laza.service.SizeService;
 import com.phincon.laza.validator.SizeValidator;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -47,24 +45,21 @@ public class SizeServiceImpl implements SizeService {
         size.setSize(sizeName);
         return sizeRepository.save(size);
     }
-    @Override
-    public Size update(Long id, SizeRequest updatedSize) throws Exception {
-        Optional<Size> existingSizeOptional = sizeRepository.findById(id);
-        if (existingSizeOptional.isEmpty()) {
-            throw new NotFoundException("Size not found");
-        }
-        Size existingSize = existingSizeOptional.get();
-        String updatedSizeName = updatedSize.getSize();
-        existingSize.setSize(updatedSizeName);
 
-        return sizeRepository.save(existingSize);
+    @Override
+    public Size update(Long id, SizeRequest request) throws Exception {
+        Size size = sizeRepository.findById(id).orElseThrow(() -> new NotFoundException("Size not found"));
+        size.setSize(request.getSize());
+        return sizeRepository.save(size);
     }
+
     @Override
     public void delete(Long id) throws Exception {
         Optional<Size> existingSizeOptional = sizeRepository.findById(id);
 
         if (existingSizeOptional.isPresent()) {
             Size sizes = existingSizeOptional.get();
+
             sizes.setIsDeleted(true);
             sizeRepository.save(sizes);
             return;
