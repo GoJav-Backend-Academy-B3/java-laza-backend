@@ -361,6 +361,7 @@ public class UserControllerTest {
         request.setRoles(Arrays.asList("USER", "ADMIN"));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/management/users")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -380,6 +381,7 @@ public class UserControllerTest {
         request.setRoles(Arrays.asList("USER", "ADMIN"));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/management/users")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
@@ -398,6 +400,7 @@ public class UserControllerTest {
         RoleRequest request = new RoleRequest();
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/management/users")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -421,6 +424,7 @@ public class UserControllerTest {
         request.setRoles(Arrays.asList("USER", "ADMIN"));
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/management/users")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -438,7 +442,8 @@ public class UserControllerTest {
     @Test
     @WithMockUser(authorities = "USER")
     public void testUpdateRoleToUser_thenForbidden() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.patch("/management/users"))
+        mockMvc.perform(MockMvcRequestBuilders.patch("/management/users")
+                        .with(csrf()))
                 .andExpect(status().isForbidden())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.FORBIDDEN.value()))
