@@ -1,12 +1,10 @@
 package com.phincon.laza.controller;
 
 import com.phincon.laza.model.dto.response.DataResponse;
-import com.phincon.laza.model.entity.Brand;
 import com.phincon.laza.model.entity.PaymentMethod;
 import com.phincon.laza.service.PaymentMethodService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,13 +44,6 @@ public class PaymentMethodController {
         return DataResponse.created(createdPaymentMethod);
     }
 
-//    @PostMapping("/callback/payment-methods1")
-//    public ResponseEntity<DataResponse<String>> createPaymentMethodTest() {
-////        PaymentMethod createdPaymentMethod = paymentMethodService.createPaymentMethod(paymentMethod);
-//
-//        return DataResponse.created("sdf");
-//    }
-
     @PutMapping("/management/payment-methods/{id}")
     public ResponseEntity<DataResponse<PaymentMethod>> updatePaymentMethod(@PathVariable Long id, @Valid @RequestBody PaymentMethod updatedPaymentMethod) {
         PaymentMethod updated = paymentMethodService.updatePaymentMethod(id, updatedPaymentMethod);
@@ -75,18 +66,5 @@ public class PaymentMethodController {
     public ResponseEntity<DataResponse<PaymentMethod>> activatePaymentMethod(@PathVariable Long id) {
         PaymentMethod updatedPaymentMethod =  paymentMethodService.activatePaymentMethod(id);
         return DataResponse.ok(updatedPaymentMethod);
-    }
-
-    @DeleteMapping("/management/payment-methods/{id}")
-    public ResponseEntity<DataResponse<?>> deletePaymentMethod(@PathVariable Long id) {
-        paymentMethodService.deletePaymentMethod(id);
-
-        DataResponse<Brand> dataResponse = new DataResponse<>(
-                HttpStatus.OK.value(),
-                "Success",
-                null,
-                null);
-
-        return ResponseEntity.status(HttpStatus.OK).body(dataResponse);
     }
 }
