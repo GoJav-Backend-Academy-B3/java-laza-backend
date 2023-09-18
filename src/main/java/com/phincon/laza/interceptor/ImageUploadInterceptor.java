@@ -30,7 +30,8 @@ public class ImageUploadInterceptor implements HandlerInterceptor {
             return true;
         } else {
             String format = "Supported files are: image/png, image/jpeg, image/webp. But provided %s.";
-            throw new BadRequestException(String.format(format, contentType));
+            response.sendError(400, String.format(format, contentType));
+            return false;
         }
     }
 }
