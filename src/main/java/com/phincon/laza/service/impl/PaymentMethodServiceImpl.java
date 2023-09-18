@@ -88,13 +88,6 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     }
 
     @Override
-    public void deletePaymentMethod(Long id) {
-        Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
-        paymentMethodValidator.validatePaymentMethodNotFound(paymentMethod, id);
-        paymentMethodRepository.deleteById(id);
-    }
-
-    @Override
     public PaymentMethod deactivatePaymentMethod(Long id) {
         PaymentMethod paymentMethod = getPaymentMethodById(id);
         paymentMethod.setIsActive(false);

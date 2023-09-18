@@ -66,7 +66,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<Order> getAllOrdersByUserIdPage(int page, int size, String userId) {
-        return orderRepository.findAll(PageRequest.of(page, size));
+        User user = userService.getById(userId);
+        return orderRepository.findAllByUserIdOrderByCreatedAtDesc(user, PageRequest.of(page, size));
     }
 
     @Override
