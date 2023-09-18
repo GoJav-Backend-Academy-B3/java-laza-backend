@@ -1,7 +1,7 @@
 package com.phincon.laza.repository;
 
+
 import com.phincon.laza.model.entity.*;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +11,17 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Slf4j
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class CartRepositoryTest {
+public class WishlistRepositoryTest {
 
     @Autowired
-    private CartRepository cartRepository;
-    @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private SizeRepository sizeRepository;
     @Autowired
@@ -34,7 +33,6 @@ public class CartRepositoryTest {
     @Autowired
     private RoleRepository roleRepository;
 
-
     private List<Category> categories = new ArrayList<>();
     private List<User> users = new ArrayList<>();
     private List<Brand> brands = new ArrayList<>();
@@ -43,8 +41,10 @@ public class CartRepositoryTest {
     private List<Cart> carts = new ArrayList<>();
     private Set<Role> roles = new HashSet<>();
 
+
+
     @BeforeEach
-    void init(){
+    void setUp(){
         Brand brand = new Brand();
         brand.setName("X");
         brand.setLogoUrl("X");
@@ -70,9 +70,9 @@ public class CartRepositoryTest {
         sizes.add(sizeNewI);
 
         Role roleI = new Role();
-        roleI.setName(ERole.valueOf("ADMIN"));
+        roleI.setName(ERole.valueOf("USER"));
         roleRepository.save(roleI);
-        Role findRole = roleRepository.findByName(ERole.valueOf("ADMIN")).get();
+        Role findRole = roleRepository.findByName(ERole.valueOf("USER")).get();
         roles.add(findRole);
 
 
@@ -108,81 +108,68 @@ public class CartRepositoryTest {
         user.setPassword("password");
         user.setName("user");
         user.setImageUrl("Image");
+        user.setWishlistProducts(products);
         User userNew = userRepository.save(user);
-       users.add(userNew);
-
-        Cart cartI = new Cart();
-        cartI.setId(1l);
-        cartI.setUser(users.get(0));
-        cartI.setProduct(products.get(0));
-        cartI.setSize(sizes.get(0));
-        cartI.setQuantity(2);
-        carts.add(cartRepository.save(cartI));
-
-        cartI.setId(2l);
-        cartI.setUser(users.get(0));
-        cartI.setQuantity(2);
-        cartI.setSize(sizes.get(1));
-        carts.add(cartRepository.save(cartI));
-    }
-
-    @BeforeEach
-    void initEmpty(){
-        categories.clear();
-        users.clear();
-        brands.clear();
-        products.clear();
-        sizes.clear();
-        carts.clear();
-        roles.clear();
+        users.add(userNew);
     }
 
     @Test
-    void testUpdateQuantityById_thenCorrect(){
-        User userCheck = userRepository.findByUsername(users.get(0).getUsername()).get();
-        List<Cart> cartList = cartRepository.findByUser_Id(userCheck.getId());
-        assertEquals(2, cartList.size());
-        cartRepository.deleteById(cartList.get(0).getId());
-        List<Cart> cartListDelete = cartRepository.findByUser_Id(userCheck.getId());
-        assertEquals(1, cartListDelete.size());
+    void whenAddProductToWishlist_thenReturnCorrect(){
+        User user = userRepository.findById(users.get(0).getId()).get();
+        assertNotNull(user.getWishlistProducts());
+
+        final Integer expectedWishlistNum = 2;
+        assertEquals(expectedWishlistNum, user.getWishlistProducts().size());
+
+        Product product = new Product();
+        product.setId(3l);
+        product.setName("product3");
+        product.setDescription("product3");
+        product.setImageUrl("image3");
+        product.setBrand(brands.get(0));
+        product.setImageUrl("Image");
+        product.setPrice(18000);
+        product.setSizes(sizes);
+        product.setCategory(categories.get(0));
+        Product newProduct = productsRepository.save(product);
+        products.add(newProduct);
+        user.setWishlistProducts(products);
+        userRepository.save(user);
+
+        final Integer expectedWishlistNumAfterAdd = 3;
+        User userResult = userRepository.findById(users.get(0).getId()).get();
+        assertEquals(expectedWishlistNumAfterAdd, userResult.getWishlistProducts().size());
+        assertEquals(User.class, userResult.getClass());
+        assertEquals(Product.class, userResult.getWishlistProducts().get(0).getClass());
     }
 
     @Test
-    void testSave_thenCorrect(){
-        Cart newCart = new Cart();
-        newCart.setUser(users.get(0));
-        newCart.setProduct(products.get(1));
-        newCart.setSize(sizes.get(1));
-        newCart.setQuantity(2);
+    void whenDeleteProductFromWishlist_thenReturnCorrect(){
+        Optional<User> userOption = userRepository.findById(users.get(0).getId());
+        User user = userOption.get();
+        assertNotNull(user.getWishlistProducts());
 
-        Cart result = cartRepository.save(newCart);
+        final Integer expectedWishlistNum = 2;
+        assertEquals(expectedWishlistNum, user.getWishlistProducts().size());
 
-        List<Cart> cartList = cartRepository.findByUser_Id(users.get(0).getId());
-        assertNotNull(cartList);
-        assertEquals(3, cartList.size());
-        assertEquals(newCart, cartList.get(2));
+        products.remove(0);
+        user.setWishlistProducts(products);
+        userRepository.save(user);
 
-        assertSame(result.getClass(), Cart.class);
-        assertEquals(Product.class,result.getProduct().getClass());
-        assertEquals(User.class,result.getUser().getClass());
-        assertEquals(Size.class,result.getSize().getClass());
+        final Integer expectedWishlistNumAfterAdd = 1;
+        User userResult = userRepository.findById(users.get(0).getId()).get();
+        assertEquals(expectedWishlistNumAfterAdd, userResult.getWishlistProducts().size());
+        assertEquals(User.class, userResult.getClass());
+        assertEquals(Product.class, userResult.getWishlistProducts().get(0).getClass());
     }
 
     @Test
-    void testDeleteAllByUser_thenCorrect(){
-        List<Cart> cartList = cartRepository.findByUser_Id(users.get(0).getId());
-        assertEquals(2, cartList.size());
-        cartRepository.deleteByUserId(users.get(0).getId());
-        List<Cart> cartListDeleteByUserId = cartRepository.findByUser_Id(users.get(0).getId());
-        assertEquals(0, cartListDeleteByUserId.size());
-    }
-
-    @Test
-    void testDelete_thenCorrect(){
-        List<Cart> cartList = cartRepository.findByUser_Id(users.get(0).getId());
-        assertEquals(2, cartList.size());
-        cartRepository.deleteById(cartList.get(0).getId());
-        List<Cart> cartListDeleteByUserId = cartRepository.findByUser_Id(users.get(0).getId());
-        assertEquals(1, cartListDeleteByUserId.size());
+    void whenAllProductFromWishlist_thenReturnCorrect(){
+      List<Product> productList = productsRepository.findAllByWishlistById(users.get(0).getId());
+      final int expectedProductWishNum = 2;
+      assertNotNull(productList);
+      assertEquals(expectedProductWishNum, productList.size());
+      assertEquals(Product.class, productList.get(0).getClass());
+      assertEquals(products.get(1), productList.get(0));
     }
 }
