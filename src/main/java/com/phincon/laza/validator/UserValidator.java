@@ -36,7 +36,7 @@ public class UserValidator {
     }
 
     public void validateUserIsVerified(Optional<User> findUser) {
-        if (Objects.nonNull(findUser.get().isVerified()) || findUser.get().isVerified()) {
+        if (findUser.get().isVerified()) {
             throw new NotProcessException("Account is already verification");
         }
     }
