@@ -23,7 +23,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/checkout")
-    public ResponseEntity<DataResponse<Order>> checkout(@CurrentUser SysUserDetails ctx, @Valid @RequestBody CheckoutRequest checkoutRequest) {
+    public ResponseEntity<DataResponse<Order>> checkout(@CurrentUser SysUserDetails ctx, @Valid @RequestBody CheckoutRequest checkoutRequest) throws Exception {
         Order order = orderService.requestCreateOrder(ctx.getId(), checkoutRequest);
 
         return DataResponse.ok(order);

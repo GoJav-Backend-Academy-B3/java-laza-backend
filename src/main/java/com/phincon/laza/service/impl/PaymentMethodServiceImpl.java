@@ -1,5 +1,6 @@
 package com.phincon.laza.service.impl;
 
+import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.ConflictException;
 import com.phincon.laza.model.dto.cloudinary.CloudinaryUploadResult;
 import com.phincon.laza.model.entity.PaymentMethod;
@@ -60,8 +61,11 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
     public PaymentMethod updatePaymentMethod(Long id, PaymentMethod updatedPaymentMethod) {
         try {
-            Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
-            paymentMethodValidator.validatePaymentMethodNotFound(paymentMethod, id);
+            PaymentMethod paymentMethod = getPaymentMethodById(id);
+
+            if (paymentMethod.getIsActive()) {
+                throw new BadRequestException("Payment method still active");
+            }
 
             updatedPaymentMethod.setId(id);
             return paymentMethodRepository.save(updatedPaymentMethod);
@@ -73,10 +77,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod updatePaymentMethodLogo(Long id, MultipartFile logo) {
         try {
-            Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
-            paymentMethodValidator.validatePaymentMethodNotFound(paymentMethod, id);
-
-            PaymentMethod updatedPaymentMethod = paymentMethod.get();
+            PaymentMethod updatedPaymentMethod = getPaymentMethodById(id);
 
             CloudinaryUploadResult uploadResult = cloudinaryImageService.upload(logo, "payment-method", GenerateLogoFileName(updatedPaymentMethod));
             updatedPaymentMethod.setLogoUrl(uploadResult.secureUrl());
@@ -84,12 +85,6 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void deletePaymentMethod(Long id) {
-        Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
-        paymentMethodValidator.validatePaymentMethodNotFound(paymentMethod, id);
-        paymentMethodRepository.deleteById(id);
     }
 
     @Override
@@ -102,6 +97,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod activatePaymentMethod(Long id) {
         PaymentMethod paymentMethod = getPaymentMethodById(id);
+        if (paymentMethodRepository.findByNameAndIsActiveIsTrue(paymentMethod.getName()).isEmpty()) {
+            throw new ConflictException(String.format("Payment method with name %s already active", paymentMethod.getName()));
+        }
         paymentMethod.setIsActive(true);
         return updatePaymentMethod(paymentMethod.getId(), paymentMethod);
     }

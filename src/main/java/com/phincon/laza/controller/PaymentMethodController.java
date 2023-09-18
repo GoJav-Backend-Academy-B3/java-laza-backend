@@ -3,7 +3,6 @@ package com.phincon.laza.controller;
 import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.entity.PaymentMethod;
 import com.phincon.laza.service.PaymentMethodService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@SecurityRequirement(name = "X-AUTH-TOKEN")
 public class PaymentMethodController {
 
     private final PaymentMethodService paymentMethodService;
@@ -23,7 +21,7 @@ public class PaymentMethodController {
         this.paymentMethodService = paymentMethodService;
     }
 
-    @GetMapping("/payment-methods")
+    @GetMapping("management/payment-methods")
     public ResponseEntity<DataResponse<List<PaymentMethod>>> getAllPaymentMethods() {
         return DataResponse.ok(paymentMethodService.getAllPaymentMethods());
     }
@@ -42,6 +40,7 @@ public class PaymentMethodController {
     @PostMapping("/management/payment-methods")
     public ResponseEntity<DataResponse<PaymentMethod>> createPaymentMethod(@Valid @RequestBody PaymentMethod paymentMethod) {
         PaymentMethod createdPaymentMethod = paymentMethodService.createPaymentMethod(paymentMethod);
+
         return DataResponse.created(createdPaymentMethod);
     }
 
