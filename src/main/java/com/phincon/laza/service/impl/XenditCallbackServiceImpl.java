@@ -48,9 +48,9 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
 
                 // push notification
                 String userId = order.getUser().getId();
-
                 if (userId != null) {
-                    pushNotificationService.sendPushNotification("laza_notif", userId, String.format("Order %s has been successfully paid, thank you", order.getId()));
+//                    pushNotificationService.sendPushNotification("laza_notif", userId, String.format("Order %s has been successfully paid, thank you", order.getId()));
+                    pushNotificationService.sendPushNotification(userId,"Order " + order.getId()  +"has been successfully paid, thank you");
                 }
             }
 
@@ -86,7 +86,7 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         orderService.updateOrder(order.getId(), order);
 
         // push payment notification
-        pushNotificationService.sendPushNotification("laza_notif", order.getUser().getId(), String.format("Order %s has been successfully paid, thank you", order.getId()));
+//        pushNotificationService.sendPushNotification("laza_notif", order.getUser().getId(), String.format("Order %s has been successfully paid, thank you", order.getId()));
 
     }
 
@@ -112,6 +112,6 @@ public class XenditCallbackServiceImpl implements XenditCallbackService {
         orderService.updateOrder(order.getId(), order);
 
         // push invoice notification
-        pushNotificationService.sendPushNotification("laza_notif", order.getUser().getId(), String.format("Order %s has been successfully created", order.getId()));
+//        pushNotificationService.sendPushNotification("laza_notif", order.getUser().getId(), String.format("Order %s has been successfully created", order.getId()));
     }
 }

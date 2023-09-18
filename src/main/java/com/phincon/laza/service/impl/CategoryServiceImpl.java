@@ -25,11 +25,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryById(Long id) {
-        Optional<Category> categories = categoryRepository.findById(id);
-        if (!categories.isPresent()) {
+        Optional<Category> categoryOptional = categoryRepository.findById(id);
+        if (!categoryOptional.isPresent() || categoryOptional.get().isDeleted()) {
             throw new NotFoundException("Category not found");
         }
-        return categories.get();
+        return categoryOptional.get();
     }
     @Override
     public Category save(CategoryRequest categoryRequest) {
@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
     public Category update(Long id, CategoryRequest updatedCategory) {
         Optional<Category> existingCategoryOptional = categoryRepository.findById(id);
-        if (!existingCategoryOptional.isPresent()) {
+        if (!existingCategoryOptional.isPresent() || existingCategoryOptional.get().isDeleted()) {
             throw new NotFoundException("Category not found");
         }
         Category existingCategory = existingCategoryOptional.get();

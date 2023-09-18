@@ -77,6 +77,7 @@ public class CategoryServiceTest {
         assertEquals(expectedCategory.getCategory(), result.getCategory());
     }
 
+
     @Test
     @DisplayName("getCategoryById should throw NotFoundException for non-existing category")
     void getCategoryByIdNonExisting() {
@@ -161,9 +162,13 @@ public class CategoryServiceTest {
     @DisplayName("delete should delete a category")
     void delete() {
         Long categoryId = 1L;
-
         assertDoesNotThrow(() -> {
             categoryService.delete(categoryId);
+        });
+
+
+        assertThrows(NotFoundException.class, () -> {
+            categoryService.getCategoryById(categoryId);
         });
     }
 

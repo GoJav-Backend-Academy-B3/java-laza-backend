@@ -34,4 +34,7 @@ public class Size {
         this.size = size;
     }
 
+    public boolean isDeleted() {
+        return isDeleted;
+    }
 }

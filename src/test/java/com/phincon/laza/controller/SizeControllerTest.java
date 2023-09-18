@@ -123,7 +123,7 @@ public class SizeControllerTest {
         SizeRequest request = new SizeRequest();
         request.setSize("Small");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/size").with(user(userDetail))
+        mockMvc.perform(MockMvcRequestBuilders.post("/management/size").with(user(userDetail))
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -139,7 +139,7 @@ public class SizeControllerTest {
     public void whenAddRequestToSizeAndRequestIsRequired_thenFailedResponse() throws Exception {
         SizeRequest request = new SizeRequest();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/size").with(user(userDetail))
+        mockMvc.perform(MockMvcRequestBuilders.post("/management/size").with(user(userDetail))
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -158,7 +158,7 @@ public class SizeControllerTest {
         Long id = 1L;
         request.setSize("Small");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/size/{id}", id).with(user(userDetail))
+        mockMvc.perform(MockMvcRequestBuilders.put("/management/size/{id}", id).with(user(userDetail))
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -178,7 +178,7 @@ public class SizeControllerTest {
         request.setSize("Updated Size");
         when(sizeService.update(id, request)).thenThrow(new NotFoundException("Size not found"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/size/{id}", id).with(user(userDetail))
+        mockMvc.perform(MockMvcRequestBuilders.put("/management/size/{id}", id).with(user(userDetail))
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -194,7 +194,7 @@ public class SizeControllerTest {
     public void whenDeleteSize_thenCorrectResponse() throws Exception {
         Long id = 1L;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/size/{id}", id).with(user(userDetail)))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/management/size/{id}", id).with(user(userDetail)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.OK.value()))
@@ -208,7 +208,7 @@ public class SizeControllerTest {
     public void whenDeleteSizeAndIdNotFound_thenFailedResponse() throws Exception {
         Long id = 2L;
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/size/{id}", id).with(user(userDetail)))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/management/size/{id}", id).with(user(userDetail)))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()))

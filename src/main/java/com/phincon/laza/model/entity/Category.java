@@ -40,4 +40,10 @@ public class Category {
         this.id = id;
         this.category = category;
     }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+
 }

@@ -27,10 +27,10 @@ public class MessageController {
         return "Message Published";
     }
 
-    @RabbitListener(queues = RabbitMqConfig.QUEUE)
-    @GetMapping("/consume")
-    public void listener(CustomMessage message) {
-        System.out.println(message);
-    }
+//    @RabbitListener(queues = RabbitMqConfig.QUEUE)
+//    @GetMapping("/consume")
+//    public void listener(CustomMessage message) {
+//        System.out.println(message);
+//    }
 
 }

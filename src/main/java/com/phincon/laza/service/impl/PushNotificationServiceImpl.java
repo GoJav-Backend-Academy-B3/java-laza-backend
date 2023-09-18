@@ -2,6 +2,7 @@ package com.phincon.laza.service.impl;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phincon.laza.config.RabbitMqConfig;
 import com.phincon.laza.model.entity.Order;
 import com.phincon.laza.service.PushNotificationService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -19,28 +20,39 @@ public class PushNotificationServiceImpl implements PushNotificationService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    @Override
-    public void sendPushNotification(String exchange, String routingKey, Object data) {
 
+    @Override
+    public void sendPushNotification(String userId, String message) {
         rabbitTemplate.convertAndSend(
-                exchange,
-                routingKey,
-                data
+                RabbitMqConfig.EXCHANGE,
+//                RabbitMqConfig.ROUTING_KEY,
+                "user." + userId,
+                message
         );
     }
 
-    @Override
-    public void sendPushPaidOrderNotification(String exchange, String routingKey, Order data) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonMessage = objectMapper.writeValueAsString(data);
-            rabbitTemplate.convertAndSend(
-                    exchange,
-                    routingKey,
-                    jsonMessage.getBytes()
-            );
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
+//    @Override
+//    public void sendPushNotification(String exchange, String routingKey, Object data) {
+//
+//        rabbitTemplate.convertAndSend(
+//                exchange,
+//                routingKey,
+//                data
+//        );
+//    }
+
+//    @Override
+//    public void sendPushPaidOrderNotification(String exchange, String routingKey, Order data) {
+//        try {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            String jsonMessage = objectMapper.writeValueAsString(data);
+//            rabbitTemplate.convertAndSend(
+//                    exchange,
+//                    routingKey,
+//                    jsonMessage.getBytes()
+//            );
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+//    }
 }

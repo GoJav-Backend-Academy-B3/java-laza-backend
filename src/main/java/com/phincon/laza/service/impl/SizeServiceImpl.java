@@ -30,8 +30,8 @@ public class SizeServiceImpl implements SizeService {
     @Override
     public Size getSizeById(Long id) {
         Optional<Size> sizeOptional = sizeRepository.findById(id);
-        if (!sizeOptional.isPresent()) {
-            throw new NotFoundException("Size not found with id: " + id);
+        if (!sizeOptional.isPresent() || sizeOptional.get().isDeleted()) {
+            throw new NotFoundException("Size not found");
         }
         return sizeOptional.get();
     }
@@ -51,9 +51,8 @@ public class SizeServiceImpl implements SizeService {
     public Size update(Long id, SizeRequest request){
 
         Optional<Size> existingSizeOptional = sizeRepository.findById(id);
-        if (!existingSizeOptional.isPresent()) {
-            throw new NotFoundException("Size not found with id: " + id);
-
+        if (!existingSizeOptional.isPresent() || existingSizeOptional.get().isDeleted()) {
+            throw new NotFoundException("Size not found");
         }
         Size existingSize = existingSizeOptional.get();
         String updatedSizeName = request.getSize();

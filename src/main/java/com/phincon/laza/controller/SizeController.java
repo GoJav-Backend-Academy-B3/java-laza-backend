@@ -18,13 +18,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/size")
-
 public class SizeController {
     @Autowired
     private SizeService sizeService;
 
-    @GetMapping
+    @GetMapping("/size")
     public ResponseEntity<DataResponse<List<SizeResponse>>> getAllSizes() {
         List<Size> sizes = sizeService.getAllSize();
         List<SizeResponse> sizeResponses = sizes.stream().map(SizeResponse::new).collect(Collectors.toList());
@@ -32,7 +30,7 @@ public class SizeController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/size/{id}")
     public ResponseEntity<DataResponse<SizeResponse>> getSizeById(@PathVariable Long id) {
         Size size = sizeService.getSizeById(id);
         SizeResponse result = new SizeResponse(size);
@@ -40,7 +38,7 @@ public class SizeController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PostMapping
+    @PostMapping("/management/size")
     public ResponseEntity<DataResponse<SizeResponse>> createSize(@Valid @RequestBody SizeRequest request) {
         Size size = sizeService.save(request);
         SizeResponse result = new SizeResponse(size);
@@ -48,7 +46,7 @@ public class SizeController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/management/size/{id}")
     public ResponseEntity<DataResponse<SizeResponse>> updateSize(@PathVariable Long id, @Valid @RequestBody SizeRequest request) throws Exception {
         Size size = sizeService.update(id, request);
         SizeResponse result = new SizeResponse(size);
@@ -57,7 +55,7 @@ public class SizeController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/management/size/{id}")
     public ResponseEntity<DataResponse<Void>> deleteSize(@PathVariable Long id){
         sizeService.delete(id);
         DataResponse<Void> dataResponse = new DataResponse<>();

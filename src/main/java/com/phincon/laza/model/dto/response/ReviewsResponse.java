@@ -14,6 +14,7 @@ public class ReviewsResponse {
     private String message;
     private ReviewData data;
 
+
     public ReviewsResponse(int status_code, String message) {
         this.status_code = status_code;
         this.message = message;
