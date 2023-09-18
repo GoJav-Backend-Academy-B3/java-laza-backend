@@ -187,6 +187,7 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
         userValidator.validateUserNotIsVerified(findUser);
+        userValidator.validateUserPasswordNotMatch(request.getNewPassword(), request.getConfirmPassword());
 
         Optional<VerificationCode> findCode = verificationCodeRepository.findByCodeAndUserId(request.getCode(), findUser.get().getId());
         verificationCodeValidator.validateVerificationCodeNotFound(findCode);
