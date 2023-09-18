@@ -5,16 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.exception.CustomExceptionHandler;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.WishlistRequest;
-import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.WishlistResponse;
 import com.phincon.laza.model.entity.*;
 
 
-import com.phincon.laza.security.userdetails.CurrentUser;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.WishlistService;
 
-import jakarta.validation.Valid;
 import org.junit.jupiter.api.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +21,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,9 +30,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.Matchers.hasSize;
