@@ -68,6 +68,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
             }
 
             updatedPaymentMethod.setId(id);
+            updatedPaymentMethod.setIsActive(false);
+            updatedPaymentMethod.setLogoUrl(paymentMethod.getLogoUrl());
+
             return paymentMethodRepository.save(updatedPaymentMethod);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -97,11 +100,11 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
     @Override
     public PaymentMethod activatePaymentMethod(Long id) {
         PaymentMethod paymentMethod = getPaymentMethodById(id);
-        if (paymentMethodRepository.findByNameAndIsActiveIsTrue(paymentMethod.getName()).isEmpty()) {
+        if (paymentMethodRepository.findTop1ByNameAndIsActiveIsTrue(paymentMethod.getName()).isPresent()) {
             throw new ConflictException(String.format("Payment method with name %s already active", paymentMethod.getName()));
         }
         paymentMethod.setIsActive(true);
-        return updatePaymentMethod(paymentMethod.getId(), paymentMethod);
+        return paymentMethodRepository.save(paymentMethod);
     }
 
     private String GenerateLogoFileName(PaymentMethod paymentMethod) {

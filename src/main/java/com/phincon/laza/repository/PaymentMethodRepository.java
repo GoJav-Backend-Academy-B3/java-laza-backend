@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Long> {
     List<PaymentMethod> findAllByIsActiveIsTrue();
-    Optional<PaymentMethod> findByNameAndIsActiveIsTrue(String name);
+    Optional<PaymentMethod> findTop1ByNameAndIsActiveIsTrue(String name);
 }
 
