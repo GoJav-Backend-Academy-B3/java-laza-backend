@@ -8,11 +8,11 @@ import com.phincon.laza.model.entity.Product;
 import java.util.List;
 
 public interface CartService {
-    public Cart saveCart(String userId,CartRequest cartRequest) throws Exception;
-    public Cart updateCart(Long cartId) throws Exception;
-    public void deleteCart(Long cartId) throws Exception;
-    public void deleteCartByUser(String userId);
-    public List<Cart> findCartByUser(String userId);
+     Cart saveCart(String userId,CartRequest cartRequest) throws Exception;
+     Cart updateCart(String userId, CartRequest cartRequest) throws Exception;
+     void deleteCart(Long cartId) throws Exception;
+     void deleteCartByUser(String userId);
+     List<Cart> findCartByUser(String userId);
 
-    public List<Product> findAllProductInCartByUser(String userId);
+     List<Product> findAllProductInCartByUser(String userId);
 }

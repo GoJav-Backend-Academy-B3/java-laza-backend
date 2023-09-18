@@ -25,54 +25,30 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    @PostMapping("/carts")
-    public ResponseEntity<?> saveCart(@CurrentUser SysUserDetails ctx, @Valid @RequestBody CartRequest request)throws  Exception{
+    @PostMapping("/carts/add")
+    public ResponseEntity<DataResponse<CartResponse>> saveCart(@CurrentUser SysUserDetails ctx, @Valid @RequestBody CartRequest request)throws  Exception{
         Cart cart = cartService.saveCart(ctx.getId(),request);
         CartResponse cartResponse = new CartResponse(cart);
-        DataResponse<CartResponse> response = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                cartResponse,
-                null
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return DataResponse.ok(cartResponse);
     }
 
-    @PatchMapping("/carts/{id}")
-    public ResponseEntity<?> updateCart(@PathVariable(value = "id") long id) throws  Exception{
-        Cart cart = cartService.updateCart(id);
+    @PatchMapping("/carts/update")
+    public ResponseEntity<DataResponse<CartResponse>> updateCart(@CurrentUser SysUserDetails ctx, @Valid @RequestBody  CartRequest request) throws  Exception{
+        Cart cart = cartService.updateCart(ctx.getId(), request);
         CartResponse cartResponse = new CartResponse(cart);
-        DataResponse<CartResponse> response = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                cartResponse,
-                null
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return DataResponse.ok(cartResponse);
     }
 
     @DeleteMapping("/carts/{id}")
     public ResponseEntity<DataResponse<String>> deleteCartById(@PathVariable(value = "id") long id) throws Exception{
         cartService.deleteCart(id);
-        DataResponse<String> response = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                "Successfully delete cart",
-                null
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return DataResponse.ok("Successfully delete cart");
     }
 
     @DeleteMapping("/carts/all")
     public ResponseEntity<DataResponse<String>> deleteCartByUser(@CurrentUser SysUserDetails ctx){
         cartService.deleteCartByUser(ctx.getId());
-        DataResponse<String> response = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                "Successfully delete carts",
-                null
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return DataResponse.ok("Successfully delete carts");
     }
 
     @GetMapping("/carts")
@@ -87,13 +63,7 @@ public class CartController {
             cartResponses.add(cartResponse);
         }
 
-        DataResponse<List<CartResponse>> response = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                cartResponses,
-                null
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return DataResponse.ok(cartResponses);
     }
 
 

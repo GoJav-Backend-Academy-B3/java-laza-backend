@@ -28,23 +28,30 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public Product createWishlist(String userId,WishlistRequest wishlistRequest) throws Exception {
-        Optional<Product> product1Wishlist = productsRepository.findByIdAndWishlistById(wishlistRequest.getProductId(),userId);
-        Optional<User> user = userRepository.findById(userId);
-        User userWishlist = user.get();
-
-        if (product1Wishlist.isPresent()){
-            userWishlist.removeProductWishlist(wishlistRequest.getProductId());
-            userRepository.save(userWishlist);
-            return product1Wishlist.get();
-        }
 
         Optional<Product> product = productsRepository.findById(wishlistRequest.getProductId());
         if (product.isEmpty()){
             throw new NotFoundException("Product not found");
         }
-        userWishlist.addWishlist(product.get());
-        userRepository.save(userWishlist);
+
+        Optional<User> user = userRepository.findById(userId);
+        user.get().addWishlist(product.get());
+        userRepository.save(user.get());
         return product.get();
+    }
+
+    @Override
+    public void deleteWishlist(String userId, WishlistRequest wishlistRequest) throws Exception{
+        Optional<Product> product = productsRepository.findByIdAndWishlistById(wishlistRequest.getProductId(), userId);
+
+        if (product.isEmpty()){
+            throw new NotFoundException("Product wishlist not found");
+        }
+
+        Optional<User> userWishlist = userRepository.findById(userId);
+        User user = userWishlist.get();
+        user.removeProductWishlist(wishlistRequest.getProductId());
+        userRepository.save(user);
     }
 
     @Override

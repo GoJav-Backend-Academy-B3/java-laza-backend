@@ -1,5 +1,6 @@
 package com.phincon.laza.service;
 
+import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CartRequest;
 import com.phincon.laza.model.entity.*;
@@ -79,8 +80,7 @@ public class CartServiceTesting {
         addCart.setQuantity(2);
         Optional<Cart> cartOptional = Optional.of(addCart);
 
-        // [CartService] CreateCart (add an existing product cart) should return cart
-        CartRequest requestBody = new CartRequest(products.get(0).getId(), sizes.get(0).getId());
+        CartRequest requestBody = new CartRequest(products.get(0).getId(), sizes.get(0).getId(),1);
         lenient().when(cartRepository.findByUserIdAndProductIdAndSizeId(users.get(0).getId(),
                         requestBody.getProductId(), requestBody.getSizeId()))
                 .thenReturn(cartOptional);
@@ -94,8 +94,7 @@ public class CartServiceTesting {
     @Test
     @DisplayName("[CartService] CreateCart (adding products that are not yet in the cart) should return cart")
     void whenCreateCart_thenThrowException() throws Exception{
-        // "[CartService] CreateCart (adding products that are not yet in the cart) should return cart"
-        CartRequest requestBodyI = new CartRequest(products.get(2).getId(), sizes.get(1).getId());
+        CartRequest requestBodyI = new CartRequest(products.get(2).getId(), sizes.get(1).getId(),1);
         lenient().when(cartRepository.findByUserIdAndProductIdAndSizeId(users.get(0).getId(),
                         requestBodyI.getProductId(), requestBodyI.getSizeId()))
                 .thenReturn(Optional.empty());
@@ -112,7 +111,7 @@ public class CartServiceTesting {
     @Test
     @DisplayName("[CartService] CreateCart (Product not found) should throw Not Found Error")
     void whenCreateCart_thenThrowExceptionProductNotFound() throws Exception{
-        CartRequest requestBodyI = new CartRequest(100l, sizes.get(1).getId());
+        CartRequest requestBodyI = new CartRequest(100l, sizes.get(1).getId(),1);
         lenient().when(cartRepository.findByUserIdAndProductIdAndSizeId(users.get(0).getId(),
                         requestBodyI.getProductId(), requestBodyI.getSizeId()))
                 .thenReturn(Optional.empty());
@@ -127,7 +126,7 @@ public class CartServiceTesting {
     @Test
     @DisplayName("[CartService] CreateCart (Product not found) should throw Not Found Error")
     void whenCreateCart_thenThrowExceptionSizeNotFound() throws Exception{
-        CartRequest requestBodyI = new CartRequest(products.get(2).getId(), 100l);
+        CartRequest requestBodyI = new CartRequest(products.get(2).getId(), 100l,1);
         lenient().when(sizeService.getSizeById(requestBodyI.getSizeId()))
                 .thenThrow(new NotFoundException("Size not found"));
 
@@ -138,38 +137,69 @@ public class CartServiceTesting {
 
 
     @Test
-    @DisplayName("[CartService] updateCart (Cart not found) should throw Not Found Error")
-    void whenUpdateCart_thenThrowException(){
-        lenient().when(cartRepository.findById(10l)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, ()->{
-            cartService.updateCart(10l);
+    @DisplayName("[CartService] updateCart")
+    void whenUpdateCart_thenReturnCorrectData() throws Exception{
+        CartRequest requestBody = new CartRequest(91l, 1l, 1);
+        String userId = "23";
+        when(cartRepository.findByUserIdAndProductIdAndSizeId(
+                userId,
+                requestBody.getProductId(),
+                requestBody.getSizeId()))
+                .thenReturn(Optional.of(cartDataTest.get(1)));
+
+        Cart cart = cartService.updateCart(userId, requestBody);
+        assertNotNull(cart);
+        assertEquals(1, cart.getQuantity());
+        assertEquals("product2", cart.getProduct().getName());
+    }
+
+
+    @Test
+    @DisplayName("[CartService] updateCart with invalid request value")
+    void whenUpdateCart_thenThrowException() throws Exception{
+        CartRequest requestBody = new CartRequest(91l, 1l, 1);
+        String userId = "23";
+        when(cartRepository.findByUserIdAndProductIdAndSizeId(
+                userId,
+                requestBody.getProductId(),
+                requestBody.getSizeId()))
+                .thenReturn(Optional.empty());
+
+       assertThrows(NotFoundException.class, ()->{
+           cartService.updateCart(userId, requestBody);
+       });
+    }
+
+    @Test
+    @DisplayName("[CartService] updateCart with quantity more than quantity in cart")
+    void whenUpdateCartMoreThanQuantity_thenThrowException() throws Exception{
+        CartRequest requestBody = new CartRequest(90l, 1l, 2);
+        String userId = "23";
+        when(cartRepository.findByUserIdAndProductIdAndSizeId(
+                userId,
+                requestBody.getProductId(),
+                requestBody.getSizeId()))
+                .thenReturn(Optional.of(cartDataTest.get(0)));
+
+        assertThrows(BadRequestException.class, ()->{
+            cartService.updateCart(userId, requestBody);
         });
     }
 
+
+
     @Test
-    @DisplayName("[CartService] updateCart (The number of products in the cart is 1) should return cart")
-    void whenUpdateCart_thenCorrectResponse() throws Exception{
-        long cartId = 1l;
-        lenient().when(cartRepository.findById(cartId)).thenReturn(Optional.of(cartDataTest.get(0)));
-        doNothing().when(cartRepository).deleteById(cartId);
-        Cart cart = cartService.updateCart(cartId);
+    @DisplayName("[CartService] updateCart with same quantity")
+    void whenUpdateCartWithSameQuantity_thenReturnCorrectData() throws Exception{
+        CartRequest requestBody = new CartRequest(90l, 1l, 1);
+        String userId = "23";
+        when(cartRepository.findByUserIdAndProductIdAndSizeId(userId, requestBody.getProductId(), requestBody.getSizeId())).thenReturn(Optional.of(cartDataTest.get(0)));
+        Cart cart = cartService.updateCart("23", requestBody);
         assertNotNull(cart);
+        assertEquals(90, cart.getProduct().getId());
+        assertEquals(1l, cart.getSize().getId());
+        assertEquals("product1", cart.getProduct().getName());
         assertEquals(0, cart.getQuantity());
-    }
-
-    @Test
-    @DisplayName("[CartService] updateCart (The number of products in the cart is more than 1) should return cart")
-    void whenUpdateCart_thenCorrectResponseMoreThanOne() throws Exception{
-        long cartId = cartDataTest.get(1).getId();
-        Cart cartUpdate = new Cart(2l, users.get(0), products.get(1),sizes.get(1), 2);
-
-        lenient().when(cartRepository.findById(cartId)).thenReturn(Optional.of(cartDataTest.get(1)));
-        doNothing().when(cartRepository).updateQuantityById(1,cartId);
-        lenient().when(cartRepository.findById(cartId)).thenReturn(Optional.of(cartUpdate));
-
-        Cart cart = cartService.updateCart(cartId);
-        assertNotNull(cart);
-        assertEquals(1, cart.getQuantity());
     }
 
 

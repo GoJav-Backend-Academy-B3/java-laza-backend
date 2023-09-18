@@ -101,8 +101,9 @@ public class AuthServiceImpl implements AuthService {
         verificationToken.setUser(user);
 
         verificationTokenRepository.save(verificationToken);
-        senderMailService.confirmRegister(user, token);
+        log.info("Verification token is saved with User id={}", user.getId());
 
+        senderMailService.confirmRegister(user, token);
         log.info("User id={} success send mail confirm account", user.getId());
         return user;
     }
@@ -111,6 +112,7 @@ public class AuthServiceImpl implements AuthService {
     public void registerResend(RecoveryRequest request) throws Exception {
         Optional<User> findUser = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserNotFound(findUser);
+        userValidator.validateUserIsVerified(findUser);
 
         String token = GenerateRandom.token();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
@@ -120,8 +122,9 @@ public class AuthServiceImpl implements AuthService {
         verificationToken.setUser(findUser.get());
 
         verificationTokenRepository.save(verificationToken);
-        senderMailService.confirmRegister(findUser.get(), token);
+        log.info("Verification token is saved with User id={}", findUser.get().getId());
 
+        senderMailService.confirmRegister(findUser.get(), token);
         log.info("User id={} success resend mail confirm account", findUser.get().getId());
     }
 
@@ -140,7 +143,6 @@ public class AuthServiceImpl implements AuthService {
 
         findUser.get().setVerified(true);
         userRepository.save(findUser.get());
-
         log.info("User id={} success verification token", findUser.get().getId());
     }
 
@@ -158,6 +160,7 @@ public class AuthServiceImpl implements AuthService {
         verificationCode.setUser(findUser.get());
 
         verificationCodeRepository.save(verificationCode);
+        log.info("Verification code is saved with User id={}", findUser.get().getId());
 
         senderMailService.forgotPassword(findUser.get(), code);
         log.info("User id={} success send mail forgot password", findUser.get().getId());

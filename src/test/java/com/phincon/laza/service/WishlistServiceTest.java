@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith({MockitoExtension.class})
@@ -34,11 +35,11 @@ public class WishlistServiceTest {
 
     @InjectMocks
     private WishlistService wishlistService = new WishlistServiceImpl();
-
+    private List<User> userDataTest = new ArrayList<>();
+    private List<Product> productDataTest = new ArrayList<>();
     @BeforeEach
     void init(){
-        List<User> userDataTest = new ArrayList<>();
-        List<Product> productDataTest = new ArrayList<>();
+
 
         userDataTest.add(
                 new User("23", "user1", "user1", "password", "email", "image",true, null,null, productDataTest,null,null,null,null,null,null)
@@ -59,9 +60,7 @@ public class WishlistServiceTest {
         Optional<User> userOptional = Optional.of(userDataTest.get(0));
         Optional<User> userOptionalII = Optional.of(userDataTest.get(1));
 
-        // saveWishlist (there is no wishlist) should return product
-        lenient().when(productsRepository.findByIdAndWishlistById(90l, "23")).thenReturn(productOptional);
-        lenient().when(userRepository.findById("23")).thenReturn(userOptional);
+
 
 
         // saveWishlist (there is no wishlist) should return product
@@ -94,24 +93,60 @@ public class WishlistServiceTest {
     }
 
     @Test
-    @DisplayName("[WishlistService] saveWishlist (there is wishlist) should return product (delete wishlist)")
+    @DisplayName("[WishlistService] saveWishlist should return correct object")
     void whenSaveWishlist_thenCorrectResponse() throws Exception{
-        WishlistRequest wishlistRequest = new WishlistRequest(90l);
+        // saveWishlist (there is no wishlist) should return product
         String userId = "23";
-        Product productWishlist = wishlistService.createWishlist(userId, wishlistRequest);
+        WishlistRequest requestBody = new WishlistRequest(90l);
+        lenient().when(productsRepository.findById(requestBody.getProductId())).thenReturn(Optional.of(productDataTest.get(0)));
+        lenient().when(userRepository.findById(userId)).thenReturn(Optional.of(userDataTest.get(0)));
+
+        Product productWishlist = wishlistService.createWishlist(userId, requestBody);
         assertNotNull(productWishlist);
+        assertEquals(Product.class, productWishlist.getClass());
         assertEquals(90, productWishlist.getId());
+        assertEquals("product1", productWishlist.getName());
+        assertEquals("desc1", productWishlist.getDescription());
     }
 
     @Test
-    @DisplayName("[WishlistService] saveWishlist (there is no wishlist) should return product (add wishlist)")
-    void whenSaveWishlistWithNoWishlist_thenCorrectResponse() throws  Exception{
-        WishlistRequest wishlistRequest = new WishlistRequest(90l);
-        String userId = "24";
-        Product productWishlist = wishlistService.createWishlist(userId, wishlistRequest);
-        assertNotNull(productWishlist);
-        assertEquals(90, productWishlist.getId());
+    @DisplayName("[WishlistService] saveWishlist with invalid product id and throw not found exception")
+    void whenSaveWishlist_thenThrowNotFoundException() throws Exception{
+        String userId = "23";
+        WishlistRequest requestBody = new WishlistRequest(90l);
+        lenient().when(productsRepository.findById(requestBody.getProductId())).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, ()->{
+            wishlistService.createWishlist(userId, requestBody);
+        });
     }
+
+    @Test
+    @DisplayName("[WishlistService] deleteWishlist and does not throw Exception")
+    void whenDeleteWishlist_thenCorrectResponse() throws  Exception{
+        WishlistRequest requestBody = new WishlistRequest(91l);
+        String userId = "24";
+
+        when(productsRepository.findByIdAndWishlistById(requestBody.getProductId(), userId)).thenReturn(Optional.of(productDataTest.get(1)));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userDataTest.get(1)));
+
+        assertDoesNotThrow(()->{
+            wishlistService.deleteWishlist(userId, requestBody);
+        });
+    }
+
+    @Test
+    @DisplayName("[WishlistService] deleteWishlist and throw NotFoundException when the product wishlist there has no")
+    void whenDeleteWishlist_thenThrowException() throws  Exception{
+        WishlistRequest requestBody = new WishlistRequest(91l);
+        String userId = "24";
+
+        when(productsRepository.findByIdAndWishlistById(requestBody.getProductId(), userId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,()->{
+            wishlistService.deleteWishlist(userId, requestBody);
+        });
+    }
+
 
     @Test
     @DisplayName("[WishlistService] saveWishlist (there is no product) should throw NotFoundException")

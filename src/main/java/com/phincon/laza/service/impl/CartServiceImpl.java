@@ -1,5 +1,6 @@
 package com.phincon.laza.service.impl;
 
+import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CartRequest;
 import com.phincon.laza.model.entity.Cart;
@@ -36,14 +37,11 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart saveCart(String userId,CartRequest cartRequest) throws Exception{
 
-        Optional<Cart> cartFind = cartRepository.findByUserIdAndProductIdAndSizeId(
-                userId,
-                cartRequest.getProductId(),
-                cartRequest.getSizeId());
+        Optional<Cart> cartProduct = cartRepository.findByUserIdAndProductIdAndSizeId(userId, cartRequest.getProductId(), cartRequest.getSizeId());
 
-        if (cartFind.isPresent()){
-            Cart cart = cartFind.get();
-            cart.setQuantity(cart.getQuantity() + 1);
+        if (cartProduct.isPresent()){
+            Cart cart = cartProduct.get();
+            cart.setQuantity(cart.getQuantity() + cartRequest.getQuantity());
             return cartRepository.save(cart);
         }
 
@@ -51,29 +49,30 @@ public class CartServiceImpl implements CartService {
         Size size = sizeService.getSizeById(cartRequest.getSizeId());
         User user = userService.getById(userId);
 
-
-        return cartRepository.save(new Cart(0l, user, product, size,1));
+        return cartRepository.save(new Cart(0l, user, product, size, cartRequest.getQuantity()));
     }
 
     @Override
-    public Cart updateCart(Long cartId) throws Exception {
+    public Cart updateCart(String userId, CartRequest cartRequest) throws Exception {
 
-        Optional<Cart> getCart = cartRepository.findById(cartId);
+        Optional<Cart> cartProduct = cartRepository.findByUserIdAndProductIdAndSizeId(userId, cartRequest.getProductId(), cartRequest.getSizeId());
 
-        if (!getCart.isPresent()){
+        if (cartProduct.isEmpty()){
             throw new NotFoundException("Cart not found");
         }
-
-        if (getCart.get().getQuantity() == 1){
-            cartRepository.deleteById(getCart.get().getId());
-            getCart.get().setQuantity(0);
-            return getCart.get();
+        if (cartRequest.getQuantity() > cartProduct.get().getQuantity()){
+            throw new BadRequestException("The quantity cannot be smaller than the product quantity");
         }
 
-        cartRepository.updateQuantityById(getCart.get().getQuantity()-1, getCart.get().getId());
-        Optional<Cart> result = cartRepository.findById(getCart.get().getId());
-        result.get().setQuantity(result.get().getQuantity()-1);
-        return result.get();
+        if (cartRequest.getQuantity().equals(cartProduct.get().getQuantity())){
+            cartRepository.deleteById(cartProduct.get().getId());
+            cartProduct.get().setQuantity(0);
+            return cartProduct.get();
+        }
+
+        cartProduct.get().setQuantity(cartProduct.get().getQuantity() - cartRequest.getQuantity());
+        cartRepository.save(cartProduct.get());
+        return cartProduct.get();
     }
 
     @Override

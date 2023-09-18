@@ -9,39 +9,36 @@ import com.phincon.laza.security.userdetails.CurrentUser;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.WishlistService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController("WishlistController")
+@RestController
+@RequiredArgsConstructor
 public class WishlistController {
 
     @Autowired
-    private WishlistService wishlistService;
+    private final WishlistService wishlistService;
 
-    @PostMapping("/wishlist")
+
+    @PostMapping("/wishlists/add")
     public ResponseEntity<?> saveWishlist(@CurrentUser SysUserDetails ctx, @Valid @RequestBody WishlistRequest wishlistRequest) throws Exception{
         Product product = wishlistService.createWishlist(ctx.getId(), wishlistRequest);
-        WishlistResponse wishlistResponse = new WishlistResponse(
-                product
-        );
-        DataResponse<WishlistResponse> dataResponse = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                wishlistResponse,
-                null
-        );
-        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
+        WishlistResponse wishlistResponse = new WishlistResponse(product);
+        return DataResponse.ok(wishlistResponse);
     }
 
-    @GetMapping("/wishlist")
+    @DeleteMapping("/wishlists/delete")
+    public  ResponseEntity<?> deleteWishlist(@CurrentUser SysUserDetails ctx, @Valid @RequestBody WishlistRequest wishlistRequest) throws Exception{
+        wishlistService.deleteWishlist(ctx.getId(), wishlistRequest);
+        return DataResponse.ok("Successfully delete product wishlist");
+    }
+
+    @GetMapping("/wishlists")
     public ResponseEntity<?> getProductWishlist(@CurrentUser SysUserDetails ctx)
     {
         List<Product> products = wishlistService.findWishlistByUser(ctx.getId());
@@ -49,12 +46,6 @@ public class WishlistController {
         for (Product product: products){
             wishlistResponses.add(new WishlistResponse(product));
         }
-        DataResponse<List<WishlistResponse>> dataResponse = new DataResponse<>(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.name(),
-                wishlistResponses,
-                null
-        );
-        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
+        return DataResponse.ok(wishlistResponses);
     }
 }
