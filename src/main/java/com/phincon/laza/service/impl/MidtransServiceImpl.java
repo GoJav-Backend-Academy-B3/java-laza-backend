@@ -79,7 +79,6 @@ public class MidtransServiceImpl implements MidtransService {
             order.setTransaction(transactions);
         }
 
-//        order.setTransaction(transactionService.createTransaction(transaction));
         order.getTransaction().add(transactionService.createTransaction(transaction));
 
         PaymentDetail paymentDetail = new PaymentDetail();

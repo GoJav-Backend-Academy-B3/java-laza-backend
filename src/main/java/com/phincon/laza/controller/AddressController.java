@@ -22,7 +22,7 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping
-    public ResponseEntity<?> add(@CurrentUser SysUserDetails ctx, @Valid @RequestBody AddressRequest request) throws Exception {
+    public ResponseEntity<DataResponse<Address>> add(@CurrentUser SysUserDetails ctx, @Valid @RequestBody AddressRequest request) throws Exception {
         Address address = addressService.add(ctx.getId(), request);
 
         DataResponse<Address> dataResponse = new DataResponse<>(
