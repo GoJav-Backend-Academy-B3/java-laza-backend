@@ -1,6 +1,7 @@
 package com.phincon.laza.model.entity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -19,6 +20,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,6 +53,8 @@ public class Product {
     private LocalDateTime createdAt;
   
     private String cloudinaryPublicId;
+    
+    private Boolean isDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "brand_id", nullable = false)
@@ -78,6 +82,11 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Cart> carts;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 
     public Product(Long id, String name, String description, String imageUrl, Integer price,
             Brand brand, List<Size> sizes, Category category) {
