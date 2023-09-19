@@ -54,8 +54,6 @@ public class Product {
   
     private String cloudinaryPublicId;
     
-    private Boolean isDeleted = false;
-
     @ManyToOne
     @JoinColumn(name = "brand_id", nullable = false)
     @JsonManagedReference
