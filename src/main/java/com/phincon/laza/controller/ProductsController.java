@@ -66,7 +66,7 @@ public class ProductsController {
         return DataResponse.ok(data, meta);
     }
 
-    @PostMapping("/management/products")
+    @PostMapping(value = "/management/products", consumes = "multipart/form-data")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> createProduct(
             @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.create(request);
@@ -76,7 +76,7 @@ public class ProductsController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/management/products/{id}")
+    @PutMapping(value = "/management/products/{id}", consumes = "multipart/form-data")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> updateProduct(
             @PathVariable Long id,
             @ModelAttribute CreateUpdateProductRequest request) throws Exception {
