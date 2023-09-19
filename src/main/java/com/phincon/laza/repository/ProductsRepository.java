@@ -15,5 +15,5 @@ import com.phincon.laza.model.entity.Product;
 public interface ProductsRepository extends JpaRepository<Product, Long> {
     Page<Product> findByNameContaining(String keyword, Pageable page);
     Optional<Product> findByIdAndWishlistById(Long productId, String userId);
-    List<Product> findAllByWishlistById(String userId);
+    Page<Product> findAllByWishlistById(String userId, Pageable pageable);
 }

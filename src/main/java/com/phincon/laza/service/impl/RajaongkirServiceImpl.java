@@ -70,8 +70,7 @@ public class RajaongkirServiceImpl implements RajaongkirService {
                     RAJAONGKIR_COST_URL,
                     HttpMethod.POST,
                     entity,
-                    new ParameterizedTypeReference<>() {
-                    }
+                    new ParameterizedTypeReference<>() {}
             );
             return result.getBody().get("rajaongkir").getResults();
         }catch (IOException e){
@@ -81,6 +80,7 @@ public class RajaongkirServiceImpl implements RajaongkirService {
             if (error.getRajaongkir().getStatus().getCode().equals(400)){
                 throw new BadRequestException(error.getRajaongkir().getStatus().getDescription());
             }else{
+                // service provider error
                 throw new ExecutionControl.InternalException(error.getRajaongkir().getStatus().getDescription());
             }
         }

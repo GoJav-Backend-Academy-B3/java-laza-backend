@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.*;
@@ -165,11 +168,13 @@ public class WishlistRepositoryTest {
 
     @Test
     void whenAllProductFromWishlist_thenReturnCorrect(){
-      List<Product> productList = productsRepository.findAllByWishlistById(users.get(0).getId());
+      Page<Product> productList = productsRepository.findAllByWishlistById(users.get(0).getId(), PageRequest.of(0, 5));
       final int expectedProductWishNum = 2;
       assertNotNull(productList);
-      assertEquals(expectedProductWishNum, productList.size());
-      assertEquals(Product.class, productList.get(0).getClass());
-      assertEquals(products.get(1), productList.get(0));
+      assertEquals(expectedProductWishNum, productList.getContent().size());
+      assertEquals(Product.class, productList.getContent().get(0).getClass());
+      assertEquals(1, productList.getTotalPages());
+      assertEquals(2, productList.getTotalElements());
+      assertEquals(products.get(1), productList.getContent().get(0));
     }
 }
