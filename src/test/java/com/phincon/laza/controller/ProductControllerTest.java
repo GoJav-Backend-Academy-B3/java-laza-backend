@@ -1,5 +1,6 @@
 package com.phincon.laza.controller;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,11 +18,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.phincon.laza.config.ProductDataConfig;
 import com.phincon.laza.exception.CustomExceptionHandler;
@@ -106,11 +110,14 @@ public class ProductControllerTest {
     public void addOneProduct_ok() throws Exception {
         assert (productOne != null);
         var product = productOne;
+        var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/png", InputStream.nullInputStream());
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getPrice(), (MultipartFile) mockMultipart,
+                product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), product.getBrand().getId());
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenReturn(product);
         var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/management/products")
+                .file(mockMultipart)
                 .param("name", requestData.name())
                 .param("description", requestData.description()).param("price", requestData.price().toString())
                 .param("categoryId", requestData.categoryId().toString())
@@ -135,11 +142,15 @@ public class ProductControllerTest {
     public void addOneProductIdNonexistent_404() throws Exception {
         assert (productOne != null);
         var product = productOne;
+        var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/png", InputStream.nullInputStream());
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getPrice(), (MultipartFile) mockMultipart,
+                product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), 120l);
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenThrow(NotFoundException.class);
-        var request = MockMvcRequestBuilders.multipart("/management/products").param("name", requestData.name())
+        var request = MockMvcRequestBuilders.multipart("/management/products")
+                .file(mockMultipart)
+                .param("name", requestData.name())
                 .param("description", requestData.description()).param("price", requestData.price().toString())
                 .param("categoryId", requestData.categoryId().toString())
                 .param("brandId", requestData.brandId().toString());
@@ -154,12 +165,15 @@ public class ProductControllerTest {
         assert (productOne != null);
         Long updateId = 91l;
         var product = productUpdated;
+        var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/png", InputStream.nullInputStream());
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), null, product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getPrice(), (MultipartFile) mockMultipart,
+                product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), product.getBrand().getId());
         Mockito.when(service.update(Mockito.anyLong(), Mockito.any(CreateUpdateProductRequest.class)))
                 .thenReturn(product);
         var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/management/products/{id}", updateId)
+                .file(mockMultipart)
                 .param("name", requestData.name()).param("description", requestData.description())
                 .param("price", requestData.price().toString()).param("categoryId", requestData.categoryId().toString())
                 .param("brandId", requestData.brandId().toString());
@@ -183,17 +197,19 @@ public class ProductControllerTest {
     public void updateProductInvalidId_notFound() throws Exception {
         Long updateId = 92l;
         var product = productUpdated;
+        var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/png", InputStream.nullInputStream());
         var requestData = new CreateUpdateProductRequest(
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                null,
+                (MultipartFile) mockMultipart,
                 product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(),
                 product.getBrand().getId());
         Mockito.when(service.update(Mockito.anyLong(), Mockito.any(CreateUpdateProductRequest.class)))
                 .thenThrow(NotFoundException.class);
         var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/management/products/{id}", updateId)
+                .file(mockMultipart)
                 .param("name", requestData.name())
                 .param("description", requestData.description())
                 .param("price", requestData.price().toString())
