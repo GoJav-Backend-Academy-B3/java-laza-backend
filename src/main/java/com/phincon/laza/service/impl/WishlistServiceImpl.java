@@ -10,6 +10,9 @@ import com.phincon.laza.service.ProductsService;
 import com.phincon.laza.service.UserService;
 import com.phincon.laza.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +58,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
-    public List<Product> findWishlistByUser(String userId) {
-        return productsRepository.findAllByWishlistById(userId);
+    public Page<Product> findWishlistByUser(String userId, int page, int size) {
+        return productsRepository.findAllByWishlistById(userId, PageRequest.of(page, size));
     }
 }

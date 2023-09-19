@@ -22,6 +22,8 @@ public class WishlistResponse {
         this.productImage_url = product.getImageUrl();
         this.price = product.getPrice();
         this.brandName = product.getBrand().getName();
-
+    }
+    public static WishlistResponse fromProductEntity(Product p) {
+        return new WishlistResponse(p);
     }
 }

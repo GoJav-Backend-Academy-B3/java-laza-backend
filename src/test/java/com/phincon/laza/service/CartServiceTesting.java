@@ -124,7 +124,7 @@ public class CartServiceTesting {
     }
 
     @Test
-    @DisplayName("[CartService] CreateCart (Product not found) should throw Not Found Error")
+    @DisplayName("[CartService] CreateCart (Size not found) should throw Not Found Error")
     void whenCreateCart_thenThrowExceptionSizeNotFound() throws Exception{
         CartRequest requestBodyI = new CartRequest(products.get(2).getId(), 100l,1);
         lenient().when(sizeService.getSizeById(requestBodyI.getSizeId()))

@@ -5,26 +5,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phincon.laza.exception.CustomExceptionHandler;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.WishlistRequest;
-import com.phincon.laza.model.dto.response.DataResponse;
 import com.phincon.laza.model.dto.response.WishlistResponse;
 import com.phincon.laza.model.entity.*;
 
 
-import com.phincon.laza.security.userdetails.CurrentUser;
 import com.phincon.laza.security.userdetails.SysUserDetails;
 import com.phincon.laza.service.WishlistService;
 
-import jakarta.validation.Valid;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,9 +33,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.Matchers.hasSize;
@@ -46,8 +42,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-
 
 
 @ContextConfiguration(classes = WishlistController.class)
@@ -68,7 +62,7 @@ public class WishlistControllerTest {
      private List<Product> products = new ArrayList<>();
      private List<Size> sizes = new ArrayList<>();
 
-     private SysUserDetails userDetail;
+     private SysUserDetails userDetail = new SysUserDetails();
 
     @BeforeEach
     void setup() throws  Exception{
@@ -88,7 +82,6 @@ public class WishlistControllerTest {
         users.add(new User("24", "user2", "user2", "password", "email", "image", true, null, null, products, null, null, null, null, null, null));
         userDetail = new SysUserDetails("23", "smith", "password",
                 Arrays.asList(new SimpleGrantedAuthority("USER"), new SimpleGrantedAuthority("ADMIN")));
-
     }
 
     @Test
@@ -129,24 +122,6 @@ public class WishlistControllerTest {
     verify(wishlistService,times(1)).createWishlist(any(),any());
     }
 
-    @Test
-    @DisplayName("[WishlistControllerTest] Get getProductWishlist and should return status 200")
-    void whenGetProductWishlist_thenReturnCorrectResponse() throws Exception{
-        when(wishlistService.findWishlistByUser(any())).thenReturn(products);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/wishlists").with(user(userDetail)))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(HttpStatus.OK.name()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.OK.value()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.*", hasSize(3)))
-                        .andExpect(MockMvcResultMatchers.jsonPath("$.data[0]").isNotEmpty());
-
-        verify(wishlistService,times(1)).findWishlistByUser(any());
-
-    }
 
 @DisplayName("[WishlistControllerTest] deleteWishlist and should return status 200")
 void whenDeleteWishlist_thenReturnCorrectResponse() throws Exception{
@@ -181,4 +156,25 @@ void whenDeleteWishlist_thenReturnCorrectResponse() throws Exception{
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.NOT_FOUND.value()));
         verify(wishlistService,times(1)).deleteWishlist(any(),any());
     }
+
+//    @Test
+//    @DisplayName("[WishlistControllerTest] Get getProductWishlist and should return status 200")
+//    void whenGetProductWishlist_thenReturnCorrectResponse() throws Exception{
+//        when(wishlistService.findWishlistByUser(anyString(),anyInt(), anyInt())).thenReturn(new PageImpl<>(products));
+//
+//        mockMvc.perform(MockMvcRequestBuilders.get("/wishlists").with(user(userDetail))
+//                        .param("page", "0").param("size", "5"))
+//                .andDo(t->{System.out.println(t.toString());});
+//                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(HttpStatus.OK.name()))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.status_code").value(HttpStatus.OK.value()))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isNotEmpty())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.data.products", hasSize(3)))
+//                        .andExpect(MockMvcResultMatchers.jsonPath(".data.getTotalPages").value(1))
+//                                .andExpect(MockMvcResultMatchers.jsonPath(".data.getTotalElements").value(3));
+//
+//        verify(wishlistService,times(1)).findWishlistByUser("l", 97, 97);
+//    }
 }

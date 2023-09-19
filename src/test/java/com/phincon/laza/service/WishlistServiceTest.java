@@ -14,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,9 +41,12 @@ public class WishlistServiceTest {
     private WishlistService wishlistService = new WishlistServiceImpl();
     private List<User> userDataTest = new ArrayList<>();
     private List<Product> productDataTest = new ArrayList<>();
+
+
     @BeforeEach
     void init(){
 
+        List<Product> productListEmpty = new ArrayList<>();
 
         userDataTest.add(
                 new User("23", "user1", "user1", "password", "email", "image",true, null,null, productDataTest,null,null,null,null,null,null)
@@ -51,8 +58,9 @@ public class WishlistServiceTest {
         productDataTest.add(new Product(90l, "product1", "desc1","image",10000, LocalDateTime.now(),"test", new Brand(10l,"BrandA","logo",false, null),null,new Category(1l,"categoryA",null,false),userDataTest,null,null));
         productDataTest.add(new Product(91l, "product2", "desc2","image",10000, LocalDateTime.now(),"test", new Brand(10l,"BrandA","logo",false, null),null,new Category(1l,"categoryA",null,false),userDataTest,null,null));
         productDataTest.add(new Product(92l, "product3", "desc3","image",10000, LocalDateTime.now(),"test", new Brand(10l,"BrandA","logo",false, null),null,new Category(1l,"categoryA",null,false),userDataTest,null,null));
-        lenient().when(productsRepository.findAllByWishlistById("23")).thenReturn(productDataTest);
-        lenient().when(productsRepository.findAllByWishlistById("no")).thenReturn(new ArrayList<>());
+
+        lenient().when(productsRepository.findAllByWishlistById("23", PageRequest.of(0, 5))).thenReturn(new PageImpl<>(productDataTest));
+        lenient().when(productsRepository.findAllByWishlistById("no", PageRequest.of(0, 5))).thenReturn(new PageImpl<>(productListEmpty));
 
         Product product = productDataTest.get(0);
         product.setWishlistBy(userDataTest);
@@ -79,17 +87,18 @@ public class WishlistServiceTest {
     @DisplayName("[WishlistService] findWishlistByUser should return products list")
     void whenFindWishlistByUser_thenCorrectResponse(){
         String userId = "23";
-        List<Product> productResult = wishlistService.findWishlistByUser(userId);
+        Page<Product> productResult = wishlistService.findWishlistByUser(userId, 0, 5);
         assertNotNull(productResult);
-        assertEquals(userId, productResult.get(0).getWishlistBy().get(0).getId());
+        assertEquals(1, productResult.getTotalPages());
+        assertEquals(PageImpl.class, productResult.getClass());
     }
 
     @Test
     @DisplayName("[WishlistService] findWishlistByUser should return empty product list")
     void whenFindWishlistByUser_thenCorrectResponseEmpty(){
         String userId = "no";
-        List<Product> productResult = wishlistService.findWishlistByUser(userId);
-        assertEquals(Arrays.asList(), productResult);
+        Page<Product> productResult = wishlistService.findWishlistByUser(userId, 0,5);
+        assertEquals(Arrays.asList(), productResult.getContent());
     }
 
     @Test

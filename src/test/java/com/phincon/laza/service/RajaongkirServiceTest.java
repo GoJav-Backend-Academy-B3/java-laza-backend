@@ -4,21 +4,16 @@ package com.phincon.laza.service;
 import com.phincon.laza.exception.custom.BadRequestException;
 import com.phincon.laza.model.dto.rajaongkir.*;
 import com.phincon.laza.model.dto.request.ROCostRequest;
-import com.phincon.laza.repository.CityRepository;
 import com.phincon.laza.service.impl.RajaongkirServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
