@@ -86,14 +86,18 @@ public class UserValidatorTest {
 
     @Test
     public void testValidateUser_thenVerified() {
-        Optional<User> findUser = Optional.of(new User());
+        User user = new User();
+        user.setVerified(true);
+
+        Optional<User> findUser = Optional.of(user);
+
         lenient().when(userRepository.findById(anyString())).thenReturn(findUser);
 
         assertThrows(NotProcessException.class, () -> {
             userValidator.validateUserIsVerified(findUser);
         });
 
-        log.info("[COMPLETE] testing validate user then not verified");
+        log.info("[COMPLETE] testing validate user then verified");
     }
 
     @Test
