@@ -140,15 +140,15 @@ public class ProductServiceTest {
     @DisplayName("Add one product with request should return data")
     public void addOneProduct_data() throws Exception {
         final long brandId = 3l;
-        final Brand brand = ProductDataConfig.brandInit().get(2);
+        final Brand brand = ProductDataConfig.brands.get(2);
 
         final long categoryId = 1l;
-        final Category category = ProductDataConfig.categoryInit().get(2);
+        final Category category = ProductDataConfig.categories.get(2);
 
         final long sz1Id = 1l;
         final long sz2Id = 2l;
-        final Size sz1 = ProductDataConfig.sizeInit().get(0);
-        final Size sz2 = ProductDataConfig.sizeInit().get(1);
+        final Size sz1 = ProductDataConfig.sizes.get(0);
+        final Size sz2 = ProductDataConfig.sizes.get(1);
 
         final Product product = productOne;
         final MultipartFile mockMultipart = new MockMultipartFile("product1image",
@@ -187,12 +187,12 @@ public class ProductServiceTest {
         final long brandId = 3l;
 
         final long categoryId = 1l;
-        final Category category = ProductDataConfig.categoryInit().get(2);
+        final Category category = ProductDataConfig.categories.get(2);
 
         final long sz1Id = 1l;
         final long sz2Id = 2l;
-        final Size sz1 = ProductDataConfig.sizeInit().get(0);
-        final Size sz2 = ProductDataConfig.sizeInit().get(1);
+        final Size sz1 = ProductDataConfig.sizes.get(0);
+        final Size sz2 = ProductDataConfig.sizes.get(1);
 
         final MultipartFile mockMultipart = new MockMultipartFile("product1image",
                 InputStream.nullInputStream());
@@ -228,15 +228,15 @@ public class ProductServiceTest {
         final long productId = 99l;
 
         final long brandId = 1l;
-        final Brand brand = ProductDataConfig.brandInit().get(2);
+        final Brand brand = ProductDataConfig.brands.get(2);
 
         final long categoryId = 1l;
-        final Category category = ProductDataConfig.categoryInit().get(2);
+        final Category category = ProductDataConfig.categories.get(2);
 
         final long sz1Id = 1l;
         final long sz2Id = 2l;
-        final Size sz1 = ProductDataConfig.sizeInit().get(0);
-        final Size sz2 = ProductDataConfig.sizeInit().get(1);
+        final Size sz1 = ProductDataConfig.sizes.get(0);
+        final Size sz2 = ProductDataConfig.sizes.get(1);
 
         final MultipartFile mockMultipart = new MockMultipartFile("product1image",
                 InputStream.nullInputStream());

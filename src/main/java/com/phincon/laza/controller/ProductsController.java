@@ -24,6 +24,7 @@ import com.phincon.laza.model.dto.response.ProductsResponse;
 import com.phincon.laza.model.entity.Product;
 import com.phincon.laza.service.ProductsService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -66,9 +67,9 @@ public class ProductsController {
         return DataResponse.ok(data, meta);
     }
 
-    @PostMapping("/management/products")
+    @PostMapping(value = "/management/products", consumes = "multipart/form-data")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> createProduct(
-            @ModelAttribute CreateUpdateProductRequest request) throws Exception {
+            @Valid @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.create(request);
         CreateUpdateProductResponse result = CreateUpdateProductResponse.fromProductEntity(product);
         DataResponse<CreateUpdateProductResponse> dataResponse = new DataResponse<>(HttpStatus.CREATED.value(),
@@ -76,10 +77,10 @@ public class ProductsController {
         return ResponseEntity.status(dataResponse.getStatusCode()).body(dataResponse);
     }
 
-    @PutMapping("/management/products/{id}")
+    @PutMapping(value = "/management/products/{id}", consumes = "multipart/form-data")
     public ResponseEntity<DataResponse<CreateUpdateProductResponse>> updateProduct(
             @PathVariable Long id,
-            @ModelAttribute CreateUpdateProductRequest request) throws Exception {
+            @Valid @ModelAttribute CreateUpdateProductRequest request) throws Exception {
         Product product = productsService.update(id, request);
         CreateUpdateProductResponse result = CreateUpdateProductResponse.fromProductEntity(product);
         DataResponse<CreateUpdateProductResponse> dataResponse = new DataResponse<CreateUpdateProductResponse>(
