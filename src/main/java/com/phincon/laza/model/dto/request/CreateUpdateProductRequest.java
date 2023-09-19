@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 public record CreateUpdateProductRequest(
         @NotBlank String name,
         @NotBlank String description,
-        @Min(1) Integer price,
+        @NotNull @Min(1) Integer price,
         @NotNull @FileContentType(contentType = {
                 "image/png", "image/jpeg", "image/webp" }) MultipartFile imageFile,
         @NotNull List<Long> sizeIds,
