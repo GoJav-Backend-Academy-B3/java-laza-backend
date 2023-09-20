@@ -22,7 +22,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
@@ -135,6 +134,29 @@ public class ProductControllerTest {
                 MockMvcResultMatchers.jsonPath("$.data.sizes").isArray(),
                 MockMvcResultMatchers.jsonPath("$.data.sizes[*].size").exists());
         Mockito.verify(service, Mockito.times(1)).create(requestData);
+    }
+    
+    @Test
+    @DisplayName("Add one product with file content type outside allowed should return 400")
+    public void addOneProductFileContentTypeOutsideAllowed_ok() throws Exception {
+        assert (productOne != null);
+        var product = productOne;
+        var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/bmp", InputStream.nullInputStream());
+        var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
+                product.getPrice(), (MultipartFile) mockMultipart,
+                product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
+                product.getCategory().getId(), product.getBrand().getId());
+        Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenReturn(product);
+        var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/management/products")
+                .file(mockMultipart)
+                .param("name", requestData.name())
+                .param("description", requestData.description()).param("price", requestData.price().toString())
+                .param("categoryId", requestData.categoryId().toString())
+                .param("brandId", requestData.brandId().toString());
+        requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
+        var action = mockmvc.perform(request);
+        action.andExpectAll(MockMvcResultMatchers.status().isBadRequest());
+        Mockito.verify(service, Mockito.never()).create(requestData);
     }
 
     @Test
