@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,6 +78,31 @@ public class UserValidator {
     public void validateUserPasswordNotMatch(String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new BadRequestException("New password and Confirm password do not match");
+        }
+    }
+
+    public void validateUserCheckPasswordStrength(String password) {
+        boolean hasLower = false, hasUpper = false,
+                hasDigit = false, specialChar = false;
+
+        Set<Character> set = new HashSet<Character>(
+                Arrays.asList('!', '@', '#', '$', '%', '^', '&',
+                        '*', '(', ')', '-', '+'));
+
+        for (char i : password.toCharArray())
+        {
+            if (Character.isLowerCase(i))
+                hasLower = true;
+            if (Character.isUpperCase(i))
+                hasUpper = true;
+            if (Character.isDigit(i))
+                hasDigit = true;
+            if (set.contains(i))
+                specialChar = true;
+        }
+
+        if (!hasLower && !hasUpper && !specialChar && !hasDigit) {
+            throw new BadRequestException("Password so week, please input upper, lower, digit and symbol in character");
         }
     }
 
