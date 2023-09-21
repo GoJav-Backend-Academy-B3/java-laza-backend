@@ -19,6 +19,7 @@ public class FileContentTypeCheck implements ConstraintValidator<FileContentType
 
     @Override
     public boolean isValid(MultipartFile value, ConstraintValidatorContext context) {
+        if (value == null) return true;
         String fileContentType = value.getContentType();
 
         return Arrays.asList(contentType).contains(fileContentType);
