@@ -2,21 +2,37 @@ package com.phincon.laza.model.dto.request;
 
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import com.phincon.laza.validator.FileContentType;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record CreateUpdateProductRequest(
-        @NotBlank String name,
-        @NotBlank String description,
-        @NotNull @Min(1) Integer price,
-        @NotNull @FileContentType(contentType = {
-                "image/png", "image/jpeg", "image/webp" }) MultipartFile imageFile,
-        @NotNull List<Long> sizeIds,
-        @NotNull Long categoryId,
-        @NotNull Long brandId){
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class CreateUpdateProductRequest {
+    @NotBlank
+    String name;
+
+    @NotBlank
+    String description;
+    
+    @NotNull
+    @Min(1)
+    Integer price;
+    
+    @NotNull
+    List<Long> sizeIds;
+    
+    @NotNull
+    Long categoryId;
+    
+    @NotNull
+    Long brandId;
 }
