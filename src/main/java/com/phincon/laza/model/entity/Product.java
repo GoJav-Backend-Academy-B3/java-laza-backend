@@ -1,7 +1,6 @@
 package com.phincon.laza.model.entity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -51,9 +50,12 @@ public class Product {
     private Integer price;
 
     private LocalDateTime createdAt;
-  
+
     private String cloudinaryPublicId;
-    
+
+    @Column(nullable = false)
+    private Boolean isDeleted;
+
     @ManyToOne
     @JoinColumn(name = "brand_id", nullable = false)
     @JsonManagedReference
@@ -65,7 +67,7 @@ public class Product {
     private List<Size> sizes;
 
     @ManyToOne
-    @JoinColumn(name="category_id", nullable=false)
+    @JoinColumn(name = "category_id", nullable = false)
     @JsonManagedReference
     private Category category;
 
@@ -83,6 +85,7 @@ public class Product {
 
     @PrePersist
     protected void onCreate() {
+        isDeleted = false;
         createdAt = LocalDateTime.now();
     }
 
@@ -98,5 +101,22 @@ public class Product {
         this.category = category;
     }
 
-}
+    public Product(Long id, String name, String description, String imageUrl, Integer price, LocalDateTime createdAt,
+            String cloudinaryPublicId, Brand brand, List<Size> sizes, Category category, List<User> wishlistBy,
+            List<Review> reviewList, List<Cart> carts) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.price = price;
+        this.createdAt = createdAt;
+        this.cloudinaryPublicId = cloudinaryPublicId;
+        this.brand = brand;
+        this.sizes = sizes;
+        this.category = category;
+        this.wishlistBy = wishlistBy;
+        this.reviewList = reviewList;
+        this.carts = carts;
+    }
 
+}
