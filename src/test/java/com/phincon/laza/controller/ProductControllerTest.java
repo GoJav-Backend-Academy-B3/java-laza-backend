@@ -104,6 +104,9 @@ public class ProductControllerTest {
         Mockito.verify(service, Mockito.times(1)).getProductById(requestId);
     }
 
+    /**
+     * @throws Exception
+     */
     @Test
     @DisplayName("Add one product should OK and return data")
     public void addOneProduct_ok() throws Exception {
@@ -111,31 +114,31 @@ public class ProductControllerTest {
         var product = productOne;
         var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/png", InputStream.nullInputStream());
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), (MultipartFile) mockMultipart,
+                product.getPrice(),
                 product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), product.getBrand().getId());
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenReturn(product);
         var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/management/products")
                 .file(mockMultipart)
-                .param("name", requestData.name())
-                .param("description", requestData.description()).param("price", requestData.price().toString())
-                .param("categoryId", requestData.categoryId().toString())
-                .param("brandId", requestData.brandId().toString());
-        requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
+                .param("name", requestData.getName())
+                .param("description", requestData.getDescription()).param("price", requestData.getPrice().toString())
+                .param("categoryId", requestData.getCategoryId().toString())
+                .param("brandId", requestData.getBrandId().toString());
+        requestData.getSizeIds().forEach(v -> request.param("sizeIds", v.toString()));
         var action = mockmvc.perform(request);
         action.andExpectAll(MockMvcResultMatchers.status().isCreated(),
-                MockMvcResultMatchers.jsonPath("$.data.name").value(requestData.name()),
-                MockMvcResultMatchers.jsonPath("$.data.description").value(requestData.description()),
-                MockMvcResultMatchers.jsonPath("$.data.price").value(requestData.price()),
-                MockMvcResultMatchers.jsonPath("$.data.category.id").value(requestData.categoryId()),
+                MockMvcResultMatchers.jsonPath("$.data.name").value(requestData.getName()),
+                MockMvcResultMatchers.jsonPath("$.data.description").value(requestData.getDescription()),
+                MockMvcResultMatchers.jsonPath("$.data.price").value(requestData.getPrice()),
+                MockMvcResultMatchers.jsonPath("$.data.category.id").value(requestData.getCategoryId()),
                 MockMvcResultMatchers.jsonPath("$.data.category.category").value(product.getCategory().getCategory()),
-                MockMvcResultMatchers.jsonPath("$.data.brand.id").value(requestData.brandId()),
+                MockMvcResultMatchers.jsonPath("$.data.brand.id").value(requestData.getBrandId()),
                 MockMvcResultMatchers.jsonPath("$.data.brand.name").value(product.getBrand().getName()),
                 MockMvcResultMatchers.jsonPath("$.data.sizes").isArray(),
                 MockMvcResultMatchers.jsonPath("$.data.sizes[*].size").exists());
         Mockito.verify(service, Mockito.times(1)).create(requestData);
     }
-    
+
     @Test
     @DisplayName("Add one product with file content type outside allowed should return 400")
     public void addOneProductFileContentTypeOutsideAllowed_ok() throws Exception {
@@ -143,17 +146,17 @@ public class ProductControllerTest {
         var product = productOne;
         var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/bmp", InputStream.nullInputStream());
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), (MultipartFile) mockMultipart,
+                product.getPrice(),
                 product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), product.getBrand().getId());
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenReturn(product);
         var request = MockMvcRequestBuilders.multipart(HttpMethod.POST, "/management/products")
                 .file(mockMultipart)
-                .param("name", requestData.name())
-                .param("description", requestData.description()).param("price", requestData.price().toString())
-                .param("categoryId", requestData.categoryId().toString())
-                .param("brandId", requestData.brandId().toString());
-        requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
+                .param("name", requestData.getName())
+                .param("description", requestData.getDescription()).param("price", requestData.getPrice().toString())
+                .param("categoryId", requestData.getCategoryId().toString())
+                .param("brandId", requestData.getBrandId().toString());
+        requestData.getSizeIds().forEach(v -> request.param("sizeIds", v.toString()));
         var action = mockmvc.perform(request);
         action.andExpectAll(MockMvcResultMatchers.status().isBadRequest());
         Mockito.verify(service, Mockito.never()).create(requestData);
@@ -166,17 +169,17 @@ public class ProductControllerTest {
         var product = productOne;
         var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/png", InputStream.nullInputStream());
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), (MultipartFile) mockMultipart,
+                product.getPrice(),
                 product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), 120l);
         Mockito.when(service.create(Mockito.any(CreateUpdateProductRequest.class))).thenThrow(NotFoundException.class);
         var request = MockMvcRequestBuilders.multipart("/management/products")
                 .file(mockMultipart)
-                .param("name", requestData.name())
-                .param("description", requestData.description()).param("price", requestData.price().toString())
-                .param("categoryId", requestData.categoryId().toString())
-                .param("brandId", requestData.brandId().toString());
-        requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
+                .param("name", requestData.getName())
+                .param("description", requestData.getDescription()).param("price", requestData.getPrice().toString())
+                .param("categoryId", requestData.getCategoryId().toString())
+                .param("brandId", requestData.getBrandId().toString());
+        requestData.getSizeIds().forEach(v -> request.param("sizeIds", v.toString()));
         var action = mockmvc.perform(request);
         action.andExpectAll(MockMvcResultMatchers.status().isNotFound());
     }
@@ -189,25 +192,26 @@ public class ProductControllerTest {
         var product = productUpdated;
         var mockMultipart = new MockMultipartFile("imageFile", "filename", "image/png", InputStream.nullInputStream());
         var requestData = new CreateUpdateProductRequest(product.getName(), product.getDescription(),
-                product.getPrice(), (MultipartFile) mockMultipart,
+                product.getPrice(),
                 product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(), product.getBrand().getId());
         Mockito.when(service.update(Mockito.anyLong(), Mockito.any(CreateUpdateProductRequest.class)))
                 .thenReturn(product);
         var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/management/products/{id}", updateId)
                 .file(mockMultipart)
-                .param("name", requestData.name()).param("description", requestData.description())
-                .param("price", requestData.price().toString()).param("categoryId", requestData.categoryId().toString())
-                .param("brandId", requestData.brandId().toString());
-        requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
+                .param("name", requestData.getName()).param("description", requestData.getDescription())
+                .param("price", requestData.getPrice().toString())
+                .param("categoryId", requestData.getCategoryId().toString())
+                .param("brandId", requestData.getBrandId().toString());
+        requestData.getSizeIds().forEach(v -> request.param("sizeIds", v.toString()));
         var action = mockmvc.perform(request);
         action.andExpectAll(MockMvcResultMatchers.status().isOk(),
-                MockMvcResultMatchers.jsonPath("$.data.name").value(requestData.name()),
-                MockMvcResultMatchers.jsonPath("$.data.description").value(requestData.description()),
-                MockMvcResultMatchers.jsonPath("$.data.price").value(requestData.price()),
-                MockMvcResultMatchers.jsonPath("$.data.category.id").value(requestData.categoryId()),
+                MockMvcResultMatchers.jsonPath("$.data.name").value(requestData.getName()),
+                MockMvcResultMatchers.jsonPath("$.data.description").value(requestData.getDescription()),
+                MockMvcResultMatchers.jsonPath("$.data.price").value(requestData.getPrice()),
+                MockMvcResultMatchers.jsonPath("$.data.category.id").value(requestData.getCategoryId()),
                 MockMvcResultMatchers.jsonPath("$.data.category.category").value(product.getCategory().getCategory()),
-                MockMvcResultMatchers.jsonPath("$.data.brand.id").value(requestData.brandId()),
+                MockMvcResultMatchers.jsonPath("$.data.brand.id").value(requestData.getBrandId()),
                 MockMvcResultMatchers.jsonPath("$.data.brand.name").value(product.getBrand().getName()),
                 MockMvcResultMatchers.jsonPath("$.data.sizes").isArray(),
                 MockMvcResultMatchers.jsonPath("$.data.sizes[*].size").exists());
@@ -224,7 +228,6 @@ public class ProductControllerTest {
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                (MultipartFile) mockMultipart,
                 product.getSizes().stream().map(v -> v.getId()).collect(Collectors.toList()),
                 product.getCategory().getId(),
                 product.getBrand().getId());
@@ -232,12 +235,12 @@ public class ProductControllerTest {
                 .thenThrow(NotFoundException.class);
         var request = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "/management/products/{id}", updateId)
                 .file(mockMultipart)
-                .param("name", requestData.name())
-                .param("description", requestData.description())
-                .param("price", requestData.price().toString())
-                .param("categoryId", requestData.categoryId().toString())
-                .param("brandId", requestData.brandId().toString());
-        requestData.sizeIds().forEach(v -> request.param("sizeIds", v.toString()));
+                .param("name", requestData.getName())
+                .param("description", requestData.getDescription())
+                .param("price", requestData.getPrice().toString())
+                .param("categoryId", requestData.getCategoryId().toString())
+                .param("brandId", requestData.getBrandId().toString());
+        requestData.getSizeIds().forEach(v -> request.param("sizeIds", v.toString()));
         var action = mockmvc.perform(request);
         action.andExpectAll(MockMvcResultMatchers.status().isNotFound());
         Mockito.verify(service, Mockito.times(1)).update(Mockito.eq(updateId), Mockito.eq(requestData));

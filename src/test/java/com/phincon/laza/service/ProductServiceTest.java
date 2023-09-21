@@ -155,7 +155,7 @@ public class ProductServiceTest {
                 InputStream.nullInputStream());
         final CreateUpdateProductRequest request = new CreateUpdateProductRequest(
                 productOne.getName(), productOne.getDescription(),
-                productOne.getPrice(), mockMultipart, Arrays.asList(sz1Id, sz2Id), categoryId, brandId);
+                productOne.getPrice(), Arrays.asList(sz1Id, sz2Id), categoryId, brandId);
         Mockito.when(brandService.findById(Mockito.anyLong())).thenReturn(brand);
         Mockito.when(categoryService.getCategoryById(Mockito.anyLong())).thenReturn(category);
         Mockito.when(sizeService.getSizeById(Mockito.anyLong())).thenReturn(sz1, sz2);
@@ -166,8 +166,8 @@ public class ProductServiceTest {
 
         final Product result = service.create(request);
 
-        Assertions.assertEquals(request.name(), result.getName());
-        Assertions.assertEquals(request.description(), result.getDescription());
+        Assertions.assertEquals(request.getName(), result.getName());
+        Assertions.assertEquals(request.getDescription(), result.getDescription());
         Assertions.assertEquals(product.getPrice(), result.getPrice());
         Assertions.assertEquals(product.getBrand(), result.getBrand());
         Assertions.assertEquals(product.getCategory(), result.getCategory());
@@ -198,7 +198,7 @@ public class ProductServiceTest {
                 InputStream.nullInputStream());
         final CreateUpdateProductRequest request = new CreateUpdateProductRequest(
                 productOne.getName(), productOne.getDescription(),
-                productOne.getPrice(), mockMultipart, Arrays.asList(sz1Id, sz2Id), categoryId, brandId);
+                productOne.getPrice(), Arrays.asList(sz1Id, sz2Id), categoryId, brandId);
         Mockito.when(brandService.findById(Mockito.anyLong())).thenThrow(NotFoundException.class);
         Mockito.when(categoryService.getCategoryById(Mockito.anyLong())).thenReturn(category);
         Mockito.when(sizeService.getSizeById(Mockito.anyLong())).thenReturn(sz1, sz2);
@@ -244,7 +244,7 @@ public class ProductServiceTest {
         final Product updated = productUpdated;
         final CreateUpdateProductRequest request = new CreateUpdateProductRequest(
                 updated.getName(), updated.getDescription(),
-                updated.getPrice(), mockMultipart, Arrays.asList(sz1Id, sz2Id), categoryId, brandId);
+                updated.getPrice(), Arrays.asList(sz1Id, sz2Id), categoryId, brandId);
         Mockito.when(repository.findById(Mockito.eq(productId))).thenAnswer(I -> {
             final Product product = productOne;
             Product p = new Product(product.getId(), product.getName(), product.getDescription(),
@@ -264,9 +264,9 @@ public class ProductServiceTest {
 
         Product result = service.update(productId, request);
 
-        Assertions.assertEquals(request.name(), result.getName());
-        Assertions.assertEquals(request.description(), result.getDescription());
-        Assertions.assertEquals(request.price(), result.getPrice());
+        Assertions.assertEquals(request.getName(), result.getName());
+        Assertions.assertEquals(request.getDescription(), result.getDescription());
+        Assertions.assertEquals(request.getPrice(), result.getPrice());
         Assertions.assertEquals(updated.getBrand(), result.getBrand());
         Assertions.assertEquals(updated.getCategory(), result.getCategory());
         Assertions.assertTrue(CollectionUtils.isEqualCollection(updated.getSizes(), result.getSizes()));
