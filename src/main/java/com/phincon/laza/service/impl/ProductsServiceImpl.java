@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import com.cloudinary.Cloudinary;
 import com.phincon.laza.exception.custom.NotFoundException;
 import com.phincon.laza.model.dto.request.CreateUpdateProductRequest;
 import com.phincon.laza.model.entity.Brand;
@@ -39,7 +41,7 @@ public class ProductsServiceImpl implements ProductsService {
     @Autowired
     private SizeService sizeService;
     @Autowired
-    private CloudinaryImageService cloudinaryImageService;
+    private Cloudinary cloudinary;
 
     @Override
     public Page<Product> getAll(int page, int size) {
@@ -64,18 +66,18 @@ public class ProductsServiceImpl implements ProductsService {
     public Product create(CreateUpdateProductRequest createProductRequest) throws Exception {
         var product = new Product();
         // fill some fillable field
-        product.setName(createProductRequest.name());
-        product.setPrice(createProductRequest.price());
-        product.setDescription(createProductRequest.description());
+        product.setName(createProductRequest.getName());
+        product.setPrice(createProductRequest.getPrice());
+        product.setDescription(createProductRequest.getDescription());
 
         // check for brand
-        var brandCompletable = findBrandById(createProductRequest.brandId())
+        var brandCompletable = findBrandById(createProductRequest.getBrandId())
                 .thenAcceptAsync(product::setBrand);
         // check for category
-        var categoryCompletable = findCategoryById(createProductRequest.categoryId())
+        var categoryCompletable = findCategoryById(createProductRequest.getCategoryId())
                 .thenAcceptAsync(product::setCategory);
         // check for sizes
-        var sizesCompletable = findSizesByIds(createProductRequest.sizeIds())
+        var sizesCompletable = findSizesByIds(createProductRequest.getSizeIds())
                 .thenAcceptAsync(product::setSizes);
 
         try {
@@ -84,10 +86,10 @@ public class ProductsServiceImpl implements ProductsService {
             throw (NotFoundException) e.getCause();
         }
 
-        var result = cloudinaryImageService.upload(createProductRequest.imageFile().getBytes(), "products",
-                GenerateRandom.token());
-        product.setImageUrl(result.secureUrl());
-        product.setCloudinaryPublicId(result.publicId());
+        // var result = cloudinaryImageService.upload(createProductRequest.imageFile().getBytes(), "products",
+        //         GenerateRandom.token());
+        // product.setImageUrl(result.secureUrl());
+        product.setCloudinaryPublicId(String.format("%s/%s", "products", GenerateRandom.token()));
 
         return productsRepository.save(product);
     }
@@ -95,36 +97,44 @@ public class ProductsServiceImpl implements ProductsService {
     @Override
     public Product update(Long id, CreateUpdateProductRequest updateProductRequest) throws Exception {
         var product = this.getProductById(id);
-        product.setName(updateProductRequest.name());
-        product.setPrice(updateProductRequest.price());
-        product.setDescription(updateProductRequest.description());
+        product.setName(updateProductRequest.getName());
+        product.setPrice(updateProductRequest.getPrice());
+        product.setDescription(updateProductRequest.getDescription());
 
         // check for brand
-        var brandCompletable = findBrandById(updateProductRequest.brandId())
+        var brandCompletable = findBrandById(updateProductRequest.getBrandId())
                 .thenAcceptAsync(product::setBrand);
         // check for category
-        var categoryCompletable = findCategoryById(updateProductRequest.categoryId())
+        var categoryCompletable = findCategoryById(updateProductRequest.getCategoryId())
                 .thenAcceptAsync(product::setCategory);
         // check for sizes
-        var sizesCompletable = findSizesByIds(updateProductRequest.sizeIds())
+        var sizesCompletable = findSizesByIds(updateProductRequest.getSizeIds())
                 .thenAcceptAsync(product::setSizes);
 
         CompletableFuture.allOf(brandCompletable, categoryCompletable, sizesCompletable).join();
 
-        cloudinaryImageService.delete(product.getCloudinaryPublicId());
-        var result = cloudinaryImageService.upload(updateProductRequest.imageFile().getBytes(), "products",
-                GenerateRandom.token());
-        product.setImageUrl(result.secureUrl());
+        // var result = cloudinaryImageService.upload(createProductRequest.imageFile().getBytes(), "products",
+        //         GenerateRandom.token());
+        // product.setImageUrl(result.secureUrl());
+        product.setCloudinaryPublicId(String.format("%s/%s", "products", GenerateRandom.token()));
 
         return productsRepository.save(product);
     }
 
     @Override
+    public void setImageUrl(Long id, String imageUrl) throws Exception {
+        var product = this.getProductById(id);
+        product.setImageUrl(imageUrl);
+        productsRepository.save(product);
+    }
+
+    @Override
     public void delete(Long id) throws Exception {
         var product = this.getProductById(id);
-        String publicId = product.getCloudinaryPublicId();
+        // String publicId = product.getCloudinaryPublicId();
 
-        cloudinaryImageService.delete(publicId);
+        // // TODO Delete object on cloudinary
+        // cloudinaryImageService.delete(publicId);
 
         productsRepository.delete(product);
     }

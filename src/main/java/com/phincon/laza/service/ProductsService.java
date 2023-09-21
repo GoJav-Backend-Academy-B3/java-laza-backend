@@ -19,5 +19,7 @@ public interface ProductsService {
 
     Product update(Long id, CreateUpdateProductRequest updateProductRequest) throws Exception;
 
+    void setImageUrl(Long id, String imageUrl) throws Exception;
+
     void delete(Long id) throws Exception;
 }
