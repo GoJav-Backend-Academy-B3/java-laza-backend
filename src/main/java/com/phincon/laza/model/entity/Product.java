@@ -53,7 +53,6 @@ public class Product {
 
     private String cloudinaryPublicId;
 
-    @Column(nullable = false)
     private Boolean isDeleted;
 
     @ManyToOne
