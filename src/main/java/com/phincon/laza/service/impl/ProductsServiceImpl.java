@@ -25,7 +25,10 @@ import com.phincon.laza.service.SizeService;
 
 import com.phincon.laza.utils.GenerateRandom;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ProductsServiceImpl implements ProductsService {
     @Autowired
     private ProductsRepository productsRepository;
@@ -128,6 +131,7 @@ public class ProductsServiceImpl implements ProductsService {
 
     private CompletableFuture<Brand> findBrandById(Long id) throws Exception {
         return CompletableFuture.supplyAsync(() -> {
+            log.info("findBrandById({})", id);
             return brandService.findById(id);
         });
     }
@@ -135,6 +139,7 @@ public class ProductsServiceImpl implements ProductsService {
     private CompletableFuture<Category> findCategoryById(Long id) throws NotFoundException {
         return CompletableFuture.supplyAsync(() -> {
             try {
+                log.info("findCategoryById({})", id);
                 return categoryService.getCategoryById(id);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -147,6 +152,7 @@ public class ProductsServiceImpl implements ProductsService {
         return CompletableFuture.supplyAsync(() -> {
             return ids.stream().map(t -> {
                 try {
+                    log.info("findSizeById({})", t);
                     return sizeService.getSizeById(t);
                 } catch (Exception e) {
                     e.printStackTrace();
