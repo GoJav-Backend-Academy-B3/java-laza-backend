@@ -71,6 +71,7 @@ public class AuthServiceImpl implements AuthService {
 
         Optional<User> findByEmail = userRepository.findByEmail(request.getEmail());
         userValidator.validateUserEmailIsExists(findByEmail);
+        userValidator.validateUserCheckPasswordStrength(request.getPassword());
 
         Set<Provider> listProvider =  new HashSet<>();
         Optional<Provider> findProvider = providerRepository.findByName(EProvider.LOCAL);
@@ -188,6 +189,7 @@ public class AuthServiceImpl implements AuthService {
         userValidator.validateUserNotFound(findUser);
         userValidator.validateUserNotIsVerified(findUser);
         userValidator.validateUserPasswordNotMatch(request.getNewPassword(), request.getConfirmPassword());
+        userValidator.validateUserCheckPasswordStrength(request.getConfirmPassword());
 
         Optional<VerificationCode> findCode = verificationCodeRepository.findByCodeAndUserId(request.getCode(), findUser.get().getId());
         verificationCodeValidator.validateVerificationCodeNotFound(findCode);

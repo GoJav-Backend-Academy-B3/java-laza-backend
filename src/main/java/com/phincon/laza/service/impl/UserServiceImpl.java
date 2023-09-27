@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(String id, ChangePasswordRequest request) {
         userValidator.validateUserPasswordNotMatch(request.getNewPassword(), request.getConfirmPassword());
+        userValidator.validateUserCheckPasswordStrength(request.getConfirmPassword());
 
         Optional<User> findUser = userRepository.findById(id);
         userValidator.validateUserNotFound(findUser);
